@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import Image from "next/image";
 
 export default function Home() {
@@ -13,13 +13,13 @@ export default function Home() {
     "/nevo.jpeg",
   ];
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      window.location.reload();
-    }, 1700);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     window.location.reload();
+  //   }, 1700);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   return (
     <div
