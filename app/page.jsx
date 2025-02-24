@@ -73,6 +73,20 @@ export default function Home() {
           </div>
         ))}
       </div>
+      <form>
+        <p className="mt-8 text-[30px]">יש לכם משהו להוסיף?</p>
+        <hr className="w-[90%] mt-0.5" />
+        <input
+          type="text"
+          placeholder="שם החייל"
+          className="w-full rounded-lg mt-2 text-black"
+        />
+        <textarea
+          name="message"
+          className="w-full mt-3 rounded-lg h-[100px] text-black"
+          placeholder="תכתוב כאן"
+        ></textarea>
+      </form>
     </div>
   );
 }
