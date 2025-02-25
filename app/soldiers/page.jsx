@@ -14,7 +14,6 @@ const Page = () => {
       try {
         const data = await getAllObjects("soldiers");
         setSoldiers(data);
-        console.log(data);
       } catch (error) {
         console.error("Error fetching soldiers:", error);
       }
