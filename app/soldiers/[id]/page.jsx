@@ -81,7 +81,7 @@ const Page = () => {
         ))}
       </div>
       <form onSubmit={handleCommentSubmit} onChange={handleCommentChange}>
-        <p className="mt-8 text-[30px]">יש לכם משהו להוסיף?</p>
+        <p className="mt-8 text-[22px]">יש לכם משהו להוסיף?</p>
         <hr className="w-[90%] mt-0.5" />
         <input
           type="text"
