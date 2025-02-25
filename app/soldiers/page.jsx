@@ -60,8 +60,8 @@ const Page = () => {
                     height={100}
                     className="rounded-lg w-full h-32 object-cover"
                   />
-                  <p className="mt-2 leading-none text-[20px]">
-                    {soldier.name}
+                  <p className="mt-2 leading-none text-[18px]">
+                    {soldier.darga} {soldier.name}
                   </p>
                 </Link>
               ))
