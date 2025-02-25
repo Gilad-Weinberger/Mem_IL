@@ -24,10 +24,9 @@ const Page = () => {
   }, []);
 
   return (
-    <div className="bg-black w-full pt-14 min-h-screen h-full text-white">
+    <div className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white">
       <Navbar />
-      <div className="h-full py-5 px-10" dir="rtl">
-        
+      <div className="h-full" dir="rtl">
         <div className="flex items-center justify-center w-full" dir="rtl">
           <input
             type="text"
@@ -46,7 +45,7 @@ const Page = () => {
         <div className="text-center w-full" dir="rtl">
           <p className="text-[30px] mt-4">ארכיון החיילים</p>
           <hr className="w-full mt-2" />
-          <div className="grid grid-cols-2 gap-2 mt-2 w-full">
+          <div className="grid grid-cols-2 gap-3 mt-2 w-full">
             {soldiers.length > 0 ? (
               soldiers.map((soldier) => (
                 <Link
