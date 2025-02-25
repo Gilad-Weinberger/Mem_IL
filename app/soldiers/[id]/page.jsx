@@ -35,6 +35,14 @@ const Page = () => {
       className="bg-black w-screen min-h-screen h-full py-5 px-10 text-white float-right"
       dir="rtl"
     >
+      <div className="w-full h-[80px] bg-black flex items-center justify-center px-10 fixed top-0" dir="rtl">
+        <nav className="flex space-x-4">
+          <a href="" className="mx-4">דף הבית</a>
+          <a href="" className="mx-4">אודות</a>
+          <a href="" className="mx-4">תמונות</a>
+          <a href="" className="mx-4">צור קשר</a>
+        </nav>
+      </div>
       <div className="flex items-center justify-center w-full" dir="rtl">
         <input
           type="text"
