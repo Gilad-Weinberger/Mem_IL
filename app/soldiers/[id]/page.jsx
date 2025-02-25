@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { getObject } from "@/lib/functions/dbFunctions";
+import Navbar from "@/components/Navbar";
 
 const Page = () => {
   const [soldier, setSoldier] = useState({});
@@ -32,17 +33,10 @@ const Page = () => {
 
   return (
     <div
-      className="bg-black w-screen min-h-screen h-full py-5 px-10 text-white float-right"
+      className="bg-black w-[calc(100vw-10px)] min-h-screen h-full px-5 pt-14 text-white float-right"
       dir="rtl"
     >
-      <div className="w-full h-[80px] bg-black flex items-center justify-center px-10 fixed top-0" dir="rtl">
-        <nav className="flex space-x-4">
-          <a href="" className="mx-4">דף הבית</a>
-          <a href="" className="mx-4">אודות</a>
-          <a href="" className="mx-4">תמונות</a>
-          <a href="" className="mx-4">צור קשר</a>
-        </nav>
-      </div>
+      <Navbar />
       <div className="flex items-center justify-center w-full" dir="rtl">
         <input
           type="text"
