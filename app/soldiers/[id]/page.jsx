@@ -33,7 +33,7 @@ const Page = () => {
 
   return (
     <div
-      className="bg-black w-[calc(100vw-10px)] min-h-screen h-full px-5 pt-14 text-white float-right"
+      className="bg-black w-full min-h-screen h-full px-5 pt-14 text-white float-right"
       dir="rtl"
     >
       <Navbar />
@@ -52,7 +52,7 @@ const Page = () => {
           className="-mr-7"
         />
       </div>
-      <p className="text-[50px] text-center font-extralight max-w-full mt-3">
+      <p className="text-[40px] text-center leading-[40px] font-extralight max-w-full  mt-3">
         {soldier.darga} {soldier.name}
       </p>
       <Image
