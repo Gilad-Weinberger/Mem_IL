@@ -22,9 +22,13 @@ const Page = () => {
     return <div>error</div>;
   }
 
+  const handleCommentChange = () => {
+    console.log("hello")
+  }
+
   const handleCommentSubmit = (e) => {
     e.preventDefault();
-    console.log("submit");
+    
   };
 
   return (
@@ -75,7 +79,7 @@ const Page = () => {
           </div>
         ))}
       </div>
-      <form onSubmit={handleCommentSubmit}>
+      <form onSubmit={handleCommentSubmit} onChange={handleCommentChange}>
         <p className="mt-8 text-[30px]">יש לכם משהו להוסיף?</p>
         <hr className="w-[90%] mt-0.5" />
         <input
