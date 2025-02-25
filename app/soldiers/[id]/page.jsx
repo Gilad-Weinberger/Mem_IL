@@ -23,12 +23,11 @@ const Page = () => {
   }
 
   const handleCommentChange = () => {
-    console.log("hello")
-  }
+    console.log("hello");
+  };
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
-    
   };
 
   return (
