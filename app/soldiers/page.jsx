@@ -25,55 +25,58 @@ const Page = () => {
   return (
     <div className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white">
       <Navbar />
-      <div className="h-full" dir="rtl">
-        <div className="flex items-center justify-center w-full" dir="rtl">
+      <div className="h-full max-w-4xl mx-auto" dir="rtl">
+        {/* Search Bar */}
+        <div className="relative flex justify-center w-full">
           <input
             type="text"
             dir="rtl"
             placeholder="חפש חייל/ת..."
-            className="w-full rounded-lg py-1 pr-3 pl-8 text-black float-right"
+            className="w-full md:w-3/4 lg:w-1/2 rounded-lg py-2 pr-4 pl-10 md:pl-12 text-black"
           />
           <Image
             src="/search.svg"
             alt="search"
             width={22}
             height={22}
-            className="-mr-7"
+            className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2"
           />
         </div>
-        <div className="text-center w-full" dir="rtl">
-          <p className="text-[30px] mt-4">ארכיון החיילים</p>
-          <hr className="w-full mt-2" />
-          <div className="grid grid-cols-2 gap-3 mt-2 w-full">
-            {soldiers.length > 0 ? (
-              soldiers.map((soldier) => (
-                <Link
-                  key={soldier.id}
-                  href={`/soldiers/${soldier.id}`}
-                  className="flex flex-col items-center cursor-pointer hover:opacity-80"
-                >
-                  <Image
-                    src={soldier.images[0] || "/nevo.jpeg"}
-                    alt="soldier-image"
-                    width={100}
-                    height={100}
-                    className="rounded-lg w-full h-32 object-cover"
-                  />
-                  <p className="mt-2 leading-none text-[18px]">
-                    {soldier.darga} {soldier.name}
-                  </p>
-                </Link>
-              ))
-            ) : (
-              <p>Loading soldiers...</p>
-            )}
-          </div>
-          <p className="mt-8 text-center">
-            ליצירת קשר והוספת חייל/ת לאתר memory.il.app@gmail.com
-          </p>
-          <p className="text-center text-[14px] mt-6">
-            האתר פותח ע"י גלעד וינברגר, עמיחי בן יוסף ואפרים דויטש
-          </p>
+
+        {/* Archive Title */}
+        <div className="text-center w-full mt-6">
+          <p className="text-2xl md:text-3xl font-semibold">ארכיון החיילים</p>
+          <hr className="w-full mt-2 border-gray-500" />
+        </div>
+
+        {/* Soldiers Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+          {soldiers.length > 0 ? (
+            soldiers.map((soldier) => (
+              <Link
+                key={soldier.id}
+                href={`/soldiers/${soldier.id}`}
+                className="flex flex-col items-center cursor-pointer hover:opacity-80"
+              >
+                <Image
+                  src={soldier.images[0] || "/nevo.jpeg"}
+                  alt="soldier-image"
+                  width={150}
+                  height={150}
+                  className="rounded-lg w-full h-40 object-cover"
+                />
+                <p className="mt-2 text-lg md:text-xl">{soldier.darga} {soldier.name}</p>
+              </Link>
+            ))
+          ) : (
+            <p className="text-center w-full text-lg">Loading soldiers...</p>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-10 text-center">
+          <p className="text-lg">ליצירת קשר והוספת חייל/ת לאתר  <br />memory.il.app@gmail.com</p>
+          <p className="text-sm mt-4">האתר פותח ע"י גלעד וינברגר, עמיחי בן יוסף ואפרים דויטש</p>
         </div>
       </div>
     </div>
@@ -81,3 +84,4 @@ const Page = () => {
 };
 
 export default Page;
+
