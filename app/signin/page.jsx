@@ -4,9 +4,10 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth, googleProvider } from "../../lib/firebase";
+import { auth, googleProvider, db } from "../../lib/firebase";
 import { useRouter } from "next/navigation";
 import { signInWithPopup } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -33,7 +34,27 @@ export default function SignIn() {
   };
 
   const handleGoogleSignIn = async () => {
-    console.log("google sign in");
+    try {
+      const res = await signInWithPopup(auth, googleProvider);
+      if (!res) return;
+
+      const user = res.user;
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          name: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+          createdAt: new Date(),
+        });
+      }
+
+      sessionStorage.setItem("user", JSON.stringify(user));
+      router.push("/");
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
   return (
@@ -48,6 +69,7 @@ export default function SignIn() {
         <div className="mb-4">
           <label className="mb-2 block text-gray-300">אימייל</label>
           <input
+            dir="rtl"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -59,6 +81,7 @@ export default function SignIn() {
         <div className="mb-3">
           <label className="mb-2 block text-gray-300">סיסמה</label>
           <input
+            dir="rtl"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -98,3 +121,4 @@ export default function SignIn() {
     </div>
   );
 }
+

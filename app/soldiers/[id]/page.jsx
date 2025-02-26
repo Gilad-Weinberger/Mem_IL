@@ -52,7 +52,7 @@ const Page = () => {
           className="-mr-7"
         />
       </div>
-      <p className="text-[40px] text-center leading-[40px] font-extralight max-w-full  mt-3">
+      <p className="text-[40px] text-center leading-[40px] font-extralight max-w-full  mt-6">
         {soldier.darga} {soldier.name}
       </p>
       <Image

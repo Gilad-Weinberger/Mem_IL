@@ -9,7 +9,7 @@ const Navbar = () => {
       <Link href="/signup" className="mx-4 text-white">
         התחבר
       </Link>
-      <Link href="/" className="mx-4 text-white">
+      <Link href="/soldiers" className="mx-4 text-white">
         דף הבית
       </Link>
     </div>

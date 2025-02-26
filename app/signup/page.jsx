@@ -9,6 +9,8 @@ import {
 } from "react-firebase-hooks/auth";
 import { auth } from "../../lib/firebase";
 import { useRouter } from "next/navigation";
+import { db } from "../../lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -35,14 +37,31 @@ export default function SignUp() {
       setPassword("");
       setConfirmPassword("");
 
-      router.push("/");
+      router.push("/soldiers");
     } catch (e) {
       setError(e.message);
     }
   };
 
   const handleGoogleSignUp = async () => {
-    console.log("google sign up");
+    try {
+      const res = await signInWithGoogle();
+      if (!res) return;
+      
+      const user = res.user;
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        createdAt: new Date(),
+      });
+
+      sessionStorage.setItem("user", JSON.stringify(user));
+      router.push("/soldiers");
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
   return (
@@ -122,3 +141,4 @@ export default function SignUp() {
     </div>
   );
 }
+
