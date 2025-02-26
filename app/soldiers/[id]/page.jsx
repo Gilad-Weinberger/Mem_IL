@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { getObject } from "@/lib/functions/dbFunctions";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const Page = () => {
   const [soldier, setSoldier] = useState({});
@@ -20,7 +21,11 @@ const Page = () => {
   }, [id]);
 
   if (!soldier) {
-    return <div className="text-white text-center text-xl mt-10">שגיאה בטעינת המידע</div>;
+    return (
+      <div className="text-white text-center text-xl mt-10">
+        שגיאה בטעינת המידע
+      </div>
+    );
   }
 
   const handleCommentChange = () => {
@@ -32,7 +37,10 @@ const Page = () => {
   };
 
   return (
-    <div className="bg-black w-full min-h-screen h-full px-5 pt-14 text-white" dir="rtl">
+    <div
+      className="bg-black w-full min-h-screen h-full px-5 pt-14 text-white"
+      dir="rtl"
+    >
       <Navbar />
 
       {/* Search Bar */}
@@ -43,7 +51,13 @@ const Page = () => {
           placeholder="חפש חייל/ת..."
           className="w-full rounded-lg py-2 pr-3 pl-10 text-black text-lg"
         />
-        <Image src={"/search.svg"} alt="search" width={22} height={22} className="-mr-8" />
+        <Image
+          src={"/search.svg"}
+          alt="search"
+          width={22}
+          height={22}
+          className="-mr-8"
+        />
       </div>
 
       {/* Soldier Info */}
@@ -113,15 +127,9 @@ const Page = () => {
           </button>
         </form>
       </div>
-
-      {/* Footer */}
-      <div className="max-w-3xl mx-auto text-center mt-6">
-        <p className="text-lg">ליצירת קשר והוספת חייל/ת לאתר memory.il.app@gmail.com</p>
-        <p className="text-[14px] mt-3">האתר פותח ע"י גלעד וינברגר, עמיחי בן יוסף ואפרים דויטש</p>
-      </div>
+      <Footer />
     </div>
   );
 };
 
 export default Page;
-

@@ -5,9 +5,12 @@ import { getAllObjects } from "@/lib/functions/dbFunctions";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
+import Footer from "@/components/Footer";
 
 const Page = () => {
   const [soldiers, setSoldiers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchSoldiers = async () => {
@@ -16,6 +19,9 @@ const Page = () => {
         setSoldiers(data);
       } catch (error) {
         console.error("Error fetching soldiers:", error);
+        setError(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -26,7 +32,6 @@ const Page = () => {
     <div className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white">
       <Navbar />
       <div className="h-full max-w-4xl mx-auto" dir="rtl">
-        {/* Search Bar */}
         <div className="relative flex justify-center w-full">
           <input
             type="text"
@@ -42,46 +47,46 @@ const Page = () => {
             className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2"
           />
         </div>
-
-        {/* Archive Title */}
         <div className="text-center w-full mt-6">
           <p className="text-2xl md:text-3xl font-semibold">ארכיון החיילים</p>
           <hr className="w-full mt-2 border-gray-500" />
         </div>
-
-        {/* Soldiers Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-          {soldiers.length > 0 ? (
-            soldiers.map((soldier) => (
-              <Link
-                key={soldier.id}
-                href={`/soldiers/${soldier.id}`}
-                className="flex flex-col items-center cursor-pointer hover:opacity-80"
-              >
-                <Image
-                  src={soldier.images[0] || "/nevo.jpeg"}
-                  alt="soldier-image"
-                  width={150}
-                  height={150}
-                  className="rounded-lg w-full h-40 object-cover"
-                />
-                <p className="mt-2 text-lg md:text-xl">{soldier.darga} {soldier.name}</p>
-              </Link>
-            ))
+          {loading ? (
+            <p className="text-center w-full text-lg">טוען חיילים...</p>
+          ) : error ? (
+            <p className="text-center w-full text-lg text-red-500">
+              הייתה שגיאה בטעינת החיילים
+            </p>
+          ) : soldiers.length === 0 ? (
+            <p className="text-center w-full text-lg">רשימת החיילים ריקה</p>
           ) : (
-            <p className="text-center w-full text-lg">Loading soldiers...</p>
+            <>
+              {soldiers.map((soldier) => (
+                <Link
+                  key={soldier.id}
+                  href={`/soldiers/${soldier.id}`}
+                  className="flex flex-col items-center cursor-pointer hover:opacity-80"
+                >
+                  <Image
+                    src={soldier.images[0] || "/nevo.jpeg"}
+                    alt="soldier-image"
+                    width={150}
+                    height={150}
+                    className="rounded-lg w-full h-40 object-cover"
+                  />
+                  <p className="mt-2 text-lg md:text-xl">
+                    {soldier.darga} {soldier.name}
+                  </p>
+                </Link>
+              ))}
+            </>
           )}
         </div>
-
-        {/* Footer */}
-        <div className="mt-10 text-center">
-          <p className="text-lg">ליצירת קשר והוספת חייל/ת לאתר  <br />memory.il.app@gmail.com</p>
-          <p className="text-sm mt-4">האתר פותח ע"י גלעד וינברגר, עמיחי בן יוסף ואפרים דויטש</p>
-        </div>
+        <Footer />
       </div>
     </div>
   );
 };
 
 export default Page;
-

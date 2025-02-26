@@ -8,6 +8,7 @@ import { auth, googleProvider, db } from "../../lib/firebase";
 import { useRouter } from "next/navigation";
 import { signInWithPopup } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -15,6 +16,19 @@ export default function SignIn() {
   const [error, setError] = useState("");
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const router = useRouter();
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace("/soldiers");
+      }
+      setUser(user);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [router]);
 
   const handleEmailPasswordSignIn = async (e) => {
     e.preventDefault();
@@ -24,7 +38,7 @@ export default function SignIn() {
         sessionStorage.setItem("user", JSON.stringify(res.user));
         setEmail("");
         setPassword("");
-        router.push("/");
+        router.push("/soldiers");
       } else {
         setError("פרטי התחברות שגויים.");
       }
@@ -34,27 +48,7 @@ export default function SignIn() {
   };
 
   const handleGoogleSignIn = async () => {
-    try {
-      const res = await signInWithPopup(auth, googleProvider);
-      if (!res) return;
-
-      const user = res.user;
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (!userDoc.exists()) {
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          name: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-          createdAt: new Date(),
-        });
-      }
-
-      sessionStorage.setItem("user", JSON.stringify(user));
-      router.push("/");
-    } catch (e) {
-      setError(e.message);
-    }
+    console.log("google sign in");
   };
 
   return (
@@ -121,4 +115,3 @@ export default function SignIn() {
     </div>
   );
 }
-

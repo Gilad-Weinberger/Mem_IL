@@ -7,10 +7,10 @@ import {
   useCreateUserWithEmailAndPassword,
   useSignInWithGoogle,
 } from "react-firebase-hooks/auth";
-import { auth } from "../../lib/firebase";
+import { auth, db } from "../../lib/firebase";
 import { useRouter } from "next/navigation";
-import { db } from "../../lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -21,6 +21,19 @@ export default function SignUp() {
   const [createUserWithEmailAndPassword] =
     useCreateUserWithEmailAndPassword(auth);
   const [signInWithGoogle] = useSignInWithGoogle(auth);
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace("/soldiers");
+      }
+      setUser(user);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,24 +57,7 @@ export default function SignUp() {
   };
 
   const handleGoogleSignUp = async () => {
-    try {
-      const res = await signInWithGoogle();
-      if (!res) return;
-      
-      const user = res.user;
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        name: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        createdAt: new Date(),
-      });
-
-      sessionStorage.setItem("user", JSON.stringify(user));
-      router.push("/soldiers");
-    } catch (e) {
-      setError(e.message);
-    }
+    console.log("google sign up");
   };
 
   return (
@@ -141,4 +137,3 @@ export default function SignUp() {
     </div>
   );
 }
-
