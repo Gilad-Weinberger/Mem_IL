@@ -15,6 +15,7 @@ const Navbar = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      console.log("user", user);
     });
 
     // Cleanup subscription on unmount
@@ -36,15 +37,12 @@ const Navbar = () => {
             className="invert"
           />
         </Link>
-        {user && (
-          <p className="text-white">שלום {user ? user.displayName : "אורח"}</p>
-        )}
         {user ? (
           <button onClick={logout} className="text-white hover:text-red-500">
             התנתק
           </button>
         ) : (
-          <Link href="/signup" className="text-white hover:text-gray-300 ">
+          <Link href="/signin" className="text-white hover:text-gray-300 ">
             התחבר
           </Link>
         )}
