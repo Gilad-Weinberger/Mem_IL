@@ -14,9 +14,6 @@ const Navbar = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.replace("/soldiers");
-      }
       setUser(user);
     });
 
@@ -24,21 +21,13 @@ const Navbar = () => {
     return () => unsubscribe();
   }, [router]);
 
-  const handleLogout = () => {
-    logout();
-    router.push("/soldiers");
-  };
-
   return (
     <div>
       <div
         className="fixed top-0 right-0 w-full bg-black flex items-center justify-between px-10 h-12 z-50 shadow-md"
         dir="rtl"
       >
-        <Link
-          href="/soldiers"
-          className="text-white hover:text-gray-300 transition-all"
-        >
+        <Link href="/soldiers" className="text-white hover:text-gray-300">
           <Image
             src={"/home.svg"}
             alt="home-icon"
@@ -46,20 +35,16 @@ const Navbar = () => {
             width={25}
             className="invert"
           />
-          שלום {user ? user.displayName : "אורח"}
         </Link>
+        {user && (
+          <p className="text-white">שלום {user ? user.displayName : "אורח"}</p>
+        )}
         {user ? (
-          <button
-            onClick={handleLogout}
-            className="text-white hover:text-red-500 transition-all"
-          >
+          <button onClick={logout} className="text-white hover:text-red-500">
             התנתק
           </button>
         ) : (
-          <Link
-            href="/signup"
-            className="text-white hover:text-gray-300 transition-all"
-          >
+          <Link href="/signup" className="text-white hover:text-gray-300 ">
             התחבר
           </Link>
         )}
