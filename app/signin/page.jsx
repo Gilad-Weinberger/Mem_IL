@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth } from "../../lib/firebase";
+import { auth, googleProvider } from "../../lib/firebase";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup } from "firebase/auth";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -46,7 +46,15 @@ export default function SignIn() {
   };
 
   const handleGoogleSignIn = async () => {
-    console.log("google sign in");
+    try {
+      const res = await signInWithPopup(auth, googleProvider);
+      if (res) {
+        sessionStorage.setItem("user", JSON.stringify(res.user));
+        router.push("/soldiers");
+      }
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
   return (
