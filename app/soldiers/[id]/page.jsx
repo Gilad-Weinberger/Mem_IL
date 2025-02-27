@@ -12,7 +12,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const Page = () => {
-  const [soldier, setSoldier] = useState({});
+  const [soldier, setSoldier] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [comment, setComment] = useState({
     author: "",
     message: "",
@@ -21,13 +23,35 @@ const Page = () => {
 
   useEffect(() => {
     if (id) {
-      console.log("id", id);
-      getObject("soldiers", id).then((data) => {
-        setSoldier(data);
-      });
+      setLoading(true);
+      getObject("soldiers", id)
+        .then((data) => {
+          if (!data) {
+            setError(new Error("לא נמצא חייל"));
+          } else {
+            setSoldier(data);
+          }
+        })
+        .catch((err) => setError(err))
+        .finally(() => setLoading(false));
     }
   }, [id]);
 
+  if (loading) {
+    return (
+      <div className="text-white text-center text-xl mt-10">טוען מידע...</div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-white text-center text-xl mt-10">
+        שגיאה בטעינת המידע: {error.message}
+      </div>
+    );
+  }
+
+  // If soldier is still null, show an error message
   if (!soldier) {
     return (
       <div className="text-white text-center text-xl mt-10">
@@ -132,6 +156,7 @@ const Page = () => {
           ))}
         </div>
       </div>
+
       {/* Comments Section */}
       <div className="max-w-3xl mx-auto mt-8">
         <p className="text-[30px]">תגובות</p>
@@ -147,7 +172,8 @@ const Page = () => {
           <p className="text-lg">אין תגובות עדיין.</p>
         )}
       </div>
-      {/* Comments Form - Updated for Consistency */}
+
+      {/* Comments Form */}
       <div className="max-w-3xl mx-auto mt-8">
         <form
           onSubmit={handleCommentSubmit}

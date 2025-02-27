@@ -1,14 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const Page = () => {
   const [soldier, setSoldier] = useState({});
-  const router = useRouter();
   const [errors, setErrors] = useState({});
+  const [user, setUser] = useState();
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      console.log("user", user);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [router]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,9 +50,15 @@ const Page = () => {
       return;
     }
 
-    console.log(soldier);
+    // Add the user ID to the soldier object
+    const soldierWithUser = {
+      ...soldier,
+      user: user.uid, // Assuming user.uid is the user's ID from Firebase Auth
+    };
 
-    createObject("soldiers", soldier)
+    console.log(soldierWithUser);
+
+    createObject("soldiers", soldierWithUser)
       .then((docRef) => {
         console.log("Soldier created successfully");
         router.push(`/soldiers/${docRef.id}`);
