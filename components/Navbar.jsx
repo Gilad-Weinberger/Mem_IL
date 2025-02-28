@@ -14,7 +14,12 @@ const Navbar = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+      const storedUser = sessionStorage.getItem("user");
+      if (storedUser) {
+        setUser(storedUser);
+      } else {
+        setUser(null);
+      }
       console.log("user", user);
     });
 

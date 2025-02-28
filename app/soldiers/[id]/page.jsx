@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   getObject,
   createObject,
@@ -20,6 +20,7 @@ const Page = () => {
     message: "",
   });
   const { id } = useParams();
+  const router = useRouter();
 
   useEffect(() => {
     if (id) {
@@ -36,6 +37,13 @@ const Page = () => {
         .finally(() => setLoading(false));
     }
   }, [id]);
+
+  // Memoize sorted comments by number of likes (descending)
+  const sortedComments = useMemo(() => {
+    return [...(soldier?.comments || [])].sort(
+      (a, b) => (b.likes?.length || 0) - (a.likes?.length || 0)
+    );
+  }, [soldier?.comments]);
 
   if (loading) {
     return (
@@ -76,7 +84,13 @@ const Page = () => {
       return;
     }
 
-    const newComment = { ...comment, soldierId: id };
+    // Initialize likes as an empty array
+    const newComment = {
+      ...comment,
+      soldierId: id,
+      likes: [],
+    };
+
     createObject("comments", newComment)
       .then(() => {
         return updateObject("soldiers", id, {
@@ -91,6 +105,42 @@ const Page = () => {
         }));
       })
       .catch((error) => console.error("Error adding comment:", error));
+  };
+
+  // Function to handle liking/unliking a comment
+  const handleLikeComment = (index) => {
+    const storedUser = sessionStorage.getItem("user");
+    if (!storedUser) {
+      alert("עליך להתחבר כדי לבצע לייק!");
+      router.push("/signup");
+      return;
+    } else {
+      console.log("User is logged in", storedUser);
+    }
+    const currentUser = JSON.parse(storedUser);
+    const currentUserId = currentUser.uid;
+
+    const updatedComments = soldier.comments.map((c, i) => {
+      if (i === index) {
+        const likes = c.likes || [];
+        // Toggle the like: if the user already liked the comment, remove their like.
+        if (likes.includes(currentUserId)) {
+          return { ...c, likes: likes.filter((uid) => uid !== currentUserId) };
+        } else {
+          return { ...c, likes: [...likes, currentUserId] };
+        }
+      }
+      return c;
+    });
+
+    updateObject("soldiers", id, { comments: updatedComments })
+      .then(() => {
+        setSoldier((prevSoldier) => ({
+          ...prevSoldier,
+          comments: updatedComments,
+        }));
+      })
+      .catch((err) => console.error("Error updating like:", err));
   };
 
   return (
@@ -161,11 +211,35 @@ const Page = () => {
       <div className="max-w-3xl mx-auto mt-8">
         <p className="text-[30px]">תגובות</p>
         <hr className="w-[50%] mt-1 mb-4" />
-        {soldier.comments && soldier.comments.length > 0 ? (
-          soldier.comments.map((comment, index) => (
-            <div key={index} className="bg-gray-800 p-4 rounded-lg mb-4">
-              <p className="text-lg font-semibold">{comment.author}</p>
-              <p className="mt-2">{comment.message}</p>
+        {sortedComments.length > 0 ? (
+          sortedComments.map((c, index) => (
+            <div
+              key={index}
+              className="bg-gray-800 p-4 rounded-lg mb-4 relative"
+            >
+              <p className="text-lg font-semibold">{c.author}</p>
+              <p className="mt-2">{c.message}</p>
+              <div className="absolute bottom-2 left-2 flex items-center gap-1">
+                <button
+                  onClick={() => handleLikeComment(index)}
+                  className="mr-1"
+                >
+                  <Image
+                    src={`/heart-${c.likes?.includes(JSON.parse(sessionStorage.getItem("user"))?.uid) ? "true" : "false"}.svg`}
+                    alt="like"
+                    width={24}
+                    height={24}
+                    className={
+                      c.likes?.includes(
+                        JSON.parse(sessionStorage.getItem("user"))?.uid
+                      )
+                        ? ""
+                        : "invert"
+                    }
+                  />
+                </button>
+                <span>{c.likes ? c.likes.length : 0}</span>
+              </div>
             </div>
           ))
         ) : (
