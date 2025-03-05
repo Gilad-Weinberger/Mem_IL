@@ -94,7 +94,7 @@ const Page = () => {
                     height={150}
                     className="rounded-lg w-full h-40 object-cover"
                   />
-                  <p className="mt-2 text-lg md:text-xl">
+                  <p className="mt-2 text-white text-lg md:text-xl">
                     {soldier.darga} {soldier.name}
                   </p>
                 </Link>
@@ -102,8 +102,8 @@ const Page = () => {
             </>
           )}
         </div>
-        <Footer />
       </div>
+      <Footer />
     </div>
   );
 };

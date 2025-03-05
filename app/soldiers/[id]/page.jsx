@@ -7,12 +7,14 @@ import {
   getObject,
   createObject,
   updateObject,
+  getObjectsByField,
 } from "@/lib/functions/dbFunctions";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const Page = () => {
   const [soldier, setSoldier] = useState(null);
+  const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comment, setComment] = useState({
@@ -25,12 +27,16 @@ const Page = () => {
   useEffect(() => {
     if (id) {
       setLoading(true);
-      getObject("soldiers", id)
-        .then((data) => {
-          if (!data) {
+      Promise.all([
+        getObject("soldiers", id),
+        getObjectsByField("comments", "soldierId", id),
+      ])
+        .then(([soldierData, commentsData]) => {
+          if (!soldierData) {
             setError(new Error("לא נמצא חייל"));
           } else {
-            setSoldier(data);
+            setSoldier(soldierData);
+            setComments(commentsData || []);
           }
         })
         .catch((err) => setError(err))
@@ -40,10 +46,11 @@ const Page = () => {
 
   // Memoize sorted comments by number of likes (descending)
   const sortedComments = useMemo(() => {
-    return [...(soldier?.comments || [])].sort(
-      (a, b) => (b.likes?.length || 0) - (a.likes?.length || 0)
-    );
-  }, [soldier?.comments]);
+    return [...comments]
+      .filter((comment) => comment.status === "approved")
+      .sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0));
+  }, [comments]);
+  console.log(sortedComments);
 
   if (loading) {
     return (
@@ -84,61 +91,49 @@ const Page = () => {
       return;
     }
 
-    // Initialize likes as an empty array
     const newComment = {
       ...comment,
       soldierId: id,
       likes: [],
+      status: "pending",
+      createdAt: new Date().toISOString(),
     };
 
     createObject("comments", newComment)
       .then(() => {
-        return updateObject("soldiers", id, {
-          comments: [...(soldier.comments || []), newComment],
-        });
-      })
-      .then(() => {
         setComment({ author: "", message: "" });
-        setSoldier((prevSoldier) => ({
-          ...prevSoldier,
-          comments: [...(prevSoldier.comments || []), newComment],
-        }));
+        setComments((prev) => [...prev, newComment]);
       })
       .catch((error) => console.error("Error adding comment:", error));
   };
 
   // Function to handle liking/unliking a comment
-  const handleLikeComment = (index) => {
+  const handleLikeComment = (commentId) => {
     const storedUser = sessionStorage.getItem("user");
     if (!storedUser) {
       alert("עליך להתחבר כדי לבצע לייק!");
       router.push("/signup");
       return;
-    } else {
-      console.log("User is logged in", storedUser);
     }
+
     const currentUser = JSON.parse(storedUser);
     const currentUserId = currentUser.uid;
 
-    const updatedComments = soldier.comments.map((c, i) => {
-      if (i === index) {
+    const updatedComments = comments.map((c) => {
+      if (c.id === commentId) {
         const likes = c.likes || [];
-        // Toggle the like: if the user already liked the comment, remove their like.
-        if (likes.includes(currentUserId)) {
-          return { ...c, likes: likes.filter((uid) => uid !== currentUserId) };
-        } else {
-          return { ...c, likes: [...likes, currentUserId] };
-        }
+        const newLikes = likes.includes(currentUserId)
+          ? likes.filter((uid) => uid !== currentUserId)
+          : [...likes, currentUserId];
+        return { ...c, likes: newLikes };
       }
       return c;
     });
 
-    updateObject("soldiers", id, { comments: updatedComments })
+    const commentToUpdate = updatedComments.find((c) => c.id === commentId);
+    updateObject("comments", commentId, { likes: commentToUpdate.likes })
       .then(() => {
-        setSoldier((prevSoldier) => ({
-          ...prevSoldier,
-          comments: updatedComments,
-        }));
+        setComments(updatedComments);
       })
       .catch((err) => console.error("Error updating like:", err));
   };
@@ -149,7 +144,6 @@ const Page = () => {
       dir="rtl"
     >
       <Navbar />
-
       {/* Search Bar */}
       <div className="flex items-center justify-center w-full mt-2 max-w-2xl mx-auto">
         <input
@@ -166,7 +160,6 @@ const Page = () => {
           className="-mr-8"
         />
       </div>
-
       {/* Soldier Info */}
       <div className="max-w-3xl mx-auto text-center mt-6">
         <p className="text-[40px] leading-[40px] font-extralight">
@@ -180,14 +173,12 @@ const Page = () => {
           className="w-full h-auto object-cover rounded-lg mt-4"
         />
       </div>
-
       {/* Life Story */}
       <div className="max-w-3xl mx-auto mt-6">
         <p className="text-[30px]">סיפור חיים</p>
         <hr className="w-[50%] mt-1" />
         <p className="mt-2 text-lg">{soldier.lifeStory}</p>
       </div>
-
       {/* Images Section */}
       <div className="max-w-3xl mx-auto mt-6">
         <p className="text-[30px]">תמונות</p>
@@ -206,7 +197,6 @@ const Page = () => {
           ))}
         </div>
       </div>
-
       {/* Comments Section */}
       <div className="max-w-3xl mx-auto mt-8">
         <p className="text-[30px]">תגובות</p>
@@ -221,7 +211,7 @@ const Page = () => {
               <p className="mt-2">{c.message}</p>
               <div className="absolute bottom-2 left-2 flex items-center gap-1">
                 <button
-                  onClick={() => handleLikeComment(index)}
+                  onClick={() => handleLikeComment(c.id)}
                   className="mr-1"
                 >
                   <Image
@@ -246,7 +236,6 @@ const Page = () => {
           <p className="text-lg">אין תגובות עדיין.</p>
         )}
       </div>
-
       {/* Comments Form */}
       <div className="max-w-3xl mx-auto mt-8">
         <form

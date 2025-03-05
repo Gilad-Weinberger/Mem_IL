@@ -15,11 +15,14 @@ const Page = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Redirect to login if user is not authenticated
+        router.push("/signin");
+        return;
+      }
       setUser(user);
-      console.log("user", user);
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [router]);
 
@@ -37,6 +40,14 @@ const Page = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Check if user is logged in
+    if (!user) {
+      alert("יש להתחבר כדי להוסיף חייל");
+      router.push("/login");
+      return;
+    }
+
     const newErrors = {};
 
     if (!soldier.name) newErrors.name = "שם מלא נדרש";
@@ -53,7 +64,8 @@ const Page = () => {
     // Add the user ID to the soldier object
     const soldierWithUser = {
       ...soldier,
-      user: user.uid, // Assuming user.uid is the user's ID from Firebase Auth
+      createdBy: user.uid,
+      createdAt: new Date().toISOString(),
     };
 
     console.log(soldierWithUser);
@@ -65,6 +77,7 @@ const Page = () => {
       })
       .catch((error) => {
         console.error("Error creating soldier:", error);
+        alert("אירעה שגיאה בעת יצירת החייל");
       });
   };
 
@@ -88,6 +101,15 @@ const Page = () => {
       };
     });
   };
+
+  // Show loading state while checking authentication
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <p className="text-white text-xl">טוען...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen max-w-screen flex flex-col items-center justify-center bg-gray-900 p-4">

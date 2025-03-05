@@ -33,15 +33,28 @@ const Navbar = () => {
         className="fixed top-0 right-0 w-full bg-black flex items-center justify-between px-10 h-12 z-50 shadow-md"
         dir="rtl"
       >
-        <Link href="/soldiers" className="text-white hover:text-gray-300">
-          <Image
-            src={"/home.svg"}
-            alt="home-icon"
-            height={25}
-            width={25}
-            className="invert"
-          />
-        </Link>
+        <div className="flex items-center gap-5" dir="rtl">
+          <Link href="/soldiers">
+            <Image
+              src={"/home.svg"}
+              alt="home-icon"
+              height={25}
+              width={25}
+              className="invert"
+            />
+          </Link>
+          {user ? (
+            <Link href="/notifications">
+              <Image
+                src={"/bell.svg"}
+                alt="notifications-icon"
+                height={23}
+                width={23}
+                className="invert"
+              />
+            </Link>
+          ) : null}
+        </div>
         {user ? (
           <button onClick={logout} className="text-white hover:text-red-500">
             התנתק
