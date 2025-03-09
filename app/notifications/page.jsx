@@ -31,8 +31,6 @@ const Page = () => {
             comment.status === "pending" &&
             userSoldiers.some((soldier) => soldier.id === comment.soldierId)
         );
-        console.log(allComments);
-        console.log(userSoldiers);
 
         // Add soldier names to comments
         const commentsWithSoldierNames = pendingComments.map((comment) => ({
@@ -65,11 +63,8 @@ const Page = () => {
       setPendingComments((prev) =>
         prev.filter((comment) => comment.id !== commentId)
       );
-
-      alert(approve ? "התגובה אושרה בהצלחה" : "התגובה נמחקה בהצלחה");
     } catch (error) {
       console.error("Error handling comment:", error);
-      alert("אירעה שגיאה בעת עדכון התגובה");
     }
   };
 
