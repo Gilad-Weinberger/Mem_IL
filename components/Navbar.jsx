@@ -88,7 +88,7 @@ const Navbar = () => {
                   height={25}
                   width={25}
                   className="invert"
-                />+
+                />
               </Link>
             </>
           )}
