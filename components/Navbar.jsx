@@ -10,12 +10,24 @@ import { auth } from "@/lib/firebase";
 import { getAllObjects } from "@/lib/functions/dbFunctions";
 
 const Navbar = () => {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(null);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    setIsMounted(true);
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      setUser(storedUser);
+      fetchNotificationCount(JSON.parse(storedUser).uid);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       const storedUser = sessionStorage.getItem("user");
       if (storedUser) {
         setUser(storedUser);
@@ -27,7 +39,7 @@ const Navbar = () => {
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [isMounted, router]);
 
   const fetchNotificationCount = async (userId) => {
     try {
@@ -48,6 +60,10 @@ const Navbar = () => {
       console.error("Error fetching notification count:", error);
     }
   };
+
+  if (!isMounted) {
+    return null; // or a loading skeleton
+  }
 
   return (
     <div>

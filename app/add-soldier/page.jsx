@@ -1,16 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { createObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { ranks } from "@/lib/data/ranks";
 
 const Page = () => {
   const [soldier, setSoldier] = useState({});
   const [errors, setErrors] = useState({});
   const [user, setUser] = useState();
+  const [rankSearch, setRankSearch] = useState("");
+  const [showRankOptions, setShowRankOptions] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -102,6 +105,26 @@ const Page = () => {
     });
   };
 
+  // Filter ranks based on search
+  const filteredRanks = useMemo(() => {
+    if (!rankSearch) return ranks;
+    return ranks.filter((rank) =>
+      rank.toLowerCase().includes(rankSearch.toLowerCase())
+    );
+  }, [rankSearch]);
+
+  // Add click outside handler for rank dropdown
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest(".rank-dropdown")) {
+        setShowRankOptions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   // Show loading state while checking authentication
   if (!user) {
     return (
@@ -147,15 +170,36 @@ const Page = () => {
           >
             :דרגה
           </label>
-          <input
-            type="text"
-            id="rank"
-            name="rank"
-            value={soldier.rank || ""}
-            onChange={handleChange}
-            placeholder="הכנס דרגה"
-            className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right"
-          />
+          <div className="relative rank-dropdown">
+            <input
+              type="text"
+              id="rank"
+              name="rank"
+              value={rankSearch}
+              onChange={(e) => setRankSearch(e.target.value)}
+              onFocus={() => setShowRankOptions(true)}
+              placeholder="הכנס דרגה"
+              className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right"
+            />
+            {showRankOptions && filteredRanks.length > 0 && (
+              <div className="absolute z-50 w-full mt-1 bg-gray-700 rounded-lg max-h-60 overflow-y-auto">
+                {filteredRanks.map((rank) => (
+                  <div
+                    key={rank}
+                    className="p-2 hover:bg-gray-600 cursor-pointer text-white text-right border-b border-gray-600"
+                    onClick={() => {
+                      setRankSearch(rank);
+                      setSoldier((prev) => ({ ...prev, rank }));
+                      setShowRankOptions(false);
+                      setErrors((prev) => ({ ...prev, rank: "" }));
+                    }}
+                  >
+                    {rank}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           {errors.rank && (
             <p className="text-red-500 text-right">{errors.rank}</p>
           )}
