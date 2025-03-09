@@ -1,13 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
+import Footer from "@/components/Footer";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const Page = () => {
   const [soldier, setSoldier] = useState({});
-  const router = useRouter();
   const [errors, setErrors] = useState({});
+  const [user, setUser] = useState();
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Redirect to login if user is not authenticated
+        router.push("/signin");
+        return;
+      }
+      setUser(user);
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,6 +40,14 @@ const Page = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Check if user is logged in
+    if (!user) {
+      alert("יש להתחבר כדי להוסיף חייל");
+      router.push("/login");
+      return;
+    }
+
     const newErrors = {};
 
     if (!soldier.name) newErrors.name = "שם מלא נדרש";
@@ -36,15 +61,23 @@ const Page = () => {
       return;
     }
 
-    console.log(soldier);
+    // Add the user ID to the soldier object
+    const soldierWithUser = {
+      ...soldier,
+      createdBy: user.uid,
+      createdAt: new Date().toISOString(),
+    };
 
-    createObject("soldiers", soldier)
+    console.log(soldierWithUser);
+
+    createObject("soldiers", soldierWithUser)
       .then((docRef) => {
         console.log("Soldier created successfully");
         router.push(`/soldiers/${docRef.id}`);
       })
       .catch((error) => {
         console.error("Error creating soldier:", error);
+        alert("אירעה שגיאה בעת יצירת החייל");
       });
   };
 
@@ -68,6 +101,15 @@ const Page = () => {
       };
     });
   };
+
+  // Show loading state while checking authentication
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <p className="text-white text-xl">טוען...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen max-w-screen flex flex-col items-center justify-center bg-gray-900 p-4">
@@ -218,12 +260,7 @@ const Page = () => {
           שלח
         </button>
       </form>
-      <p className="mt-6 text-center max-w-[70%] text-white">
-        ליצירת קשר memory.il.app@gmail.com
-      </p>
-      <p className="text-center text-[14px] mt-3 text-white">
-        האתר פותח ע"י גלעד וינברגר, עמיחי בן יוסף ואפרים דויטש
-      </p>
+      <Footer />
     </div>
   );
 };

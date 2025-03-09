@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import Fuse from "fuse.js";
-import { getAllObjects } from "@/lib/functions/dbFunctions";
+import { useState, useEffect } from "react";
+import { getAllObjects, deleteObject } from "@/lib/functions/dbFunctions";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,24 +9,8 @@ import Footer from "@/components/Footer";
 
 const Page = () => {
   const [soldiers, setSoldiers] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Initialize Fuse instance for fuzzy search
-  const fuse = useMemo(() => {
-    return new Fuse(soldiers, {
-      keys: ["name"],
-      threshold: 0.4,
-      includeScore: true,
-    });
-  }, [soldiers]);
-
-  // Get filtered soldiers based on search
-  const filteredSoldiers = useMemo(() => {
-    if (!searchQuery) return soldiers;
-    return fuse.search(searchQuery).map((result) => result.item);
-  }, [fuse, searchQuery, soldiers]);
 
   useEffect(() => {
     const fetchSoldiers = async () => {
@@ -45,6 +28,19 @@ const Page = () => {
     fetchSoldiers();
   }, []);
 
+  const handleDelete = async (e, soldierId) => {
+    e.preventDefault();
+    if (window.confirm("האם אתה בטוח שברצונך למחוק חייל זה?")) {
+      try {
+        await deleteObject("soldiers", soldierId);
+        setSoldiers(soldiers.filter((soldier) => soldier.id !== soldierId));
+      } catch (error) {
+        console.error("Error deleting soldier:", error);
+        alert("שגיאה במחיקת החייל");
+      }
+    }
+  };
+
   return (
     <div className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white">
       <Navbar />
@@ -55,8 +51,6 @@ const Page = () => {
             dir="rtl"
             placeholder="חפש חייל/ת..."
             className="w-full md:w-3/4 lg:w-1/2 rounded-lg py-2 pr-4 pl-10 md:pl-12 text-black"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
           />
           <Image
             src="/search.svg"
@@ -77,27 +71,40 @@ const Page = () => {
             <p className="text-center w-full text-lg text-red-500">
               הייתה שגיאה בטעינת החיילים
             </p>
-          ) : filteredSoldiers.length === 0 ? (
-            <p className="text-center w-full text-lg">לא נמצאו חיילים</p>
+          ) : soldiers.length === 0 ? (
+            <p className="text-center w-full text-lg">רשימת החיילים ריקה</p>
           ) : (
             <>
-              {filteredSoldiers.map((soldier) => (
-                <Link
-                  key={soldier.id}
-                  href={`/soldiers/${soldier.id}`}
-                  className="flex flex-col items-center cursor-pointer hover:opacity-80"
-                >
-                  <Image
-                    src={soldier.images[0] || "/nevo.jpeg"}
-                    alt="soldier-image"
-                    width={150}
-                    height={150}
-                    className="rounded-lg w-full h-40 object-cover"
-                  />
-                  <p className="mt-2 text-white text-lg md:text-xl">
-                    {soldier.darga} {soldier.name}
-                  </p>
-                </Link>
+              {soldiers.map((soldier) => (
+                <div key={soldier.id} className="relative group">
+                  <Link
+                    href={`/soldiers/${soldier.id}`}
+                    className="flex flex-col items-center cursor-pointer hover:opacity-80"
+                  >
+                    <Image
+                      src={soldier.images[0] || "/nevo.jpeg"}
+                      alt="soldier-image"
+                      width={150}
+                      height={150}
+                      className="rounded-lg w-full h-40 object-cover"
+                    />
+                    <p className="mt-2 text-lg md:text-xl">
+                      {soldier.darga} {soldier.name}
+                    </p>
+                  </Link>
+                  <button
+                    onClick={(e) => handleDelete(e, soldier.id)}
+                    className="absolute bottom-[43px] left-1.5 bg-red-500 p-2 rounded-full hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  >
+                    <Image
+                      src="/bin.svg"
+                      alt="delete"
+                      width={20}
+                      height={20}
+                      className="invert"
+                    />
+                  </button>
+                </div>
               ))}
             </>
           )}
@@ -108,9 +115,4 @@ const Page = () => {
   );
 };
 
-<<<<<<< HEAD
-export default page;
-  
-=======
 export default Page;
->>>>>>> 84a5c51ea6ae1f35aed541343bcac278324919f4

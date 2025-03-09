@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  useCreateUserWithEmailAndPassword,
-  useSignInWithGoogle,
-} from "react-firebase-hooks/auth";
-import { auth } from "../../lib/firebase";
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { auth, googleProvider } from "../../lib/firebase";
 import { useRouter } from "next/navigation";
+import { onAuthStateChanged, signInWithPopup } from "firebase/auth";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -18,7 +16,19 @@ export default function SignUp() {
   const router = useRouter();
   const [createUserWithEmailAndPassword] =
     useCreateUserWithEmailAndPassword(auth);
-  const [signInWithGoogle] = useSignInWithGoogle(auth);
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace("/soldiers");
+      }
+      setUser(user);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,7 +36,6 @@ export default function SignUp() {
       setError("הסיסמאות אינן תואמות");
       return;
     }
-
     try {
       const res = await createUserWithEmailAndPassword(email, password);
       sessionStorage.setItem("user", JSON.stringify(res.user));
@@ -35,14 +44,22 @@ export default function SignUp() {
       setPassword("");
       setConfirmPassword("");
 
-      router.push("/");
+      router.push("/soldiers");
     } catch (e) {
       setError(e.message);
     }
   };
 
   const handleGoogleSignUp = async () => {
-    console.log("google sign up");
+    try {
+      const res = await signInWithPopup(auth, googleProvider);
+      if (res) {
+        sessionStorage.setItem("user", JSON.stringify(res.user));
+        router.push("/soldiers");
+      }
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
   return (

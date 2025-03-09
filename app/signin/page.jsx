@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth, googleProvider } from "../../lib/firebase";
 import { useRouter } from "next/navigation";
-import { signInWithPopup } from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup } from "firebase/auth";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -14,6 +14,19 @@ export default function SignIn() {
   const [error, setError] = useState("");
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const router = useRouter();
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace("/soldiers");
+      }
+      setUser(user);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [router]);
 
   const handleEmailPasswordSignIn = async (e) => {
     e.preventDefault();
@@ -23,7 +36,7 @@ export default function SignIn() {
         sessionStorage.setItem("user", JSON.stringify(res.user));
         setEmail("");
         setPassword("");
-        router.push("/");
+        router.push("/soldiers");
       } else {
         setError("פרטי התחברות שגויים.");
       }
@@ -33,7 +46,15 @@ export default function SignIn() {
   };
 
   const handleGoogleSignIn = async () => {
-    console.log("google sign in");
+    try {
+      const res = await signInWithPopup(auth, googleProvider);
+      if (res) {
+        sessionStorage.setItem("user", JSON.stringify(res.user));
+        router.push("/soldiers");
+      }
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
   return (
@@ -48,6 +69,7 @@ export default function SignIn() {
         <div className="mb-4">
           <label className="mb-2 block text-gray-300">אימייל</label>
           <input
+            dir="rtl"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -59,6 +81,7 @@ export default function SignIn() {
         <div className="mb-3">
           <label className="mb-2 block text-gray-300">סיסמה</label>
           <input
+            dir="rtl"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
