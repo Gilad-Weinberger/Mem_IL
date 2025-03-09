@@ -50,7 +50,6 @@ const Page = () => {
       .filter((comment) => comment.status === "approved")
       .sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0));
   }, [comments]);
-  console.log(sortedComments);
 
   if (loading) {
     return (
