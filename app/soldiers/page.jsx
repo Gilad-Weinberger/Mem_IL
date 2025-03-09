@@ -108,9 +108,4 @@ const Page = () => {
   );
 };
 
-<<<<<<< HEAD
-export default page;
-  
-=======
 export default Page;
->>>>>>> 84a5c51ea6ae1f35aed541343bcac278324919f4
