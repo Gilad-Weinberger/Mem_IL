@@ -152,26 +152,10 @@ const Page = () => {
       dir="rtl"
     >
       <Navbar />
-      {/* Search Bar */}
-      <div className="flex items-center justify-center w-full mt-2 max-w-2xl mx-auto">
-        <input
-          type="text"
-          dir="rtl"
-          placeholder="חפש חייל/ת..."
-          className="w-full rounded-lg py-2 pr-3 pl-10 text-black text-lg"
-        />
-        <Image
-          src={"/search.svg"}
-          alt="search"
-          width={22}
-          height={22}
-          className="-mr-8"
-        />
-      </div>
       {/* Soldier Info */}
       <div className="max-w-3xl mx-auto text-center mt-6">
         <p className="text-[40px] leading-[40px] font-extralight">
-          {soldier.darga} {soldier.name}
+          {soldier.rank} {soldier.name}
         </p>
         <Image
           src={soldier?.images?.[0] || "/fallback.png"}

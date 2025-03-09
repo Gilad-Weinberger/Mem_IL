@@ -66,20 +66,31 @@ const Navbar = () => {
             />
           </Link>
           {user && (
-            <Link href="/notifications" className="relative">
-              <Image
-                src={"/bell.svg"}
-                alt="notifications-icon"
-                height={23}
-                width={23}
-                className="invert"
-              />
-              {notificationCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {notificationCount}
-                </span>
-              )}
-            </Link>
+            <>
+              <Link href="/notifications" className="relative">
+                <Image
+                  src={"/bell.svg"}
+                  alt="notifications-icon"
+                  height={23}
+                  width={23}
+                  className="invert"
+                />
+                {notificationCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {notificationCount}
+                  </span>
+                )}
+              </Link>
+              <Link href="/add-soldier">
+                <Image
+                  src={"/plus.svg"}
+                  alt="add-soldier-icon"
+                  height={25}
+                  width={25}
+                  className="invert"
+                />+
+              </Link>
+            </>
           )}
         </div>
         {user ? (

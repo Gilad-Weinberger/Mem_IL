@@ -95,7 +95,7 @@ const Page = () => {
                     className="rounded-lg w-full h-40 object-cover"
                   />
                   <p className="mt-2 text-white text-lg md:text-xl">
-                    {soldier.darga} {soldier.name}
+                    {soldier.rank} {soldier.name}
                   </p>
                 </Link>
               ))}

@@ -51,7 +51,7 @@ const Page = () => {
     const newErrors = {};
 
     if (!soldier.name) newErrors.name = "שם מלא נדרש";
-    if (!soldier.darga) newErrors.darga = "דרגה נדרשת";
+    if (!soldier.rank) newErrors.rank = "דרגה נדרשת";
     if (!soldier.lifeStory) newErrors.lifeStory = "סיפור חיים נדרש";
     if (!soldier.birthDate) newErrors.birthDate = "תאריך לידה נדרש";
     if (!soldier.dateOfDeath) newErrors.dateOfDeath = "תאריך פטירה נדרש";
@@ -142,22 +142,22 @@ const Page = () => {
         </div>
         <div className="mb-4">
           <label
-            htmlFor="darga"
+            htmlFor="rank"
             className="block text-gray-300 mb-2 float-right"
           >
             :דרגה
           </label>
           <input
             type="text"
-            id="darga"
-            name="darga"
-            value={soldier.darga || ""}
+            id="rank"
+            name="rank"
+            value={soldier.rank || ""}
             onChange={handleChange}
             placeholder="הכנס דרגה"
             className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right"
           />
-          {errors.darga && (
-            <p className="text-red-500 text-right">{errors.darga}</p>
+          {errors.rank && (
+            <p className="text-red-500 text-right">{errors.rank}</p>
           )}
         </div>
         <div className="mb-4">
