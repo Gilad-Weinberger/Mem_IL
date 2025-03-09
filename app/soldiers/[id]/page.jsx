@@ -108,7 +108,7 @@ const Page = () => {
   };
 
   // Function to handle liking/unliking a comment
-  const handleLikeComment = (commentId) => {
+  const handleLikeComment = async (commentId) => {
     const storedUser = sessionStorage.getItem("user");
     if (!storedUser) {
       alert("עליך להתחבר כדי לבצע לייק!");
@@ -119,23 +119,32 @@ const Page = () => {
     const currentUser = JSON.parse(storedUser);
     const currentUserId = currentUser.uid;
 
-    const updatedComments = comments.map((c) => {
-      if (c.id === commentId) {
-        const likes = c.likes || [];
-        const newLikes = likes.includes(currentUserId)
-          ? likes.filter((uid) => uid !== currentUserId)
-          : [...likes, currentUserId];
-        return { ...c, likes: newLikes };
-      }
-      return c;
-    });
+    // Find the comment to update
+    const commentToUpdate = comments.find((c) => c.id === commentId);
+    if (!commentToUpdate) return;
 
-    const commentToUpdate = updatedComments.find((c) => c.id === commentId);
-    updateObject("comments", commentId, { likes: commentToUpdate.likes })
-      .then(() => {
-        setComments(updatedComments);
-      })
-      .catch((err) => console.error("Error updating like:", err));
+    // Create new likes array
+    const likes = commentToUpdate.likes || [];
+    const newLikes = likes.includes(currentUserId)
+      ? likes.filter((uid) => uid !== currentUserId)
+      : [...likes, currentUserId];
+
+    // Optimistically update the UI
+    setComments((prev) =>
+      prev.map((c) => (c.id === commentId ? { ...c, likes: newLikes } : c))
+    );
+
+    try {
+      // Update the database
+      await updateObject("comments", commentId, { likes: newLikes });
+    } catch (err) {
+      console.error("Error updating like:", err);
+      // Revert the optimistic update on error
+      setComments((prev) =>
+        prev.map((c) => (c.id === commentId ? { ...c, likes: likes } : c))
+      );
+      alert("שגיאה בעדכון הלייק, נסה שוב");
+    }
   };
 
   return (
@@ -170,6 +179,7 @@ const Page = () => {
           alt="soldier"
           width={500}
           height={550}
+          priority={true}
           className="w-full h-auto object-cover rounded-lg mt-4"
         />
       </div>
