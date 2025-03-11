@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
   getObject,
@@ -22,6 +23,7 @@ const Page = () => {
     message: "",
   });
   const [commentLimit, setCommentLimit] = useState(3);
+  const [showHideButton, setShowHideButton] = useState(false);
   const { id } = useParams();
   const router = useRouter();
 
@@ -56,6 +58,16 @@ const Page = () => {
   const displayedComments = useMemo(() => {
     return sortedComments.slice(0, commentLimit);
   }, [sortedComments, commentLimit]);
+
+  const handleShowMore = () => {
+    setCommentLimit((prev) => prev + 3);
+    setShowHideButton(true);
+  };
+
+  const handleHideComments = () => {
+    setCommentLimit(3);
+    setShowHideButton(false);
+  };
 
   if (loading) {
     return (
@@ -154,25 +166,42 @@ const Page = () => {
 
   return (
     <div
-      className="bg-black w-full min-h-screen h-full px-5 pt-14 text-white"
+      className="bg-[rgb(25,25,25)] w-full min-h-screen h-full px-5 pt-14 text-white"
       dir="rtl"
     >
       <Navbar />
       {/* Soldier Info */}
-      <div className="max-w-3xl mx-auto text-center mt-6">
-        <p className="text-[40px] leading-[40px] font-extralight">
-          {soldier.rank} {soldier.name}
-        </p>
-        <Image
-          src={soldier?.images?.[0] || "/fallback.png"}
-          alt="soldier"
-          width={500}
-          height={550}
-          priority={true}
-          className="w-full h-auto object-cover rounded-lg mt-4"
-        />
-      </div>
-      {/* Life Story */}
+        <div className="max-w-3xl mx-auto text-center mt-6">
+          <p className="text-[40px] leading-[40px] font-extralight">
+            {soldier.rank} {soldier.name}
+          </p>
+          <Image
+            src={soldier?.images?.[0] || "/fallback.png"}
+            alt="soldier"
+            width={300}
+            height={330}
+            priority={true}
+            className="w-full sm:w-[60%] md:w-[55%] h-auto object-cover rounded-lg mx-auto mt-3"
+            />
+            <div className="flex item-center justify-center mt-4 gap-8">
+          {soldier.instagram_link && (
+            <Link href={soldier.instagram_link}>
+              <Image src={"/instagram.svg"} alt="instagram-icon" width={50} height={50}/>
+            </Link>
+          )}
+          {soldier.facebook_link && (
+            <Link href={soldier.facebook_link}>
+              <Image src={"/facebook.svg"} alt="facebook-icon" width={50} height={50} />
+            </Link>
+          )}
+          {soldier.whatsapp_link && (
+            <Link href={soldier.whatsapp_link} className="mt-0.5">
+              <Image src={"/whatsapp.svg"} alt="whatsapp-icon" width={45} height={45}className="invert" />
+            </Link>
+          )}
+            </div>
+        </div>
+        {/* Life Story */}
       <div className="max-w-3xl mx-auto mt-6">
         <p className="text-[30px]">סיפור חיים</p>
         <hr className="w-[50%] mt-1" />
@@ -234,10 +263,18 @@ const Page = () => {
             ))}
             {sortedComments.length > commentLimit && (
               <button
-                onClick={() => setCommentLimit((prev) => prev + 3)}
+                onClick={handleShowMore}
                 className="w-full py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-200"
               >
                 הצג עוד
+              </button>
+            )}
+            {showHideButton && (
+              <button
+                onClick={handleHideComments}
+                className="w-full py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-200 mt-2"
+              >
+                הסתר
               </button>
             )}
           </>
@@ -250,7 +287,7 @@ const Page = () => {
         <form
           onSubmit={handleCommentSubmit}
           onChange={handleCommentChange}
-          className="w-full bg-black p-6 rounded-lg shadow-lg"
+          className="w-full bg-[rgb(25,25,25)] p-6 rounded-lg shadow-lg"
         >
           <p className="text-[22px]">יש לכם משהו להוסיף?</p>
           <hr className="w-[90%] mt-1 mb-4" />

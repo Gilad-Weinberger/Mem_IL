@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 
+
 const Page = () => {
   const [soldiers, setSoldiers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,7 +30,6 @@ const Page = () => {
   // Get filtered soldiers based on search and rank
   const filteredSoldiers = useMemo(() => {
     let result = soldiers;
-
     if (rankSearch) {
       result = result.filter((soldier) =>
         soldier.rank.toLowerCase().includes(rankSearch.toLowerCase())
@@ -87,7 +87,8 @@ const Page = () => {
   }, []);
 
   return (
-    <div className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white">
+    
+    <div className="bg-[rgb(25,25,25)] w-full pt-14 p-5 min-h-screen h-full text-white" dir="rtl">
       <Navbar />
       <div className="h-full max-w-4xl mx-auto" dir="rtl">
         {/* Search and Rank Filter Container */}

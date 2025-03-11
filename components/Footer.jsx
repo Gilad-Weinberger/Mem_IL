@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <div className="mt-10 text-center">
       <p className="text-lg">
-        ליצירת קשר והוספת חייל/ת לאתר <br />
+        ליצירת קשר:<br />
         memory.il.app@gmail.com
       </p>
       <p className="text-sm mt-4">

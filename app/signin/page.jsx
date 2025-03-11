@@ -16,17 +16,17 @@ export default function SignIn() {
   const router = useRouter();
   const [user, setUser] = useState();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        router.replace("/soldiers");
-      }
-      setUser(user);
-    });
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       router.replace("/soldiers");
+  //     }
+  //     setUser(user);
+  //   });
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, [router]);
+  //   // Cleanup subscription on unmount
+  //   return () => unsubscribe();
+  // }, [router]);
 
   const handleEmailPasswordSignIn = async (e) => {
     e.preventDefault();

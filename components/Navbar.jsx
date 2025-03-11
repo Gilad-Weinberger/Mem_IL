@@ -68,17 +68,17 @@ const Navbar = () => {
   return (
     <div>
       <div
-        className="fixed top-0 right-0 w-full bg-black flex items-center justify-between px-10 h-12 z-50 shadow-md"
+        className="fixed md:right-auto md:h-screen md:w-16 top-0 right-0 w-full bg-[rgb(25,25,25)] flex md:flex-col items-center justify-between md:justify-start md:gap-10 px-10 md:py-10 md:px-0 h-12 z-50 shadow-md"
         dir="rtl"
       >
-        <div className="flex items-center gap-5" dir="rtl">
+        <div className="flex md:flex-col items-center gap-5 md:gap-12" dir="rtl">
           <Link href="/soldiers">
             <Image
               src={"/home.svg"}
               alt="home-icon"
               height={25}
               width={25}
-              className="invert"
+              className="invert md:h-8 md:w-8"
             />
           </Link>
           {user && (
@@ -89,10 +89,10 @@ const Navbar = () => {
                   alt="notifications-icon"
                   height={23}
                   width={23}
-                  className="invert"
+                  className="invert md:h-8 md:w-8"
                 />
                 {notificationCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute md:-left-3 md:top-0 -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {notificationCount}
                   </span>
                 )}
@@ -103,30 +103,30 @@ const Navbar = () => {
                   alt="add-soldier-icon"
                   height={25}
                   width={25}
-                  className="invert"
+                  className="invert md:h-8 md:w-8"
                 />
               </Link>
             </>
           )}
         </div>
         {user ? (
-          <button onClick={logout}>
+          <button onClick={logout} className="md:mt-auto">
             <Image
               src={"/signout.svg"}
               alt="signout-icon"
               height={25}
               width={25}
-              className="invert hover:opacity-70"
+              className="invert hover:opacity-70 md:h-8 md:w-8"
             />
           </button>
         ) : (
-          <Link href="/signin">
+          <Link href="/signin" className="md:mt-auto">
             <Image
               src={"/signin.svg"}
               alt="signin-icon"
               height={25}
               width={25}
-              className="invert hover:opacity-70"
+              className="invert hover:opacity-70 md:h-8 md:w-8"
             />
           </Link>
         )}

@@ -42,7 +42,7 @@ const Page = () => {
   };
 
   return (
-    <div className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white">
+    <div className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white" >
       <Navbar />
       <div className="h-full max-w-4xl mx-auto" dir="rtl">
         <div className="relative flex justify-center w-full">
