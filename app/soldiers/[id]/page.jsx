@@ -21,6 +21,7 @@ const Page = () => {
     author: "",
     message: "",
   });
+  const [commentLimit, setCommentLimit] = useState(3);
   const { id } = useParams();
   const router = useRouter();
 
@@ -50,6 +51,11 @@ const Page = () => {
       .filter((comment) => comment.status === "approved")
       .sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0));
   }, [comments]);
+
+  // Get displayed comments based on limit
+  const displayedComments = useMemo(() => {
+    return sortedComments.slice(0, commentLimit);
+  }, [sortedComments, commentLimit]);
 
   if (loading) {
     return (
@@ -195,36 +201,46 @@ const Page = () => {
         <p className="text-[30px]">תגובות</p>
         <hr className="w-[50%] mt-1 mb-4" />
         {sortedComments.length > 0 ? (
-          sortedComments.map((c, index) => (
-            <div
-              key={index}
-              className="bg-gray-800 p-4 rounded-lg mb-4 relative"
-            >
-              <p className="text-lg font-semibold">{c.author}</p>
-              <p className="mt-2">{c.message}</p>
-              <div className="absolute bottom-2 left-2 flex items-center gap-1">
-                <button
-                  onClick={() => handleLikeComment(c.id)}
-                  className="mr-1"
-                >
-                  <Image
-                    src={`/heart-${c.likes?.includes(JSON.parse(sessionStorage.getItem("user"))?.uid) ? "true" : "false"}.svg`}
-                    alt="like"
-                    width={24}
-                    height={24}
-                    className={
-                      c.likes?.includes(
-                        JSON.parse(sessionStorage.getItem("user"))?.uid
-                      )
-                        ? ""
-                        : "invert"
-                    }
-                  />
-                </button>
-                <span>{c.likes ? c.likes.length : 0}</span>
+          <>
+            {displayedComments.map((c, index) => (
+              <div
+                key={index}
+                className="bg-gray-800 p-4 rounded-lg mb-4 relative"
+              >
+                <p className="text-lg font-semibold">{c.author}</p>
+                <p className="mt-2">{c.message}</p>
+                <div className="absolute bottom-2 left-2 flex items-center gap-1">
+                  <button
+                    onClick={() => handleLikeComment(c.id)}
+                    className="mr-1"
+                  >
+                    <Image
+                      src={`/heart-${c.likes?.includes(JSON.parse(sessionStorage.getItem("user"))?.uid) ? "true" : "false"}.svg`}
+                      alt="like"
+                      width={24}
+                      height={24}
+                      className={
+                        c.likes?.includes(
+                          JSON.parse(sessionStorage.getItem("user"))?.uid
+                        )
+                          ? ""
+                          : "invert"
+                      }
+                    />
+                  </button>
+                  <span>{c.likes ? c.likes.length : 0}</span>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+            {sortedComments.length > commentLimit && (
+              <button
+                onClick={() => setCommentLimit((prev) => prev + 3)}
+                className="w-full py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-200"
+              >
+                הצג עוד
+              </button>
+            )}
+          </>
         ) : (
           <p className="text-lg">אין תגובות עדיין.</p>
         )}

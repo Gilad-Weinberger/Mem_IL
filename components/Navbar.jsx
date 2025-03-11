@@ -110,12 +110,24 @@ const Navbar = () => {
           )}
         </div>
         {user ? (
-          <button onClick={logout} className="text-white hover:text-red-500">
-            התנתק
+          <button onClick={logout}>
+            <Image
+              src={"/signout.svg"}
+              alt="signout-icon"
+              height={25}
+              width={25}
+              className="invert hover:opacity-70"
+            />
           </button>
         ) : (
-          <Link href="/signin" className="text-white hover:text-gray-300 ">
-            התחבר
+          <Link href="/signin">
+            <Image
+              src={"/signin.svg"}
+              alt="signin-icon"
+              height={25}
+              width={25}
+              className="invert hover:opacity-70"
+            />
           </Link>
         )}
       </div>
