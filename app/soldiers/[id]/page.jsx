@@ -172,7 +172,6 @@ const Page = () => {
           title: `${soldier.rank} ${soldier.name}`,
           text: soldier.lifeStory,
           url: window.location.href,
-          files: soldier.images.map((image) => new File([image], "image.jpg", { type: "image/jpeg" })),
         });
       } catch (error) {
         console.error("Error sharing:", error);
