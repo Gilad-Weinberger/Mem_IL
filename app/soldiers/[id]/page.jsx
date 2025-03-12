@@ -12,6 +12,7 @@ import {
 } from "@/lib/functions/dbFunctions";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Head from 'next/head';
 
 const Page = () => {
   const [soldier, setSoldier] = useState(null);
@@ -164,11 +165,31 @@ const Page = () => {
     }
   };
 
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${soldier.rank} ${soldier.name}`,
+          text: soldier.lifeStory,
+          url: window.location.href,
+          files: soldier.images.map((image) => new File([image], "image.jpg", { type: "image/jpeg" })),
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      alert("Sharing is not supported in this browser.");
+    }
+  };
+
   return (
     <div
       className="bg-[rgb(25,25,25)] w-full min-h-screen h-full px-5 pt-14 text-white"
       dir="rtl"
     >
+      <Head>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Navbar />
       {/* Soldier Info */}
         <div className="max-w-3xl mx-auto text-center mt-6">
@@ -199,6 +220,9 @@ const Page = () => {
               <Image src={"/whatsapp.svg"} alt="whatsapp-icon" width={45} height={45}className="invert" />
             </Link>
           )}
+          <button onClick={handleShare} className="mt-0.5">
+            <Image src={"/share.svg"} alt="share-icon" width={45} height={45} className="invert" />
+          </button>
             </div>
         </div>
         {/* Life Story */}

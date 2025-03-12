@@ -74,7 +74,7 @@ const Page = () => {
 
   return (
     <div
-      className="bg-black w-full min-h-screen h-full px-5 pt-14 text-white"
+      className="bg-[rgb(25,25,25)] w-full min-h-screen h-full px-5 pt-14 text-white"
       dir="rtl"
     >
       <Navbar />
