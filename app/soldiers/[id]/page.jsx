@@ -170,7 +170,7 @@ const Page = () => {
       try {
         await navigator.share({
           title: `${soldier.rank} ${soldier.name}`,
-          text: soldier.lifeStory,
+          text: "link: ",
           url: window.location.href,
         });
       } catch (error) {
