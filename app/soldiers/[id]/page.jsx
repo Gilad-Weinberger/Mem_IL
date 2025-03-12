@@ -12,7 +12,7 @@ import {
 } from "@/lib/functions/dbFunctions";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Head from 'next/head';
+import Head from "next/head";
 
 const Page = () => {
   const [soldier, setSoldier] = useState(null);
@@ -170,7 +170,7 @@ const Page = () => {
       try {
         await navigator.share({
           title: `${soldier.rank} ${soldier.name}`,
-          text: "link: ",
+          text: `${soldier.rank} ${soldier.name}:\n${window.location.href}`,
           url: window.location.href,
         });
       } catch (error) {
@@ -191,40 +191,62 @@ const Page = () => {
       </Head>
       <Navbar />
       {/* Soldier Info */}
-        <div className="max-w-3xl mx-auto text-center mt-6">
-          <p className="text-[40px] leading-[40px] font-extralight">
-            {soldier.rank} {soldier.name}
-          </p>
-          <Image
-            src={soldier?.images?.[0] || "/fallback.png"}
-            alt="soldier"
-            width={300}
-            height={330}
-            priority={true}
-            className="w-full sm:w-[60%] md:w-[55%] h-auto object-cover rounded-lg mx-auto mt-3"
-            />
-            <div className="flex item-center justify-center mt-4 gap-8">
+      <div className="max-w-3xl mx-auto text-center mt-6">
+        <p className="text-[40px] leading-[40px] font-extralight">
+          {soldier.rank} {soldier.name}
+        </p>
+        <Image
+          src={soldier?.images?.[0] || "/fallback.png"}
+          alt="soldier"
+          width={300}
+          height={330}
+          priority={true}
+          className="w-full sm:w-[60%] md:w-[55%] h-auto object-cover rounded-lg mx-auto mt-3"
+        />
+        <div className="flex item-center justify-center mt-4 gap-8">
           {soldier.instagram_link && (
             <Link href={soldier.instagram_link}>
-              <Image src={"/instagram.svg"} alt="instagram-icon" width={50} height={50}/>
+              <Image
+                src={"/instagram.svg"}
+                alt="instagram-icon"
+                width={50}
+                height={50}
+              />
             </Link>
           )}
           {soldier.facebook_link && (
             <Link href={soldier.facebook_link}>
-              <Image src={"/facebook.svg"} alt="facebook-icon" width={50} height={50} />
+              <Image
+                src={"/facebook.svg"}
+                alt="facebook-icon"
+                width={50}
+                height={50}
+              />
             </Link>
           )}
           {soldier.whatsapp_link && (
             <Link href={soldier.whatsapp_link} className="mt-0.5">
-              <Image src={"/whatsapp.svg"} alt="whatsapp-icon" width={45} height={45}className="invert" />
+              <Image
+                src={"/whatsapp.svg"}
+                alt="whatsapp-icon"
+                width={45}
+                height={45}
+                className="invert"
+              />
             </Link>
           )}
           <button onClick={handleShare} className="mt-0.5">
-            <Image src={"/share.svg"} alt="share-icon" width={45} height={45} className="invert" />
+            <Image
+              src={"/share.svg"}
+              alt="share-icon"
+              width={45}
+              height={45}
+              className="invert"
+            />
           </button>
-            </div>
         </div>
-        {/* Life Story */}
+      </div>
+      {/* Life Story */}
       <div className="max-w-3xl mx-auto mt-6">
         <p className="text-[30px]">סיפור חיים</p>
         <hr className="w-[50%] mt-1" />
