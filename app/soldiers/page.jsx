@@ -8,7 +8,7 @@ import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
 import Footer from "@/components/Footer";
-
+import { rankToInitials } from "@/lib/functions/rankInitials";
 
 const Page = () => {
   const [soldiers, setSoldiers] = useState([]);
@@ -87,8 +87,10 @@ const Page = () => {
   }, []);
 
   return (
-    
-    <div className="bg-[rgb(25,25,25)] w-full pt-14 p-5 min-h-screen h-full text-white" dir="rtl">
+    <div
+      className="bg-[rgb(25,25,25)] w-full pt-14 p-5 min-h-screen h-full text-white"
+      dir="rtl"
+    >
       <Navbar />
       <div className="h-full max-w-4xl mx-auto" dir="rtl">
         {/* Search and Rank Filter Container */}
@@ -179,7 +181,7 @@ const Page = () => {
                       className="rounded-lg w-full h-40 object-cover"
                     />
                     <p className="mt-2 text-white text-lg md:text-xl">
-                      {soldier.rank} {soldier.name}
+                      {rankToInitials(soldier.rank)} {soldier.name}
                     </p>
                   </Link>
                 ))}

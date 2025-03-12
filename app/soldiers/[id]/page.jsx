@@ -13,6 +13,7 @@ import {
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Head from "next/head";
+import { rankToInitials } from "@/lib/functions/rankInitials";
 
 const Page = () => {
   const [soldier, setSoldier] = useState(null);
@@ -193,7 +194,7 @@ const Page = () => {
       {/* Soldier Info */}
       <div className="max-w-3xl mx-auto text-center mt-6">
         <p className="text-[40px] leading-[40px] font-extralight">
-          {soldier.rank} {soldier.name}
+          {rankToInitials(soldier.rank)} {soldier.name}
         </p>
         <Image
           src={soldier?.images?.[0] || "/fallback.png"}
@@ -211,6 +212,7 @@ const Page = () => {
                 alt="instagram-icon"
                 width={50}
                 height={50}
+                className="invert"
               />
             </Link>
           )}
