@@ -310,7 +310,7 @@ const Page = () => {
               htmlFor="instagram_link"
               className="block text-gray-300 mb-2 float-right"
             >
-              :קישור לאינסטגרם
+              :קישור לעמוד אינסטגרם
             </label>
             <input
               type="url"
@@ -327,7 +327,7 @@ const Page = () => {
               htmlFor="facebook_link"
               className="block text-gray-300 mb-2 float-right"
             >
-              :קישור לפייסבוק
+              :קישור לדף פייסבוק
             </label>
             <input
               type="url"
