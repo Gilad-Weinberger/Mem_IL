@@ -204,14 +204,14 @@ const Page = () => {
           priority={true}
           className="w-full sm:w-[60%] md:w-[55%] h-auto object-cover rounded-lg mx-auto mt-3"
         />
-        <div className="flex item-center justify-center mt-4 gap-8">
+        <div className="flex item-center justify-center mt-5 gap-6">
           {soldier.instagram_link && (
             <Link href={soldier.instagram_link}>
               <Image
                 src={"/instagram.svg"}
                 alt="instagram-icon"
-                width={50}
-                height={50}
+                width={42}
+                height={42}
                 className="invert"
               />
             </Link>
@@ -221,8 +221,9 @@ const Page = () => {
               <Image
                 src={"/facebook.svg"}
                 alt="facebook-icon"
-                width={50}
-                height={50}
+                width={42}
+                height={42}
+                className="invert"
               />
             </Link>
           )}
@@ -231,8 +232,8 @@ const Page = () => {
               <Image
                 src={"/whatsapp.svg"}
                 alt="whatsapp-icon"
-                width={45}
-                height={45}
+                width={40}
+                height={40}
                 className="invert"
               />
             </Link>
@@ -241,8 +242,8 @@ const Page = () => {
             <Image
               src={"/share.svg"}
               alt="share-icon"
-              width={45}
-              height={45}
+              width={40}
+              height={40}
               className="invert"
             />
           </button>
