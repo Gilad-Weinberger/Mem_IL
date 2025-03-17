@@ -172,7 +172,6 @@ const Page = () => {
         await navigator.share({
           title: `${soldier.rank} ${soldier.name}`,
           text: `${soldier.rank} ${soldier.name}:\n${window.location.href}`,
-          url: window.location.href,
         });
       } catch (error) {
         console.error("Error sharing:", error);
