@@ -30,6 +30,8 @@ const Page = () => {
   const [showQRModal, setShowQRModal] = useState(false);
   const [showExpandedQR, setShowExpandedQR] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { id } = useParams();
   const router = useRouter();
 
@@ -193,6 +195,23 @@ const Page = () => {
     router.push("/signup");
   };
 
+  const handleImageClick = (index) => {
+    setCurrentImageIndex(index);
+    setShowGallery(true);
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === 0 ? soldier.images.length - 1 : prev - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === soldier.images.length - 1 ? 0 : prev + 1
+    );
+  };
+
   return (
     <div
       className="bg-[rgb(25,25,25)] w-full min-h-screen h-full px-5 pt-14 text-white"
@@ -282,13 +301,17 @@ const Page = () => {
         <hr className="w-[50%] mt-1" />
         <div className="flex flex-wrap justify-between gap-4 mt-3">
           {(soldier.images || []).map((image, index) => (
-            <div key={index} className="w-[47%]">
+            <div 
+              key={index} 
+              className="w-[47%] cursor-pointer"
+              onClick={() => handleImageClick(index)}
+            >
               <Image
                 src={image}
                 alt="image"
                 width={1000}
                 height={1000}
-                className="w-full h-auto rounded-lg"
+                className="w-full h-auto rounded-lg hover:opacity-90 transition-opacity"
               />
             </div>
           ))}
@@ -440,6 +463,41 @@ const Page = () => {
             <p className="text-white text-center">
               עליך להתחבר כדי לבצע לייק לתגובה
             </p>
+          </div>
+        </div>
+      )}
+      {showGallery && (
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+          <button 
+            onClick={() => setShowGallery(false)}
+            className="absolute top-4 left-4 text-white text-3xl hover:text-gray-400 z-50"
+          >
+            ×
+          </button>
+          <button 
+            onClick={handlePrevImage}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400"
+          >
+            ❮
+          </button>
+          <div className="relative w-full h-screen flex items-center justify-center p-4">
+            <Image
+              src={soldier.images[currentImageIndex]}
+              alt={`תמונה ${currentImageIndex + 1}`}
+              width={1200}
+              height={800}
+              className="max-h-[90vh] w-auto h-auto object-contain"
+              priority={true}
+            />
+          </div>
+          <button 
+            onClick={handleNextImage}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400"
+          >
+            ❯
+          </button>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white">
+            {currentImageIndex + 1} / {soldier.images.length}
           </div>
         </div>
       )}
