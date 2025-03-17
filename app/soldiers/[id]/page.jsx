@@ -14,6 +14,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Head from "next/head";
 import { rankToInitials } from "@/lib/functions/rankInitials";
+import { QRCodeCanvas } from "qrcode.react";
 
 const Page = () => {
   const [soldier, setSoldier] = useState(null);
@@ -26,6 +27,11 @@ const Page = () => {
   });
   const [commentLimit, setCommentLimit] = useState(3);
   const [showHideButton, setShowHideButton] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [showExpandedQR, setShowExpandedQR] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { id } = useParams();
   const router = useRouter();
 
@@ -130,8 +136,7 @@ const Page = () => {
   const handleLikeComment = async (commentId) => {
     const storedUser = sessionStorage.getItem("user");
     if (!storedUser) {
-      alert("עליך להתחבר כדי לבצע לייק!");
-      router.push("/signup");
+      setShowLoginModal(true);
       return;
     }
 
@@ -177,8 +182,34 @@ const Page = () => {
         console.error("Error sharing:", error);
       }
     } else {
-      alert("Sharing is not supported in this browser.");
+      setShowQRModal(true);
     }
+  };
+
+  const handleQRClick = () => {
+    setShowExpandedQR(true);
+  };
+
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+    router.push("/signup");
+  };
+
+  const handleImageClick = (index) => {
+    setCurrentImageIndex(index);
+    setShowGallery(true);
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === 0 ? soldier.images.length - 1 : prev - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) => 
+      prev === soldier.images.length - 1 ? 0 : prev + 1
+    );
   };
 
   return (
@@ -205,7 +236,7 @@ const Page = () => {
         />
         <div className="flex item-center justify-center mt-5 gap-6">
           {soldier.instagram_link && (
-            <Link href={soldier.instagram_link}>
+            <Link href={soldier.instagram_link} target="_blank">
               <Image
                 src={"/instagram.svg"}
                 alt="instagram-icon"
@@ -216,7 +247,7 @@ const Page = () => {
             </Link>
           )}
           {soldier.facebook_link && (
-            <Link href={soldier.facebook_link}>
+            <Link href={soldier.facebook_link} target="">
               <Image
                 src={"/facebook.svg"}
                 alt="facebook-icon"
@@ -227,7 +258,7 @@ const Page = () => {
             </Link>
           )}
           {soldier.whatsapp_link && (
-            <Link href={soldier.whatsapp_link} className="mt-0.5">
+            <Link href={soldier.whatsapp_link} className="mt-0.5" target="_blank">
               <Image
                 src={"/whatsapp.svg"}
                 alt="whatsapp-icon"
@@ -246,6 +277,16 @@ const Page = () => {
               className="invert"
             />
           </button>
+          <button onClick={handleQRClick} className="bg-[rgb(25,25,25)] rounded-lg h-[42px] w-[42px] flex items-center justify-center">
+            <QRCodeCanvas 
+              value={window.location.href}
+              size={40}
+              level="H"
+              includeMargin={false}
+              fgColor="#FFFFFF"
+              bgColor="rgb(25,25,25)"
+            />
+          </button>
         </div>
       </div>
       {/* Life Story */}
@@ -260,13 +301,17 @@ const Page = () => {
         <hr className="w-[50%] mt-1" />
         <div className="flex flex-wrap justify-between gap-4 mt-3">
           {(soldier.images || []).map((image, index) => (
-            <div key={index} className="w-[47%]">
+            <div 
+              key={index} 
+              className="w-[47%] cursor-pointer"
+              onClick={() => handleImageClick(index)}
+            >
               <Image
                 src={image}
                 alt="image"
                 width={1000}
                 height={1000}
-                className="w-full h-auto rounded-lg"
+                className="w-full h-auto rounded-lg hover:opacity-90 transition-opacity"
               />
             </div>
           ))}
@@ -361,6 +406,101 @@ const Page = () => {
           </button>
         </form>
       </div>
+      {showQRModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg relative">
+            <button 
+              onClick={() => setShowQRModal(false)}
+              className="absolute top-2 left-2 text-black text-2xl"
+            >
+              ×
+            </button>
+            <h3 className="text-black text-xl mb-4 text-center">סרוק לשיתוף</h3>
+            <div className="bg-white p-4">
+              <QRCodeCanvas 
+                value={window.location.href}
+                size={256}
+                level="H"
+                includeMargin={true}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+      {showExpandedQR && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[rgb(25,25,25)] p-6 rounded-lg relative">
+            <button 
+              onClick={() => setShowExpandedQR(false)}
+              className="absolute top-2 left-2 text-white text-2xl hover:text-gray-400"
+            >
+              ×
+            </button>
+            <h3 className="text-white text-xl mb-4 text-center">סרוק לשיתוף</h3>
+            <div className="bg-[rgb(25,25,25)] p-4">
+              <QRCodeCanvas 
+                value={window.location.href}
+                size={256}
+                level="H"
+                includeMargin={true}
+                fgColor="#FFFFFF"
+                bgColor="rgb(25,25,25)"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[rgb(25,25,25)] p-6 rounded-lg relative max-w-sm mx-4">
+            <button 
+              onClick={handleCloseLoginModal}
+              className="absolute top-2 left-2 text-white text-2xl hover:text-gray-400"
+            >
+              ×
+            </button>
+            <h3 className="text-white text-xl mb-4 text-center">התחברות נדרשת</h3>
+            <p className="text-white text-center">
+              עליך להתחבר כדי לבצע לייק לתגובה
+            </p>
+          </div>
+        </div>
+      )}
+      {showGallery && (
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+          <button 
+            onClick={() => setShowGallery(false)}
+            className="absolute top-4 left-4 text-white text-3xl hover:text-gray-400 z-50"
+          >
+            ×
+          </button>
+          <button 
+            onClick={handlePrevImage}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400"
+          >
+            ❮
+          </button>
+          <div className="relative w-full h-screen flex items-center justify-center p-4">
+            <Image
+              src={soldier.images[currentImageIndex]}
+              alt={`תמונה ${currentImageIndex + 1}`}
+              width={1200}
+              height={800}
+              className="max-h-[90vh] w-auto h-auto object-contain"
+              priority={true}
+            />
+          </div>
+          <button 
+            onClick={handleNextImage}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400"
+          >
+            ❯
+          </button>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white">
+            {currentImageIndex + 1} / {soldier.images.length}
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );
