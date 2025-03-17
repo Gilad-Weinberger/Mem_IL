@@ -14,6 +14,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Head from "next/head";
 import { rankToInitials } from "@/lib/functions/rankInitials";
+import { QRCodeCanvas } from "qrcode.react";
 
 const Page = () => {
   const [soldier, setSoldier] = useState(null);
@@ -26,6 +27,9 @@ const Page = () => {
   });
   const [commentLimit, setCommentLimit] = useState(3);
   const [showHideButton, setShowHideButton] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [showExpandedQR, setShowExpandedQR] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const { id } = useParams();
   const router = useRouter();
 
@@ -130,8 +134,7 @@ const Page = () => {
   const handleLikeComment = async (commentId) => {
     const storedUser = sessionStorage.getItem("user");
     if (!storedUser) {
-      alert("עליך להתחבר כדי לבצע לייק!");
-      router.push("/signup");
+      setShowLoginModal(true);
       return;
     }
 
@@ -177,8 +180,17 @@ const Page = () => {
         console.error("Error sharing:", error);
       }
     } else {
-      alert("Sharing is not supported in this browser.");
+      setShowQRModal(true);
     }
+  };
+
+  const handleQRClick = () => {
+    setShowExpandedQR(true);
+  };
+
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+    router.push("/signup");
   };
 
   return (
@@ -205,7 +217,7 @@ const Page = () => {
         />
         <div className="flex item-center justify-center mt-5 gap-6">
           {soldier.instagram_link && (
-            <Link href={soldier.instagram_link}>
+            <Link href={soldier.instagram_link} target="_blank">
               <Image
                 src={"/instagram.svg"}
                 alt="instagram-icon"
@@ -216,7 +228,7 @@ const Page = () => {
             </Link>
           )}
           {soldier.facebook_link && (
-            <Link href={soldier.facebook_link}>
+            <Link href={soldier.facebook_link} target="">
               <Image
                 src={"/facebook.svg"}
                 alt="facebook-icon"
@@ -227,7 +239,7 @@ const Page = () => {
             </Link>
           )}
           {soldier.whatsapp_link && (
-            <Link href={soldier.whatsapp_link} className="mt-0.5">
+            <Link href={soldier.whatsapp_link} className="mt-0.5" target="_blank">
               <Image
                 src={"/whatsapp.svg"}
                 alt="whatsapp-icon"
@@ -244,6 +256,16 @@ const Page = () => {
               width={40}
               height={40}
               className="invert"
+            />
+          </button>
+          <button onClick={handleQRClick} className="bg-[rgb(25,25,25)] rounded-lg h-[42px] w-[42px] flex items-center justify-center">
+            <QRCodeCanvas 
+              value={window.location.href}
+              size={40}
+              level="H"
+              includeMargin={false}
+              fgColor="#FFFFFF"
+              bgColor="rgb(25,25,25)"
             />
           </button>
         </div>
@@ -361,6 +383,66 @@ const Page = () => {
           </button>
         </form>
       </div>
+      {showQRModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg relative">
+            <button 
+              onClick={() => setShowQRModal(false)}
+              className="absolute top-2 left-2 text-black text-2xl"
+            >
+              ×
+            </button>
+            <h3 className="text-black text-xl mb-4 text-center">סרוק לשיתוף</h3>
+            <div className="bg-white p-4">
+              <QRCodeCanvas 
+                value={window.location.href}
+                size={256}
+                level="H"
+                includeMargin={true}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+      {showExpandedQR && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[rgb(25,25,25)] p-6 rounded-lg relative">
+            <button 
+              onClick={() => setShowExpandedQR(false)}
+              className="absolute top-2 left-2 text-white text-2xl hover:text-gray-400"
+            >
+              ×
+            </button>
+            <h3 className="text-white text-xl mb-4 text-center">סרוק לשיתוף</h3>
+            <div className="bg-[rgb(25,25,25)] p-4">
+              <QRCodeCanvas 
+                value={window.location.href}
+                size={256}
+                level="H"
+                includeMargin={true}
+                fgColor="#FFFFFF"
+                bgColor="rgb(25,25,25)"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[rgb(25,25,25)] p-6 rounded-lg relative max-w-sm mx-4">
+            <button 
+              onClick={handleCloseLoginModal}
+              className="absolute top-2 left-2 text-white text-2xl hover:text-gray-400"
+            >
+              ×
+            </button>
+            <h3 className="text-white text-xl mb-4 text-center">התחברות נדרשת</h3>
+            <p className="text-white text-center">
+              עליך להתחבר כדי לבצע לייק לתגובה
+            </p>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );
