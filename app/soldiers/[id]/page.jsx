@@ -218,8 +218,19 @@ const Page = () => {
       dir="rtl"
     >
       <Head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg"/>
       </Head>
+      <button
+        onClick={() => router.back()}
+        className="fixed top-4 left-4 p-2 rounded"
+      >
+        <Image
+          src="/go-previous-svgrepo-com.svg"
+          alt="Go Back"
+          width={24}
+          height={24}
+        />
+      </button>
       <Navbar />
       {/* Soldier Info */}
       <div className="max-w-3xl mx-auto text-center mt-6">
@@ -277,14 +288,13 @@ const Page = () => {
               className="invert"
             />
           </button>
-          <button onClick={handleQRClick} className="bg-[rgb(25,25,25)] rounded-lg h-[42px] w-[42px] flex items-center justify-center">
-            <QRCodeCanvas 
-              value={window.location.href}
-              size={40}
-              level="H"
-              includeMargin={false}
-              fgColor="#FFFFFF"
-              bgColor="rgb(25,25,25)"
+          <button onClick={handleQRClick} className="bg-[rgb(25,25,25)]  rounded-lg h-[42px] w-[42px] flex items-center justify-center">
+            <Image 
+              src="/qr-scan-svgrepo-com.svg"
+              alt="qr-icon"
+              width={40}
+              height={40}
+              className=""
             />
           </button>
         </div>

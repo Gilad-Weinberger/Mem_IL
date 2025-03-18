@@ -59,6 +59,17 @@ export default function SignIn() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-900 p-4">
+      <button
+        onClick={() => router.back()}
+        className="fixed top-4 left-4 p-2 rounded"
+      >
+        <Image
+          src="/go-previous-svgrepo-com.svg"
+          alt="Go Back"
+          width={24}
+          height={24}
+        />
+      </button>
       <form
         onSubmit={handleEmailPasswordSignIn}
         className="w-full max-w-sm bg-gray-800 p-6 rounded-xl shadow-md text-right"
