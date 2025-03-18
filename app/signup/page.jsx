@@ -18,17 +18,14 @@ export default function SignUp() {
     useCreateUserWithEmailAndPassword(auth);
   const [user, setUser] = useState();
 
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       router.replace("/soldiers");
-  //     }
-  //     setUser(user);
-  //   });
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
 
-  //   // Cleanup subscription on unmount
-  //   return () => unsubscribe();
-  // }, [router]);
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,7 +41,8 @@ export default function SignUp() {
       setPassword("");
       setConfirmPassword("");
 
-      router.push("/soldiers");
+      const lastPage = sessionStorage.getItem("lastPage") || "/soldiers";
+      router.push(lastPage);
     } catch (e) {
       setError(e.message);
     }
@@ -55,7 +53,8 @@ export default function SignUp() {
       const res = await signInWithPopup(auth, googleProvider);
       if (res) {
         sessionStorage.setItem("user", JSON.stringify(res.user));
-        router.push("/soldiers");
+        const lastPage = sessionStorage.getItem("lastPage") || "/soldiers";
+        router.push(lastPage);
       }
     } catch (e) {
       setError(e.message);
@@ -64,6 +63,17 @@ export default function SignUp() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-900 p-4">
+      <button
+              onClick={() => router.back()}
+              className="fixed top-4 left-4 p-2 rounded"
+            >
+              <Image
+                src="/go-previous-svgrepo-com.svg"
+                alt="Go Back"
+                width={24}
+                height={24}
+              />
+      </button>
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-sm bg-gray-800 p-6 rounded-xl shadow-md"

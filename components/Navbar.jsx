@@ -12,34 +12,28 @@ import { getAllObjects } from "@/lib/functions/dbFunctions";
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const [notificationCount, setNotificationCount] = useState(0);
-  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    setIsMounted(true);
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setUser(storedUser);
-      fetchNotificationCount(JSON.parse(storedUser).uid);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
-
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-      const storedUser = sessionStorage.getItem("user");
-      if (storedUser) {
-        setUser(storedUser);
-        fetchNotificationCount(JSON.parse(storedUser).uid);
+      if (authUser) {
+        const storedUser = sessionStorage.getItem("user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        } else {
+          sessionStorage.setItem("user", JSON.stringify(authUser));
+          setUser(authUser);
+          fetchNotificationCount(authUser.uid);
+        }
       } else {
+        sessionStorage.removeItem("user"); // Clear session storage on logout
         setUser(null);
         setNotificationCount(0);
       }
     });
 
     return () => unsubscribe();
-  }, [isMounted, router]);
+  }, [router]);
 
   const fetchNotificationCount = async (userId) => {
     try {
@@ -61,9 +55,10 @@ const Navbar = () => {
     }
   };
 
-  if (!isMounted) {
-    return null; // or a loading skeleton
-  }
+  const handleLogout = async () => {
+    await logout();
+    setUser(null);
+  };
 
   return (
     <div>
@@ -110,7 +105,7 @@ const Navbar = () => {
           )}
         </div>
         {user ? (
-          <button onClick={logout} className="md:mt-auto">
+          <button onClick={handleLogout} className="md:mt-auto">
             <Image
               src={"/signout.svg"}
               alt="signout-icon"

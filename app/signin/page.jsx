@@ -16,17 +16,14 @@ export default function SignIn() {
   const router = useRouter();
   const [user, setUser] = useState();
 
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       router.replace("/soldiers");
-  //     }
-  //     setUser(user);
-  //   });
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
 
-  //   // Cleanup subscription on unmount
-  //   return () => unsubscribe();
-  // }, [router]);
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
 
   const handleEmailPasswordSignIn = async (e) => {
     e.preventDefault();
@@ -36,7 +33,8 @@ export default function SignIn() {
         sessionStorage.setItem("user", JSON.stringify(res.user));
         setEmail("");
         setPassword("");
-        router.push("/soldiers");
+        const lastPage = sessionStorage.getItem("lastPage") || "/soldiers";
+        router.push(lastPage);
       } else {
         setError("פרטי התחברות שגויים.");
       }
@@ -50,7 +48,8 @@ export default function SignIn() {
       const res = await signInWithPopup(auth, googleProvider);
       if (res) {
         sessionStorage.setItem("user", JSON.stringify(res.user));
-        router.push("/soldiers");
+        const lastPage = sessionStorage.getItem("lastPage") || "/soldiers";
+        router.push(lastPage);
       }
     } catch (e) {
       setError(e.message);

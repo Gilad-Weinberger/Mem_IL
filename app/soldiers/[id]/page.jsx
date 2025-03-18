@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { onAuthStateChanged } from "firebase/auth"; // Import Firebase auth
+import { auth } from "@/lib/firebase"; // Ensure you have Firebase initialized
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -15,6 +17,7 @@ import Footer from "@/components/Footer";
 import Head from "next/head";
 import { rankToInitials } from "@/lib/functions/rankInitials";
 import { QRCodeCanvas } from "qrcode.react";
+import { motion } from "framer-motion"; // Import framer-motion for animations
 
 const Page = () => {
   const [soldier, setSoldier] = useState(null);
@@ -34,6 +37,28 @@ const Page = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { id } = useParams();
   const router = useRouter();
+  const [user, setUser] = useState(null); // Track the authenticated user
+  const [imageLimit, setImageLimit] = useState(2); // Limit for displayed images
+  const [showHideImagesButton, setShowHideImagesButton] = useState(false); // Track if "הסתר" button should be shown
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+      if (authUser) {
+        const storedUser = sessionStorage.getItem("user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        } else {
+          sessionStorage.setItem("user", JSON.stringify(authUser));
+          setUser(authUser);
+        }
+      } else {
+        sessionStorage.removeItem("user"); // Clear session storage on logout
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   useEffect(() => {
     if (id) {
@@ -75,6 +100,15 @@ const Page = () => {
   const handleHideComments = () => {
     setCommentLimit(3);
     setShowHideButton(false);
+  };
+
+  const handleShowMoreImages = () => {
+    setImageLimit((prev) => prev + 2);
+  };
+
+  const handleHideImages = () => {
+    setImageLimit(2);
+    setShowHideImagesButton(false);
   };
 
   if (loading) {
@@ -201,15 +235,25 @@ const Page = () => {
   };
 
   const handlePrevImage = () => {
+    if (!soldier.images || soldier.images.length === 0) return;
     setCurrentImageIndex((prev) => 
       prev === 0 ? soldier.images.length - 1 : prev - 1
     );
   };
-
+  
   const handleNextImage = () => {
+    if (!soldier.images || soldier.images.length === 0) return;
     setCurrentImageIndex((prev) => 
       prev === soldier.images.length - 1 ? 0 : prev + 1
     );
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("user"); // Clear user data from session storage
+    setComments((prev) =>
+      prev.map((c) => ({ ...c, likes: [] })) // Optionally reset likes in UI
+    );
+    alert("התנתקת בהצלחה");
   };
 
   return (
@@ -231,7 +275,7 @@ const Page = () => {
           height={24}
         />
       </button>
-      <Navbar />
+      <Navbar onLogout={handleLogout} />
       {/* Soldier Info */}
       <div className="max-w-3xl mx-auto text-center mt-6">
         <p className="text-[40px] leading-[40px] font-extralight">
@@ -310,11 +354,14 @@ const Page = () => {
         <p className="text-[30px]">תמונות</p>
         <hr className="w-[50%] mt-1" />
         <div className="flex flex-wrap justify-between gap-4 mt-3">
-          {(soldier.images || []).map((image, index) => (
-            <div 
-              key={index} 
+          {(soldier.images || []).slice(0, imageLimit).map((image, index) => (
+            <motion.div
+              key={index}
               className="w-[47%] cursor-pointer"
               onClick={() => handleImageClick(index)}
+              initial={{ opacity: 0, y: 20 }} // Start with opacity 0 and slightly below
+              animate={{ opacity: 1, y: 0 }} // Fade in and move upwards
+              transition={{ duration: 0.5, delay: index * 0.05 }} // Add slight delay for each image
             >
               <Image
                 src={image}
@@ -323,9 +370,28 @@ const Page = () => {
                 height={1000}
                 className="w-full h-auto rounded-lg hover:opacity-90 transition-opacity"
               />
-            </div>
+            </motion.div>
           ))}
         </div>
+        {soldier.images && imageLimit < soldier.images.length && (
+          <button
+            onClick={() => {
+              handleShowMoreImages();
+              setShowHideImagesButton(true);
+            }}
+            className="w-full py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-200 mt-4"
+          >
+            הצג עוד
+          </button>
+        )}
+        {showHideImagesButton && (
+          <button
+            onClick={handleHideImages}
+            className="w-full py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-200 mt-2"
+          >
+            הסתר
+          </button>
+        )}
       </div>
       {/* Comments Section */}
       <div className="max-w-3xl mx-auto mt-8">
@@ -334,9 +400,12 @@ const Page = () => {
         {sortedComments.length > 0 ? (
           <>
             {displayedComments.map((c, index) => (
-              <div
+              <motion.div
                 key={index}
                 className="bg-gray-800 p-4 rounded-lg mb-4 relative"
+                initial={{ opacity: 0, y: 20 }} // Start with opacity 0 and slightly below
+                animate={{ opacity: 1, y: 0 }} // Fade in and move upwards
+                transition={{ duration: 0.5, delay: index * 0.05 }} // Add slight delay for each comment
               >
                 <p className="text-lg font-semibold">{c.author}</p>
                 <p className="mt-2">{c.message}</p>
@@ -361,7 +430,7 @@ const Page = () => {
                   </button>
                   <span>{c.likes ? c.likes.length : 0}</span>
                 </div>
-              </div>
+              </motion.div>
             ))}
             {sortedComments.length > commentLimit && (
               <button
@@ -486,9 +555,9 @@ const Page = () => {
           </button>
           <button 
             onClick={handlePrevImage}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400 z-50" // Ensure z-index is set
           >
-            ❮
+            ❯
           </button>
           <div className="relative w-full h-screen flex items-center justify-center p-4">
             <Image
@@ -502,9 +571,9 @@ const Page = () => {
           </div>
           <button 
             onClick={handleNextImage}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400 z-50" // Ensure z-index is set
           >
-            ❯
+            ❮
           </button>
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white">
             {currentImageIndex + 1} / {soldier.images.length}
