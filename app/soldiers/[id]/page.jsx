@@ -41,6 +41,11 @@ const Page = () => {
   const [imageLimit, setImageLimit] = useState(2); // Limit for displayed images
   const [showHideImagesButton, setShowHideImagesButton] = useState(false); // Track if "הסתר" button should be shown
 
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
+  const [swipeDirection, setSwipeDirection] = useState(null); // Track swipe direction
+  const [showPsalmsModal, setShowPsalmsModal] = useState(false); // State for Psalms modal
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       if (authUser) {
@@ -236,14 +241,16 @@ const Page = () => {
 
   const handlePrevImage = () => {
     if (!soldier.images || soldier.images.length === 0) return;
-    setCurrentImageIndex((prev) => 
+    setSwipeDirection("left"); // Set swipe direction
+    setCurrentImageIndex((prev) =>
       prev === 0 ? soldier.images.length - 1 : prev - 1
     );
   };
-  
+
   const handleNextImage = () => {
     if (!soldier.images || soldier.images.length === 0) return;
-    setCurrentImageIndex((prev) => 
+    setSwipeDirection("right"); // Set swipe direction
+    setCurrentImageIndex((prev) =>
       prev === soldier.images.length - 1 ? 0 : prev + 1
     );
   };
@@ -255,6 +262,28 @@ const Page = () => {
     );
     alert("התנתקת בהצלחה");
   };
+
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    setTouchStartX(touch.clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    const touch = e.touches[0];
+    setTouchEndX(touch.clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX - touchEndX > 50) {
+      handleNextImage(); // Swipe left to go to the next image
+    } else if (touchEndX - touchStartX > 50) {
+      handlePrevImage(); // Swipe right to go to the previous image
+    }
+    setTouchStartX(null);
+    setTouchEndX(null);
+  };
+
+
 
   return (
     <div
@@ -341,6 +370,15 @@ const Page = () => {
               className=""
             />
           </button>
+          <button onClick={() => setShowPsalmsModal(true)} className="mt-0.5">
+            <Image
+              src="/book-open-svgrepo-com.svg"
+              alt="psalms-icon"
+              width={40}
+              height={40}
+              className="invert"
+            />
+          </button>
         </div>
       </div>
       {/* Life Story */}
@@ -393,6 +431,7 @@ const Page = () => {
           </button>
         )}
       </div>
+      
       {/* Comments Section */}
       <div className="max-w-3xl mx-auto mt-8">
         <p className="text-[30px]">תגובות</p>
@@ -546,7 +585,12 @@ const Page = () => {
         </div>
       )}
       {showGallery && (
-        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           <button 
             onClick={() => setShowGallery(false)}
             className="absolute top-4 left-4 text-white text-3xl hover:text-gray-400 z-50"
@@ -560,14 +604,23 @@ const Page = () => {
             ❯
           </button>
           <div className="relative w-full h-screen flex items-center justify-center p-4">
-            <Image
-              src={soldier.images[currentImageIndex]}
-              alt={`תמונה ${currentImageIndex + 1}`}
-              width={1200}
-              height={800}
-              className="max-h-[90vh] w-auto h-auto object-contain"
-              priority={true}
-            />
+            <motion.div
+              key={currentImageIndex} // Ensure animation triggers on index change
+              initial={{ opacity: 0, x: swipeDirection === "left" ? -100 : 100 }} // Start off-screen
+              animate={{ opacity: 1, x: 0 }} // Fade in and move to center
+              exit={{ opacity: 0, x: swipeDirection === "left" ? 100 : -100 }} // Exit off-screen
+              transition={{ duration: 0.5 }} // Animation duration
+              className="absolute"
+            >
+              <Image
+                src={soldier.images[currentImageIndex]}
+                alt={`תמונה ${currentImageIndex + 1}`}
+                width={1400} // Increased max width
+                height={1000} // Increased max height
+                className="max-h-[95vh] w-auto h-auto object-contain"
+                priority={true}
+              />
+            </motion.div>
           </div>
           <button 
             onClick={handleNextImage}
@@ -577,6 +630,25 @@ const Page = () => {
           </button>
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white">
             {currentImageIndex + 1} / {soldier.images.length}
+          </div>
+        </div>
+      )}
+      {showPsalmsModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[rgb(25,25,25)] p-6 rounded-lg relative max-w-lg mx-4">
+            <button
+              onClick={() => setShowPsalmsModal(false)}
+              className="absolute top-2 left-2 text-white text-2xl hover:text-gray-400"
+            >
+              ×
+            </button>
+            <h3 className="text-white text-xl mb-4 text-center">תהילים</h3>
+            <div className="text-white text-lg max-h-[70vh] overflow-y-auto">
+              <p>תהילים פרק א׳: ...</p>
+              <p>תהילים פרק ב׳: ...</p>
+              <p>תהילים פרק ג׳: ...</p>
+              {/* Add more psalms content here */}
+            </div>
           </div>
         </div>
       )}
