@@ -11,6 +11,7 @@ import { auth, db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const [pendingComments, setPendingComments] = useState([]);
