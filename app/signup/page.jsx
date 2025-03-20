@@ -82,7 +82,7 @@ export default function SignUp() {
         className="fixed top-4 left-4 p-2 rounded"
       >
         <Image
-          src="/go-previous-svgrepo-com.svg"
+          src="/previous.svg"
           alt="Go Back"
           width={24}
           height={24}

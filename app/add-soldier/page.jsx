@@ -3,12 +3,20 @@
 import { useState, useEffect, useMemo } from "react";
 import { createObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
-import Footer from "@/components/Footer";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase"; // Import db from firebase
 import { ranks } from "@/lib/data/ranks";
 import Navbar from "@/components/Navbar";
-import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
+import Footer from "@/components/Footer";
+import Image from "next/image";
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore"; // Import Firestore functions
 
 const Page = () => {
   const [soldier, setSoldier] = useState({});
@@ -17,6 +25,7 @@ const Page = () => {
   const [userStatus, setUserStatus] = useState(null); // New state for user status
   const [rankSearch, setRankSearch] = useState("");
   const [showRankOptions, setShowRankOptions] = useState(false);
+  const [hasPendingRequest, setHasPendingRequest] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -31,6 +40,17 @@ const Page = () => {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
         setUserStatus(userDoc.data().status);
+      }
+
+      // Check if the user has a pending status request
+      const q = query(
+        collection(db, "form-requests"),
+        where("uid", "==", user.uid),
+        where("status", "==", "pending")
+      );
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        setHasPendingRequest(true);
       }
     });
 
@@ -67,7 +87,7 @@ const Page = () => {
           dir="rtl"
         >
           <div className="flex flex-col items-center gap-4">
-            <p className="text-xl mb-4">
+            <p className="text-xl mb-4 max-w-[80%]">
               הסטטוס שלך הוא רגיל. אנא בקש שדרוג סטטוס או חזור לעמוד הקודם.
             </p>
             <button
@@ -77,7 +97,7 @@ const Page = () => {
               חזור לעמוד הקודם
             </button>
             <button
-              // need to create here a function for status update request
+              onClick={() => router.push("/status-form")}
               className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200 w-full"
             >
               בקש שדרוג סטטוס
@@ -172,27 +192,37 @@ const Page = () => {
     );
   }
 
-  // Show message if user status is regular
-  if (userStatus === "regular") {
+  // Show message if user has a pending status request
+  if (hasPendingRequest) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
-        <div>
-          <p className="text-xl mb-4">
-            הסטטוס שלך הוא רגיל. אנא בקש שדרוג סטטוס או חזור לעמוד הקודם.
-          </p>
-          <button
-            onClick={() => router.back()}
-            className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200 mr-2"
-          >
-            חזור לעמוד הקודם
-          </button>
-          <button
-            onClick={() => router.push("/request-status-update")}
-            className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200"
-          >
-            בקש שדרוג סטטוס
-          </button>
-        </div>
+        <p className="text-xl">בקשתך לעדכון סטטוס בטיפול כרגע</p>
+      </div>
+    );
+  }
+
+  // Show message if user status is regular
+  if (user && (userStatus === "regular" || !userStatus)) {
+    return (
+      <div
+        className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white gap-4 text-center"
+        dir="rtl"
+      >
+        <button
+          onClick={() => router.back()}
+          className="fixed top-4 left-4 p-2 rounded"
+        >
+          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
+        </button>
+        <p className="text-xl max-w-[80%]">
+          הסטטוס שלך הוא רגיל, <br /> אנא בקש עדכון סטטוס.
+        </p>
+        <button
+          onClick={() => router.push("/status-request")}
+          className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200"
+        >
+          בקש עדכון סטטוס
+        </button>
       </div>
     );
   }

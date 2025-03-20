@@ -86,12 +86,7 @@ export default function SignIn() {
         onClick={() => router.back()}
         className="fixed top-4 left-4 p-2 rounded"
       >
-        <Image
-          src="/go-previous-svgrepo-com.svg"
-          alt="Go Back"
-          width={24}
-          height={24}
-        />
+        <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
       </button>
       <form
         onSubmit={handleEmailPasswordSignIn}

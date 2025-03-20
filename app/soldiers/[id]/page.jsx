@@ -257,8 +257,8 @@ const Page = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem("user"); // Clear user data from session storage
-    setComments((prev) =>
-      prev.map((c) => ({ ...c, likes: [] })) // Optionally reset likes in UI
+    setComments(
+      (prev) => prev.map((c) => ({ ...c, likes: [] })) // Optionally reset likes in UI
     );
     alert("התנתקת בהצלחה");
   };
@@ -283,22 +283,20 @@ const Page = () => {
     setTouchEndX(null);
   };
 
-
-
   return (
     <div
       className="bg-[rgb(25,25,25)] w-full min-h-screen h-full px-5 pt-14 text-white"
       dir="rtl"
     >
       <Head>
-        <link rel="icon" href="/favicon.svg"/>
+        <link rel="icon" href="/favicon.svg" />
       </Head>
       <button
         onClick={() => router.back()}
         className="fixed top-4 left-4 p-2 rounded"
       >
         <Image
-          src="/go-previous-svgrepo-com.svg"
+          src="/previous.svg"
           alt="Go Back"
           width={24}
           height={24}
@@ -342,7 +340,11 @@ const Page = () => {
             </Link>
           )}
           {soldier.whatsapp_link && (
-            <Link href={soldier.whatsapp_link} className="mt-0.5" target="_blank">
+            <Link
+              href={soldier.whatsapp_link}
+              className="mt-0.5"
+              target="_blank"
+            >
               <Image
                 src={"/whatsapp.svg"}
                 alt="whatsapp-icon"
@@ -361,24 +363,27 @@ const Page = () => {
               className="invert"
             />
           </button>
-          <button onClick={handleQRClick} className="bg-[rgb(25,25,25)]  rounded-lg h-[42px] w-[42px] flex items-center justify-center">
-            <Image 
-              src="/qr-scan-svgrepo-com.svg"
+          <button
+            onClick={handleQRClick}
+            className="bg-[rgb(25,25,25)]  rounded-lg h-[42px] w-[42px] flex items-center justify-center"
+          >
+            <Image
+              src="/qr.svg"
               alt="qr-icon"
               width={40}
               height={40}
               className=""
             />
           </button>
-          <button onClick={() => setShowPsalmsModal(true)} className="mt-0.5">
+          {/* <button onClick={() => setShowPsalmsModal(true)} className="mt-0.5">
             <Image
-              src="/book-open-svgrepo-com.svg"
+              src="/book-open.svg"
               alt="psalms-icon"
               width={40}
               height={40}
               className="invert"
             />
-          </button>
+          </button> */}
         </div>
       </div>
       {/* Life Story */}
@@ -431,7 +436,7 @@ const Page = () => {
           </button>
         )}
       </div>
-      
+
       {/* Comments Section */}
       <div className="max-w-3xl mx-auto mt-8">
         <p className="text-[30px]">תגובות</p>
@@ -527,7 +532,7 @@ const Page = () => {
       {showQRModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg relative">
-            <button 
+            <button
               onClick={() => setShowQRModal(false)}
               className="absolute top-2 left-2 text-black text-2xl"
             >
@@ -535,7 +540,7 @@ const Page = () => {
             </button>
             <h3 className="text-black text-xl mb-4 text-center">סרוק לשיתוף</h3>
             <div className="bg-white p-4">
-              <QRCodeCanvas 
+              <QRCodeCanvas
                 value={window.location.href}
                 size={256}
                 level="H"
@@ -548,7 +553,7 @@ const Page = () => {
       {showExpandedQR && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-[rgb(25,25,25)] p-6 rounded-lg relative">
-            <button 
+            <button
               onClick={() => setShowExpandedQR(false)}
               className="absolute top-2 left-2 text-white text-2xl hover:text-gray-400"
             >
@@ -556,7 +561,7 @@ const Page = () => {
             </button>
             <h3 className="text-white text-xl mb-4 text-center">סרוק לשיתוף</h3>
             <div className="bg-[rgb(25,25,25)] p-4">
-              <QRCodeCanvas 
+              <QRCodeCanvas
                 value={window.location.href}
                 size={256}
                 level="H"
@@ -571,13 +576,15 @@ const Page = () => {
       {showLoginModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-[rgb(25,25,25)] p-6 rounded-lg relative max-w-sm mx-4">
-            <button 
+            <button
               onClick={handleCloseLoginModal}
               className="absolute top-2 left-2 text-white text-2xl hover:text-gray-400"
             >
               ×
             </button>
-            <h3 className="text-white text-xl mb-4 text-center">התחברות נדרשת</h3>
+            <h3 className="text-white text-xl mb-4 text-center">
+              התחברות נדרשת
+            </h3>
             <p className="text-white text-center">
               עליך להתחבר כדי לבצע לייק לתגובה
             </p>
@@ -591,13 +598,13 @@ const Page = () => {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <button 
+          <button
             onClick={() => setShowGallery(false)}
             className="absolute top-4 left-4 text-white text-3xl hover:text-gray-400 z-50"
           >
             ×
           </button>
-          <button 
+          <button
             onClick={handlePrevImage}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400 z-50" // Ensure z-index is set
           >
@@ -606,7 +613,10 @@ const Page = () => {
           <div className="relative w-full h-screen flex items-center justify-center p-4">
             <motion.div
               key={currentImageIndex} // Ensure animation triggers on index change
-              initial={{ opacity: 0, x: swipeDirection === "left" ? -100 : 100 }} // Start off-screen
+              initial={{
+                opacity: 0,
+                x: swipeDirection === "left" ? -100 : 100,
+              }} // Start off-screen
               animate={{ opacity: 1, x: 0 }} // Fade in and move to center
               exit={{ opacity: 0, x: swipeDirection === "left" ? 100 : -100 }} // Exit off-screen
               transition={{ duration: 0.5 }} // Animation duration
@@ -622,7 +632,7 @@ const Page = () => {
               />
             </motion.div>
           </div>
-          <button 
+          <button
             onClick={handleNextImage}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400 z-50" // Ensure z-index is set
           >
