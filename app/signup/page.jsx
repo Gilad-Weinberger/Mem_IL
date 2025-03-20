@@ -7,6 +7,8 @@ import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth, googleProvider } from "../../lib/firebase";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signInWithPopup } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -35,7 +37,14 @@ export default function SignUp() {
     }
     try {
       const res = await createUserWithEmailAndPassword(email, password);
-      sessionStorage.setItem("user", JSON.stringify(res.user));
+      const user = res.user;
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        status: "regular",
+        createdAt: new Date().toISOString(),
+      }); // Create user object in Firestore
+
+      sessionStorage.setItem("user", JSON.stringify(user));
 
       setEmail("");
       setPassword("");
@@ -51,11 +60,16 @@ export default function SignUp() {
   const handleGoogleSignUp = async () => {
     try {
       const res = await signInWithPopup(auth, googleProvider);
-      if (res) {
-        sessionStorage.setItem("user", JSON.stringify(res.user));
-        const lastPage = sessionStorage.getItem("lastPage") || "/soldiers";
-        router.push(lastPage);
-      }
+      const user = res.user;
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        status: "regular",
+        createdAt: new Date().toISOString(),
+      });
+
+      sessionStorage.setItem("user", JSON.stringify(user));
+      const lastPage = sessionStorage.getItem("lastPage") || "/soldiers";
+      router.push(lastPage);
     } catch (e) {
       setError(e.message);
     }
@@ -64,15 +78,15 @@ export default function SignUp() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-900 p-4">
       <button
-              onClick={() => router.back()}
-              className="fixed top-4 left-4 p-2 rounded"
-            >
-              <Image
-                src="/go-previous-svgrepo-com.svg"
-                alt="Go Back"
-                width={24}
-                height={24}
-              />
+        onClick={() => router.back()}
+        className="fixed top-4 left-4 p-2 rounded"
+      >
+        <Image
+          src="/go-previous-svgrepo-com.svg"
+          alt="Go Back"
+          width={24}
+          height={24}
+        />
       </button>
       <form
         onSubmit={handleSubmit}

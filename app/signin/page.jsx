@@ -7,6 +7,8 @@ import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth, googleProvider } from "../../lib/firebase";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signInWithPopup } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -30,7 +32,18 @@ export default function SignIn() {
     try {
       const res = await signInWithEmailAndPassword(email, password);
       if (res) {
-        sessionStorage.setItem("user", JSON.stringify(res.user));
+        const user = res.user;
+        const userDoc = doc(db, "users", user.uid);
+        const userSnapshot = await getDoc(userDoc);
+        if (!userSnapshot.exists()) {
+          await setDoc(userDoc, {
+            email: user.email,
+            status: "regular",
+            createdAt: new Date().toISOString(),
+          }); // Create user object in Firestore if not exists
+        }
+
+        sessionStorage.setItem("user", JSON.stringify(user));
         setEmail("");
         setPassword("");
         const lastPage = sessionStorage.getItem("lastPage") || "/soldiers";
@@ -47,7 +60,18 @@ export default function SignIn() {
     try {
       const res = await signInWithPopup(auth, googleProvider);
       if (res) {
-        sessionStorage.setItem("user", JSON.stringify(res.user));
+        const user = res.user;
+        const userDoc = doc(db, "users", user.uid);
+        const userSnapshot = await getDoc(userDoc);
+        if (!userSnapshot.exists()) {
+          await setDoc(userDoc, {
+            email: user.email,
+            status: "regular",
+            createdAt: new Date().toISOString(),
+          }); // Create user object in Firestore if not exists
+        }
+
+        sessionStorage.setItem("user", JSON.stringify(user));
         const lastPage = sessionStorage.getItem("lastPage") || "/soldiers";
         router.push(lastPage);
       }
