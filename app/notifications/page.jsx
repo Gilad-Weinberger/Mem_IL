@@ -1,55 +1,75 @@
 "use client";
 
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   getAllObjects,
-  getObject,
   updateObject,
   deleteObject,
 } from "@/lib/functions/dbFunctions";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const Page = () => {
   const [pendingComments, setPendingComments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [userStatus, setUserStatus] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem("user"))?.uid;
-    if (!user) return;
-
-    const fetchPendingComments = async () => {
-      try {
-        const soldiers = await getAllObjects("soldiers");
-        const userSoldiers = soldiers.filter(
-          (soldier) => soldier.createdBy === user
-        );
-
-        const allComments = await getAllObjects("comments");
-        const pendingComments = allComments.filter(
-          (comment) =>
-            comment.status === "pending" &&
-            userSoldiers.some((soldier) => soldier.id === comment.soldierId)
-        );
-
-        // Add soldier names to comments
-        const commentsWithSoldierNames = pendingComments.map((comment) => ({
-          ...comment,
-          soldierName:
-            userSoldiers.find((s) => s.id === comment.soldierId)?.name ||
-            "Unknown",
-        }));
-
-        setPendingComments(commentsWithSoldierNames);
-      } catch (error) {
-        console.error("Error fetching pending comments:", error);
-      } finally {
-        setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUser(user);
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setUserStatus(userDoc.data().status);
+        }
+      } else {
+        setUser(null);
       }
-    };
+    });
 
-    fetchPendingComments();
+    return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (user && userStatus === "admin") {
+      const fetchPendingComments = async () => {
+        try {
+          const soldiers = await getAllObjects("soldiers");
+          const userSoldiers = soldiers.filter(
+            (soldier) => soldier.createdBy === user.uid
+          );
+
+          const allComments = await getAllObjects("comments");
+          const pendingComments = allComments.filter(
+            (comment) =>
+              comment.status === "pending" &&
+              userSoldiers.some((soldier) => soldier.id === comment.soldierId)
+          );
+
+          // Add soldier names to comments
+          const commentsWithSoldierNames = pendingComments.map((comment) => ({
+            ...comment,
+            soldierName:
+              userSoldiers.find((s) => s.id === comment.soldierId)?.name ||
+              "Unknown",
+          }));
+
+          setPendingComments(commentsWithSoldierNames);
+        } catch (error) {
+          console.error("Error fetching pending comments:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchPendingComments();
+    }
+  }, [user, userStatus]);
 
   const handleCommentApproval = async (commentId, approve) => {
     try {
@@ -67,6 +87,22 @@ const Page = () => {
       console.error("Error handling comment:", error);
     }
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
+        <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
+      </div>
+    );
+  }
+
+  if (userStatus !== "admin" && userStatus !== "family") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
+        <p className="text-xl">אין לך הרשאה לגשת לעמוד זה</p>
+      </div>
+    );
+  }
 
   if (loading) {
     return <div className="text-white text-center mt-20">טוען...</div>;
