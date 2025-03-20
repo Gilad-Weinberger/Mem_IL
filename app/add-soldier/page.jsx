@@ -5,26 +5,33 @@ import { createObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase"; // Import db from firebase
 import { ranks } from "@/lib/data/ranks";
 import Navbar from "@/components/Navbar";
+import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
 
 const Page = () => {
   const [soldier, setSoldier] = useState({});
   const [errors, setErrors] = useState({});
   const [user, setUser] = useState();
+  const [userStatus, setUserStatus] = useState(null); // New state for user status
   const [rankSearch, setRankSearch] = useState("");
   const [showRankOptions, setShowRankOptions] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        // Redirect to login if user is not authenticated
         router.push("/signin");
         return;
       }
       setUser(user);
+
+      // Check user status in Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        setUserStatus(userDoc.data().status);
+      }
     });
 
     return () => unsubscribe();
@@ -52,6 +59,34 @@ const Page = () => {
       return;
     }
 
+    // Check if user status is regular
+    if (userStatus === "regular" || !userStatus) {
+      return (
+        <div
+          className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
+          dir="rtl"
+        >
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-xl mb-4">
+              הסטטוס שלך הוא רגיל. אנא בקש שדרוג סטטוס או חזור לעמוד הקודם.
+            </p>
+            <button
+              onClick={() => router.back()}
+              className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200 w-full"
+            >
+              חזור לעמוד הקודם
+            </button>
+            <button
+              // need to create here a function for status update request
+              className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200 w-full"
+            >
+              בקש שדרוג סטטוס
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     const newErrors = {};
 
     if (!soldier.name) newErrors.name = "שם מלא נדרש";
@@ -59,7 +94,8 @@ const Page = () => {
     if (!soldier.lifeStory) newErrors.lifeStory = "סיפור חיים נדרש";
     if (!soldier.birthDate) newErrors.birthDate = "תאריך לידה נדרש";
     if (!soldier.dateOfDeath) newErrors.dateOfDeath = "תאריך פטירה נדרש";
-    if (!soldier.images || soldier.images.length === 0) newErrors.images = "חובה להעלות לפחות תמונה אחת";
+    if (!soldier.images || soldier.images.length === 0)
+      newErrors.images = "חובה להעלות לפחות תמונה אחת";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -132,6 +168,31 @@ const Page = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <p className="text-white text-xl">טוען...</p>
+      </div>
+    );
+  }
+
+  // Show message if user status is regular
+  if (userStatus === "regular") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
+        <div>
+          <p className="text-xl mb-4">
+            הסטטוס שלך הוא רגיל. אנא בקש שדרוג סטטוס או חזור לעמוד הקודם.
+          </p>
+          <button
+            onClick={() => router.back()}
+            className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200 mr-2"
+          >
+            חזור לעמוד הקודם
+          </button>
+          <button
+            onClick={() => router.push("/request-status-update")}
+            className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200"
+          >
+            בקש שדרוג סטטוס
+          </button>
+        </div>
       </div>
     );
   }
