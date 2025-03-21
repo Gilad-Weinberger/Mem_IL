@@ -289,8 +289,6 @@ const Page = () => {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
     };
     return new Date(dateString).toLocaleDateString("he-IL", options);
   };
@@ -446,11 +444,12 @@ const Page = () => {
                 animate={{ opacity: 1, y: 0 }} // Fade in and move upwards
                 transition={{ duration: 0.5, delay: index * 0.05 }} // Add slight delay for each comment
               >
+                <p className="text-sm text-gray-400 absolute top-2.5 left-2">
+                  {formatDate(c.createdAt)}
+                </p>{" "}
+                {/* Move date to top left */}
                 <p className="text-lg font-semibold">{c.author}</p>
                 <p className="mt-2">{c.message}</p>
-                <p className="text-sm text-gray-400 mt-1">
-                  {formatDate(c.createdAt)}
-                </p>
                 <div className="absolute bottom-2 left-2 flex items-center gap-1">
                   <button
                     onClick={() => handleLikeComment(c.id)}
