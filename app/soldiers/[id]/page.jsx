@@ -12,12 +12,14 @@ import {
   updateObject,
   getObjectsByField,
 } from "@/lib/functions/dbFunctions";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import Head from "next/head";
 import { rankToInitials } from "@/lib/functions/rankInitials";
 import { QRCodeCanvas } from "qrcode.react";
 import { motion } from "framer-motion"; // Import framer-motion for animations
+import dynamic from "next/dynamic";
+
+const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
+const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 
 const Page = () => {
   const [soldier, setSoldier] = useState(null);
@@ -44,7 +46,6 @@ const Page = () => {
   const [touchStartX, setTouchStartX] = useState(null);
   const [touchEndX, setTouchEndX] = useState(null);
   const [swipeDirection, setSwipeDirection] = useState(null); // Track swipe direction
-  const [showPsalmsModal, setShowPsalmsModal] = useState(false); // State for Psalms modal
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -283,24 +284,27 @@ const Page = () => {
     setTouchEndX(null);
   };
 
+  const formatDate = (dateString) => {
+    const options = {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("he-IL", options);
+  };
+
   return (
     <div
       className="bg-[rgb(25,25,25)] w-full min-h-screen h-full px-5 pt-14 text-white"
       dir="rtl"
     >
-      <Head>
-        <link rel="icon" href="/favicon.svg" />
-      </Head>
       <button
         onClick={() => router.back()}
         className="fixed top-4 left-4 p-2 rounded"
       >
-        <Image
-          src="/previous.svg"
-          alt="Go Back"
-          width={24}
-          height={24}
-        />
+        <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
       </button>
       <Navbar onLogout={handleLogout} />
       {/* Soldier Info */}
@@ -309,7 +313,7 @@ const Page = () => {
           {rankToInitials(soldier.rank)} {soldier.name}
         </p>
         <Image
-          src={soldier?.images?.[0] || "/fallback.png"}
+          src={soldier?.images?.[0] || ""}
           alt="soldier"
           width={300}
           height={330}
@@ -375,15 +379,6 @@ const Page = () => {
               className=""
             />
           </button>
-          {/* <button onClick={() => setShowPsalmsModal(true)} className="mt-0.5">
-            <Image
-              src="/book-open.svg"
-              alt="psalms-icon"
-              width={40}
-              height={40}
-              className="invert"
-            />
-          </button> */}
         </div>
       </div>
       {/* Life Story */}
@@ -453,6 +448,9 @@ const Page = () => {
               >
                 <p className="text-lg font-semibold">{c.author}</p>
                 <p className="mt-2">{c.message}</p>
+                <p className="text-sm text-gray-400 mt-1">
+                  {formatDate(c.createdAt)}
+                </p>
                 <div className="absolute bottom-2 left-2 flex items-center gap-1">
                   <button
                     onClick={() => handleLikeComment(c.id)}
@@ -640,25 +638,6 @@ const Page = () => {
           </button>
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white">
             {currentImageIndex + 1} / {soldier.images.length}
-          </div>
-        </div>
-      )}
-      {showPsalmsModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[rgb(25,25,25)] p-6 rounded-lg relative max-w-lg mx-4">
-            <button
-              onClick={() => setShowPsalmsModal(false)}
-              className="absolute top-2 left-2 text-white text-2xl hover:text-gray-400"
-            >
-              ×
-            </button>
-            <h3 className="text-white text-xl mb-4 text-center">תהילים</h3>
-            <div className="text-white text-lg max-h-[70vh] overflow-y-auto">
-              <p>תהילים פרק א׳: ...</p>
-              <p>תהילים פרק ב׳: ...</p>
-              <p>תהילים פרק ג׳: ...</p>
-              {/* Add more psalms content here */}
-            </div>
           </div>
         </div>
       )}
