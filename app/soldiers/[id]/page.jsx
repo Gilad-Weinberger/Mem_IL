@@ -439,12 +439,12 @@ const Page = () => {
             {displayedComments.map((c, index) => (
               <motion.div
                 key={index}
-                className="bg-gray-800 p-4 rounded-lg mb-4 relative"
+                className="bg-gray-800 p-3 rounded-lg mb-4 relative"
                 initial={{ opacity: 0, y: 20 }} // Start with opacity 0 and slightly below
                 animate={{ opacity: 1, y: 0 }} // Fade in and move upwards
                 transition={{ duration: 0.5, delay: index * 0.05 }} // Add slight delay for each comment
               >
-                <p className="text-sm text-gray-400 absolute top-2.5 left-2">
+                <p className="text-sm text-gray-400 absolute top-4 left-2">
                   {formatDate(c.createdAt)}
                 </p>{" "}
                 {/* Move date to top left */}
