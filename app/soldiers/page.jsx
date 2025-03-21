@@ -4,10 +4,10 @@ import { useState, useEffect, useMemo } from "react";
 import Fuse from "fuse.js";
 import { getAllObjects } from "@/lib/functions/dbFunctions";
 import { ranks } from "@/lib/data/ranks";
-import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
-import Footer from "@/components/Footer";
+const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
+const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 import { rankToInitials } from "@/lib/functions/rankInitials";
 
 const Page = () => {
@@ -35,20 +35,10 @@ const Page = () => {
         soldier.rank.toLowerCase().includes(rankSearch.toLowerCase())
       );
     }
-
-    if (searchQuery) {
-      return fuse
-        .search(searchQuery)
-        .map((result) => result.item)
-        .filter(
-          (soldier) =>
-            !rankSearch ||
-            soldier.rank.toLowerCase().includes(rankSearch.toLowerCase())
-        );
-    }
-
-    return result;
-  }, [fuse, searchQuery, soldiers, rankSearch]);
+    return searchQuery
+      ? fuse.search(searchQuery).map((res) => res.item)
+      : result;
+  }, [searchQuery, soldiers, rankSearch]);
 
   // Filter ranks based on search
   const filteredRanks = useMemo(() => {
