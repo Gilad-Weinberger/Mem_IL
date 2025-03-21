@@ -174,11 +174,12 @@ const Page = () => {
                     className="flex flex-col items-center cursor-pointer hover:opacity-80"
                   >
                     <Image
-                      src={soldier.images[0] || "/nevo.jpeg"}
+                      src={soldier.images[0] || ""}
                       alt="soldier-image"
                       width={150}
                       height={150}
                       className="rounded-lg w-full h-40 object-cover"
+                      priority
                     />
                     <p className="mt-2 text-white text-lg md:text-xl">
                       {rankToInitials(soldier.rank)} {soldier.name}
