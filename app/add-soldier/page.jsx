@@ -86,23 +86,15 @@ const Page = () => {
           className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
           dir="rtl"
         >
-          <div className="flex flex-col items-center gap-4">
-            <p className="text-xl mb-4 max-w-[80%]">
-              הסטטוס שלך הוא רגיל. אנא בקש שדרוג סטטוס או חזור לעמוד הקודם.
-            </p>
-            <button
-              onClick={() => router.back()}
-              className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200 w-full"
-            >
-              חזור לעמוד הקודם
-            </button>
-            <button
-              onClick={() => router.push("/status-form")}
-              className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200 w-full"
-            >
-              בקש שדרוג סטטוס
-            </button>
-          </div>
+          <button
+            onClick={() => router.back()}
+            className="fixed top-4 left-4 p-2 rounded"
+          >
+            <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
+          </button>
+          <p className="text-xl mb-4 max-w-[80%]">
+            אין באפשרותך להוסיף חייל חדש למערכת
+          </p>
         </div>
       );
     }
@@ -228,7 +220,10 @@ const Page = () => {
   }
 
   return (
-    <div className="bg-gray-900 w-full pt-14 p-5 min-h-screen h-full text-white">
+    <div
+      className="bg-[rgb(25,25,25)] w-full pt-14 p-5 min-h-screen h-full text-white"
+      dir="rtl"
+    >
       <Navbar />
       <div className="flex flex-col items-center justify-center">
         <form

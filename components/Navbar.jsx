@@ -86,24 +86,22 @@ const Navbar = () => {
               className="invert md:h-8 md:w-8"
             />
           </Link>
-          {user && (
+          {user && userStatus !== "regular" && (
             <>
-              {(userStatus === "admin" || userStatus === "family") && (
-                <Link href="/notifications" className="relative">
-                  <Image
-                    src={"/bell.svg"}
-                    alt="notifications-icon"
-                    height={23}
-                    width={23}
-                    className="invert md:h-8 md:w-8"
-                  />
-                  {notificationCount > 0 && (
-                    <span className="absolute md:-left-3 md:top-0 -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {notificationCount}
-                    </span>
-                  )}
-                </Link>
-              )}
+              <Link href="/notifications" className="relative">
+                <Image
+                  src={"/bell.svg"}
+                  alt="notifications-icon"
+                  height={23}
+                  width={23}
+                  className="invert md:h-8 md:w-8"
+                />
+                {notificationCount > 0 && (
+                  <span className="absolute md:-left-3 md:top-0 -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {notificationCount}
+                  </span>
+                )}
+              </Link>
               <Link href="/add-soldier">
                 <Image
                   src={"/plus.svg"}
