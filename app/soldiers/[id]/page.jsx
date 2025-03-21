@@ -42,7 +42,6 @@ const Page = () => {
   const [user, setUser] = useState(null); // Track the authenticated user
   const [imageLimit, setImageLimit] = useState(2); // Limit for displayed images
   const [showHideImagesButton, setShowHideImagesButton] = useState(false); // Track if "הסתר" button should be shown
-
   const [touchStartX, setTouchStartX] = useState(null);
   const [touchEndX, setTouchEndX] = useState(null);
   const [swipeDirection, setSwipeDirection] = useState(null); // Track swipe direction
