@@ -6,8 +6,8 @@ import { getAllObjects } from "@/lib/functions/dbFunctions";
 import { ranks } from "@/lib/data/ranks";
 import Image from "next/image";
 import Link from "next/link";
-const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
-const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { rankToInitials } from "@/lib/functions/rankInitials";
 
 const Page = () => {
@@ -56,7 +56,9 @@ const Page = () => {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside, {
+      passive: true,
+    });
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
