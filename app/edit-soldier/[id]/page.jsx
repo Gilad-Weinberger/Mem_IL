@@ -1,39 +1,27 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { createObject } from "@/lib/functions/dbFunctions";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { getObject, updateObject } from "@/lib/functions/dbFunctions";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { ranks } from "@/lib/data/ranks";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { ranks } from "@/lib/data/ranks";
+import { doc, getDoc } from "firebase/firestore";
 import Image from "next/image";
-import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore"; // Import Firestore functions
 
-const Page = () => {
-  const [soldier, setSoldier] = useState({});
+const EditSoldierPage = () => {
+  const { id } = useParams();
+  const router = useRouter();
+  const [soldier, setSoldier] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
   const [errors, setErrors] = useState({});
-  const [user, setUser] = useState();
-  const [userStatus, setUserStatus] = useState(null);
   const [rankSearch, setRankSearch] = useState("");
   const [showRankOptions, setShowRankOptions] = useState(false);
-  const router = useRouter();
-
-  // Filter ranks based on search
-  const filteredRanks = useMemo(() => {
-    if (!rankSearch) return ranks;
-    return ranks.filter((rank) =>
-      rank.toLowerCase().includes(rankSearch.toLowerCase())
-    );
-  }, [rankSearch]);
+  const [userStatus, setUserStatus] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -52,7 +40,22 @@ const Page = () => {
     return () => unsubscribe();
   }, []);
 
-  // Add click outside handler for rank dropdown
+  useEffect(() => {
+    if (id) {
+      setLoading(true);
+      getObject("soldiers", id)
+        .then((soldierData) => {
+          if (!soldierData) {
+            setError(new Error("לא נמצא חייל"));
+          } else {
+            setSoldier(soldierData);
+          }
+        })
+        .catch((err) => setError(err))
+        .finally(() => setLoading(false));
+    }
+  }, [id]);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!e.target.closest(".rank-dropdown")) {
@@ -64,49 +67,11 @@ const Page = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Show loading state while checking authentication
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <p className="text-white text-xl">טוען...</p>
-      </div>
-    );
-  }
-
-  if (!user) {
-    router.push("/signin");
-    return;
-  }
-
-  // Check if user status is regular
-  if (userStatus === "regular" || !userStatus) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl mb-4 max-w-[80%]">
-          אין באפשרותך להוסיף חייל חדש למערכת
-        </p>
-      </div>
-    );
-  }
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSoldier((prevSoldier) => ({
       ...prevSoldier,
       [name]: value,
-    }));
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: "",
     }));
   };
 
@@ -114,7 +79,6 @@ const Page = () => {
     e.preventDefault();
 
     const newErrors = {};
-
     if (!soldier.name) newErrors.name = "שם מלא נדרש";
     if (!soldier.rank) newErrors.rank = "דרגה נדרשת";
     if (!soldier.lifeStory) newErrors.lifeStory = "סיפור חיים נדרש";
@@ -128,23 +92,14 @@ const Page = () => {
       return;
     }
 
-    // Add the user ID to the soldier object
-    const soldierWithUser = {
-      ...soldier,
-      createdBy: user.uid,
-      createdAt: new Date().toISOString(),
-    };
-
-    console.log(soldierWithUser);
-
-    createObject("soldiers", soldierWithUser)
-      .then((docRef) => {
-        console.log("Soldier created successfully");
-        router.push(`/soldiers/${docRef.id}`);
+    updateObject("soldiers", id, soldier)
+      .then(() => {
+        alert("החייל עודכן בהצלחה");
+        router.push(`/soldiers/${id}`);
       })
-      .catch((error) => {
-        console.error("Error creating soldier:", error);
-        alert("אירעה שגיאה בעת יצירת החייל");
+      .catch((err) => {
+        console.error("Error updating soldier:", err);
+        alert("שגיאה בעדכון החייל, נסה שוב");
       });
   };
 
@@ -169,11 +124,28 @@ const Page = () => {
     });
   };
 
-  // Show message if user status is regular
-  if (user && (userStatus === "regular" || !userStatus)) {
+  // Filter ranks based on search
+  const filteredRanks = useMemo(() => {
+    if (!rankSearch) return ranks;
+    return ranks.filter((rank) =>
+      rank.toLowerCase().includes(rankSearch.toLowerCase())
+    );
+  }, [rankSearch]);
+
+  if (loading) {
+    return (
+      <div className="text-white text-center text-xl mt-10">טוען מידע...</div>
+    );
+  }
+
+  if (
+    userStatus === "regular" ||
+    !userStatus ||
+    user.uid !== soldier?.createdBy
+  ) {
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white gap-4 text-center"
+        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
         dir="rtl"
       >
         <button
@@ -182,33 +154,39 @@ const Page = () => {
         >
           <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
         </button>
-        <p className="text-xl max-w-[80%]">
-          הסטטוס שלך הוא רגיל, <br /> אנא בקש עדכון סטטוס.
-        </p>
-        <button
-          onClick={() => router.push("/status-request")}
-          className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200"
-        >
-          בקש עדכון סטטוס
-        </button>
+        <p className="text-xl mb-4 max-w-[80%]">אין באפשרותך לערוך חייל זה</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-white text-center text-xl mt-10">
+        שגיאה בטעינת המידע: {error.message}
+      </div>
+    );
+  }
+
+  if (!soldier) {
+    return (
+      <div className="text-white text-center text-xl mt-10">
+        שגיאה בטעינת המידע
       </div>
     );
   }
 
   return (
     <div
-      className="bg-[rgb(25,25,25)] w-full pt-14 p-5 min-h-screen h-full text-white"
+      className="bg-[rgb(25,25,25)] w-full min-h-screen h-full px-5 pt-14 text-white"
       dir="rtl"
     >
       <Navbar />
-      <div className="flex flex-col items-center justify-center">
+      <div className="max-w-3xl mx-auto mt-6">
+        <h1 className="text-3xl mb-6">ערוך חייל</h1>
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-md bg-gray-800 p-6 rounded-xl shadow-md py-10"
+          className="bg-gray-800 p-6 rounded-lg shadow-lg"
         >
-          <h2 className="text-2xl font-bold text-center text-white mb-6">
-            הוספת חייל/ת
-          </h2>
           <div className="mb-4">
             <label
               htmlFor="name"
@@ -241,7 +219,7 @@ const Page = () => {
                 type="text"
                 id="rank"
                 name="rank"
-                value={rankSearch}
+                value={rankSearch || soldier.rank}
                 onChange={(e) => setRankSearch(e.target.value)}
                 onFocus={() => setShowRankOptions(true)}
                 placeholder="הכנס דרגה"
@@ -419,15 +397,15 @@ const Page = () => {
           </div>
           <button
             type="submit"
-            className="w-full p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200"
+            className="w-full py-2 bg-blue-600 rounded-lg hover:bg-blue-500 transition-colors duration-200"
           >
-            שלח
+            עדכן
           </button>
         </form>
-        <Footer />
       </div>
+      <Footer />
     </div>
   );
 };
 
-export default Page;
+export default EditSoldierPage;

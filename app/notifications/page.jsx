@@ -89,6 +89,10 @@ const Page = () => {
     }
   };
 
+  if (loading) {
+    return <div className="text-white text-center mt-20">טוען...</div>;
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
@@ -97,16 +101,12 @@ const Page = () => {
     );
   }
 
-  if (userStatus !== "admin" && userStatus !== "family") {
+  if (userStatus === "regular") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
         <p className="text-xl">אין לך הרשאה לגשת לעמוד זה</p>
       </div>
     );
-  }
-
-  if (loading) {
-    return <div className="text-white text-center mt-20">טוען...</div>;
   }
 
   return (

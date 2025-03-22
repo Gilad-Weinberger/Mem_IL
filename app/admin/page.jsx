@@ -2,15 +2,39 @@
 
 import { useState, useEffect } from "react";
 import { getAllObjects, deleteObject } from "@/lib/functions/dbFunctions";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const [soldiers, setSoldiers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
+  const [userStatus, setUserStatus] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUser(user);
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setUserStatus(userDoc.data().status);
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchSoldiers = async () => {
@@ -41,8 +65,28 @@ const Page = () => {
     }
   };
 
+  if (loading) {
+    return <div className="text-white text-center mt-20">טוען...</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
+        <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
+      </div>
+    );
+  }
+
+  if (userStatus === "regular") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
+        <p className="text-xl">אין לך הרשאה לגשת לעמוד זה</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white" >
+    <div className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white">
       <Navbar />
       <div className="h-full max-w-4xl mx-auto" dir="rtl">
         <div className="relative flex justify-center w-full">

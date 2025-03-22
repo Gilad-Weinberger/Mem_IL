@@ -15,7 +15,7 @@ import {
 import Head from "next/head";
 import { rankToInitials } from "@/lib/functions/rankInitials";
 import { QRCodeCanvas } from "qrcode.react";
-import { motion } from "framer-motion"; // Import framer-motion for animations
+import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
@@ -306,7 +306,7 @@ const Page = () => {
       <Navbar onLogout={handleLogout} />
       {/* Soldier Info */}
       <div className="max-w-3xl mx-auto text-center mt-6">
-        <p className="text-[40px] leading-[40px] font-extralight">
+        <p className="text-[40px]  mt-1 leading-[40px] font-extralight">
           {rankToInitials(soldier.rank)} {soldier.name}
         </p>
         <Image
@@ -317,7 +317,7 @@ const Page = () => {
           priority={true}
           className="w-full sm:w-[60%] md:w-[55%] h-auto object-cover rounded-lg mx-auto mt-3"
         />
-        <div className="flex item-center justify-center mt-5 gap-6">
+        <div className="flex flex-wrap item-center justify-center mt-5 gap-6">
           {soldier.instagram_link && (
             <Link href={soldier.instagram_link} target="_blank">
               <Image
@@ -376,6 +376,14 @@ const Page = () => {
               className=""
             />
           </button>
+          {user && user.uid === soldier.createdBy && (
+            <Link
+              href={`/edit-soldier/${id}`}
+              className="inline-block px-4 py-2 border border-white rounded-lg hover:bg-white hover:text-black transition-all duration-200"
+            >
+              ערוך חייל
+            </Link>
+          )}
         </div>
       </div>
       {/* Life Story */}
