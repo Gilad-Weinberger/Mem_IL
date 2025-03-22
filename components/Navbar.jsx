@@ -86,6 +86,17 @@ const Navbar = () => {
               className="invert md:h-8 md:w-8"
             />
           </Link>
+          {user && userStatus === "admin" && (
+            <Link href="/admin">
+              <Image
+                src={"/admin.svg"}
+                alt="admin-icon"
+                height={25}
+                width={25}
+                className="invert md:h-8 md:w-8"
+              />
+            </Link>
+          )}
           {user && userStatus !== "regular" && (
             <>
               <Link href="/notifications" className="relative">
