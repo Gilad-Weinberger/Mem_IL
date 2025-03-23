@@ -6,8 +6,8 @@ import { getAllObjects } from "@/lib/functions/dbFunctions";
 import { ranks } from "@/lib/data/ranks";
 import Image from "next/image";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import Navbar from "@/elements/Navbar";
+import Footer from "@/elements/Footer";
 import { rankToInitials } from "@/lib/functions/rankInitials";
 
 const PAGE_SIZE = 12; // Load soldiers in batches of 12

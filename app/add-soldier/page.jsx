@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { ranks } from "@/lib/data/ranks";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import Navbar from "@/elements/Navbar";
+import Footer from "@/elements/Footer";
 import Image from "next/image";
 import {
   doc,

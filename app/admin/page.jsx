@@ -5,10 +5,10 @@ import { getAllObjects, deleteObject } from "@/lib/functions/dbFunctions";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/elements/Navbar";
 import Image from "next/image";
 import Link from "next/link";
-import Footer from "@/components/Footer";
+import Footer from "@/elements/Footer";
 import { useRouter } from "next/navigation";
 
 const Page = () => {
