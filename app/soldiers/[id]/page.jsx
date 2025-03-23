@@ -120,14 +120,12 @@ const Page = () => {
 
   // Function to handle liking/unliking a comment
   const handleLikeComment = async (commentId) => {
-    const storedUser = sessionStorage.getItem("user");
-    if (!storedUser) {
+    if (!user) {
       setShowLoginModal(true);
       return;
     }
 
-    const currentUser = JSON.parse(storedUser);
-    const currentUserId = currentUser.uid;
+    const currentUserId = user.uid;
 
     // Find the comment to update
     const commentToUpdate = comments.find((c) => c.id === commentId);

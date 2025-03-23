@@ -13,6 +13,7 @@ import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
 
 const Page = () => {
   const [soldier, setSoldier] = useState({});
+  const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [user, setUser] = useState();
   const [userStatus, setUserStatus] = useState(null);
