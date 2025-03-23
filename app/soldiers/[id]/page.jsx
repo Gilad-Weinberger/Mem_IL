@@ -436,7 +436,6 @@ const Page = () => {
           </button>
         )}
       </div>
-
       {/* Comments Section */}
       <div className="max-w-3xl mx-auto mt-8">
         <p className="text-[30px]">תגובות</p>
