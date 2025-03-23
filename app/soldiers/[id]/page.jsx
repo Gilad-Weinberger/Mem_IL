@@ -12,11 +12,11 @@ import {
   updateObject,
   getObjectsByField,
 } from "@/lib/functions/dbFunctions";
-import Head from "next/head";
 import { rankToInitials } from "@/lib/functions/rankInitials";
 import { QRCodeCanvas } from "qrcode.react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import ShowComments from "@/elements/SoldierID/ShowComments";
 
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
 const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
@@ -30,21 +30,13 @@ const Page = () => {
     author: "",
     message: "",
   });
-  const [commentLimit, setCommentLimit] = useState(3);
-  const [showHideButton, setShowHideButton] = useState(false);
-  const [showQRModal, setShowQRModal] = useState(false);
   const [showExpandedQR, setShowExpandedQR] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showGallery, setShowGallery] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { id } = useParams();
   const router = useRouter();
   const [user, setUser] = useState(null); // Track the authenticated user
   const [imageLimit, setImageLimit] = useState(2); // Limit for displayed images
-  const [showHideImagesButton, setShowHideImagesButton] = useState(false); // Track if "הסתר" button should be shown
-  const [touchStartX, setTouchStartX] = useState(null);
-  const [touchEndX, setTouchEndX] = useState(null);
-  const [swipeDirection, setSwipeDirection] = useState(null); // Track swipe direction
+  const [showHideImagesButton, setShowHideImagesButton] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -85,28 +77,6 @@ const Page = () => {
     }
   }, [id]);
 
-  // Memoize sorted comments by number of likes (descending)
-  const sortedComments = useMemo(() => {
-    return [...comments]
-      .filter((comment) => comment.status === "approved")
-      .sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0));
-  }, [comments]);
-
-  // Get displayed comments based on limit
-  const displayedComments = useMemo(() => {
-    return sortedComments.slice(0, commentLimit);
-  }, [sortedComments, commentLimit]);
-
-  const handleShowMore = () => {
-    setCommentLimit((prev) => prev + 3);
-    setShowHideButton(true);
-  };
-
-  const handleHideComments = () => {
-    setCommentLimit(3);
-    setShowHideButton(false);
-  };
-
   const handleShowMoreImages = () => {
     setImageLimit((prev) => prev + 2);
   };
@@ -115,29 +85,6 @@ const Page = () => {
     setImageLimit(2);
     setShowHideImagesButton(false);
   };
-
-  if (loading) {
-    return (
-      <div className="text-white text-center text-xl mt-10">טוען מידע...</div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-white text-center text-xl mt-10">
-        שגיאה בטעינת המידע: {error.message}
-      </div>
-    );
-  }
-
-  // If soldier is still null, show an error message
-  if (!soldier) {
-    return (
-      <div className="text-white text-center text-xl mt-10">
-        שגיאה בטעינת המידע
-      </div>
-    );
-  }
 
   const handleCommentChange = (e) => {
     const { name, value } = e.target;
@@ -234,27 +181,6 @@ const Page = () => {
     router.push("/signup");
   };
 
-  const handleImageClick = (index) => {
-    setCurrentImageIndex(index);
-    setShowGallery(true);
-  };
-
-  const handlePrevImage = () => {
-    if (!soldier.images || soldier.images.length === 0) return;
-    setSwipeDirection("left"); // Set swipe direction
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? soldier.images.length - 1 : prev - 1
-    );
-  };
-
-  const handleNextImage = () => {
-    if (!soldier.images || soldier.images.length === 0) return;
-    setSwipeDirection("right"); // Set swipe direction
-    setCurrentImageIndex((prev) =>
-      prev === soldier.images.length - 1 ? 0 : prev + 1
-    );
-  };
-
   const handleLogout = () => {
     sessionStorage.removeItem("user"); // Clear user data from session storage
     setComments(
@@ -263,34 +189,28 @@ const Page = () => {
     alert("התנתקת בהצלחה");
   };
 
-  const handleTouchStart = (e) => {
-    const touch = e.touches[0];
-    setTouchStartX(touch.clientX);
-  };
+  if (loading) {
+    return (
+      <div className="text-white text-center text-xl mt-10">טוען מידע...</div>
+    );
+  }
 
-  const handleTouchMove = (e) => {
-    const touch = e.touches[0];
-    setTouchEndX(touch.clientX);
-  };
+  if (error) {
+    return (
+      <div className="text-white text-center text-xl mt-10">
+        שגיאה בטעינת המידע: {error.message}
+      </div>
+    );
+  }
 
-  const handleTouchEnd = () => {
-    if (touchStartX - touchEndX > 50) {
-      handleNextImage(); // Swipe left to go to the next image
-    } else if (touchEndX - touchStartX > 50) {
-      handlePrevImage(); // Swipe right to go to the previous image
-    }
-    setTouchStartX(null);
-    setTouchEndX(null);
-  };
-
-  const formatDate = (dateString) => {
-    const options = {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    };
-    return new Date(dateString).toLocaleDateString("he-IL", options);
-  };
+  // If soldier is still null, show an error message
+  if (!soldier) {
+    return (
+      <div className="text-white text-center text-xl mt-10">
+        שגיאה בטעינת המידע
+      </div>
+    );
+  }
 
   return (
     <div
@@ -401,7 +321,6 @@ const Page = () => {
             <motion.div
               key={index}
               className="w-[47%] cursor-pointer"
-              onClick={() => handleImageClick(index)}
               initial={{ opacity: 0, y: 20 }} // Start with opacity 0 and slightly below
               animate={{ opacity: 1, y: 0 }} // Fade in and move upwards
               transition={{ duration: 0.5, delay: index * 0.05 }} // Add slight delay for each image
@@ -411,7 +330,7 @@ const Page = () => {
                 alt="image"
                 width={1000}
                 height={1000}
-                className="w-full h-auto rounded-lg hover:opacity-90 transition-opacity"
+                className="w-full h-auto rounded-lg"
               />
             </motion.div>
           ))}
@@ -437,69 +356,11 @@ const Page = () => {
         )}
       </div>
       {/* Comments Section */}
-      <div className="max-w-3xl mx-auto mt-8">
-        <p className="text-[30px]">תגובות</p>
-        <hr className="w-[50%] mt-1 mb-4" />
-        {sortedComments.length > 0 ? (
-          <>
-            {displayedComments.map((c, index) => (
-              <motion.div
-                key={index}
-                className="bg-gray-800 p-3 rounded-lg mb-4 relative"
-                initial={{ opacity: 0, y: 20 }} // Start with opacity 0 and slightly below
-                animate={{ opacity: 1, y: 0 }} // Fade in and move upwards
-                transition={{ duration: 0.5, delay: index * 0.05 }} // Add slight delay for each comment
-              >
-                <p className="text-sm text-gray-400 absolute top-4 left-2">
-                  {formatDate(c.createdAt)}
-                </p>{" "}
-                {/* Move date to top left */}
-                <p className="text-lg font-semibold">{c.author}</p>
-                <p className="mt-2">{c.message}</p>
-                <div className="absolute bottom-2 left-2 flex items-center gap-1">
-                  <button
-                    onClick={() => handleLikeComment(c.id)}
-                    className="mr-1"
-                  >
-                    <Image
-                      src={`/heart-${c.likes?.includes(JSON.parse(sessionStorage.getItem("user"))?.uid) ? "true" : "false"}.svg`}
-                      alt="like"
-                      width={24}
-                      height={24}
-                      className={
-                        c.likes?.includes(
-                          JSON.parse(sessionStorage.getItem("user"))?.uid
-                        )
-                          ? ""
-                          : "invert"
-                      }
-                    />
-                  </button>
-                  <span>{c.likes ? c.likes.length : 0}</span>
-                </div>
-              </motion.div>
-            ))}
-            {sortedComments.length > commentLimit && (
-              <button
-                onClick={handleShowMore}
-                className="w-full py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-200"
-              >
-                הצג עוד
-              </button>
-            )}
-            {showHideButton && (
-              <button
-                onClick={handleHideComments}
-                className="w-full py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-200 mt-2"
-              >
-                הסתר
-              </button>
-            )}
-          </>
-        ) : (
-          <p className="text-lg">אין תגובות עדיין.</p>
-        )}
-      </div>
+      <ShowComments
+        comments={comments}
+        user={user}
+        handleLikeComment={handleLikeComment}
+      />
       {/* Comments Form */}
       <div className="max-w-3xl mx-auto mt-8">
         <form
@@ -532,27 +393,6 @@ const Page = () => {
           </button>
         </form>
       </div>
-      {showQRModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg relative">
-            <button
-              onClick={() => setShowQRModal(false)}
-              className="absolute top-2 left-2 text-black text-2xl"
-            >
-              ×
-            </button>
-            <h3 className="text-black text-xl mb-4 text-center">סרוק לשיתוף</h3>
-            <div className="bg-white p-4">
-              <QRCodeCanvas
-                value={window.location.href}
-                size={256}
-                level="H"
-                includeMargin={true}
-              />
-            </div>
-          </div>
-        </div>
-      )}
       {showExpandedQR && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-[rgb(25,25,25)] p-6 rounded-lg relative">
@@ -591,58 +431,6 @@ const Page = () => {
             <p className="text-white text-center">
               עליך להתחבר כדי לבצע לייק לתגובה
             </p>
-          </div>
-        </div>
-      )}
-      {showGallery && (
-        <div
-          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          <button
-            onClick={() => setShowGallery(false)}
-            className="absolute top-4 left-4 text-white text-3xl hover:text-gray-400 z-50"
-          >
-            ×
-          </button>
-          <button
-            onClick={handlePrevImage}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400 z-50" // Ensure z-index is set
-          >
-            ❯
-          </button>
-          <div className="relative w-full h-screen flex items-center justify-center p-4">
-            <motion.div
-              key={currentImageIndex} // Ensure animation triggers on index change
-              initial={{
-                opacity: 0,
-                x: swipeDirection === "left" ? -100 : 100,
-              }} // Start off-screen
-              animate={{ opacity: 1, x: 0 }} // Fade in and move to center
-              exit={{ opacity: 0, x: swipeDirection === "left" ? 100 : -100 }} // Exit off-screen
-              transition={{ duration: 0.5 }} // Animation duration
-              className="absolute"
-            >
-              <Image
-                src={soldier.images[currentImageIndex]}
-                alt={`תמונה ${currentImageIndex + 1}`}
-                width={1400} // Increased max width
-                height={1000} // Increased max height
-                className="max-h-[95vh] w-auto h-auto object-contain"
-                priority={true}
-              />
-            </motion.div>
-          </div>
-          <button
-            onClick={handleNextImage}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-4xl hover:text-gray-400 z-50" // Ensure z-index is set
-          >
-            ❮
-          </button>
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white">
-            {currentImageIndex + 1} / {soldier.images.length}
           </div>
         </div>
       )}

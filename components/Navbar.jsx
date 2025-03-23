@@ -17,30 +17,23 @@ const Navbar = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
-      if (authUser) {
-        const storedUser = sessionStorage.getItem("user");
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        } else {
-          sessionStorage.setItem("user", JSON.stringify(authUser));
-          setUser(authUser);
-          fetchNotificationCount(authUser.uid);
-        }
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUser(user);
+        fetchNotificationCount(user.uid);
 
-        const userDoc = await getDoc(doc(db, "users", authUser.uid));
+        const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           setUserStatus(userDoc.data().status);
         }
       } else {
-        sessionStorage.removeItem("user"); // Clear session storage on logout
         setUser(null);
         setNotificationCount(0);
       }
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, []);
 
   const fetchNotificationCount = async (userId) => {
     try {
@@ -56,6 +49,7 @@ const Navbar = () => {
           userSoldiers.some((soldier) => soldier.id === comment.soldierId)
       );
 
+      console.log("pendingComments", pendingComments.length);
       setNotificationCount(pendingComments.length);
     } catch (error) {
       console.error("Error fetching notification count:", error);
@@ -108,7 +102,7 @@ const Navbar = () => {
                   className="invert md:h-8 md:w-8"
                 />
                 {notificationCount > 0 && (
-                  <span className="absolute md:-left-3 md:top-0 -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute md:-left-3 md:-top-2 -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {notificationCount}
                   </span>
                 )}
