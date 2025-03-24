@@ -122,7 +122,7 @@ const Navbar = () => {
         {user ? (
           <button onClick={handleLogout} className="md:mt-auto">
             <Image
-              src={"/signout.svg"}
+              src={"/user.svg"}
               alt="signout-icon"
               height={25}
               width={25}
