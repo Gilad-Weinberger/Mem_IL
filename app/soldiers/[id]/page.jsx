@@ -98,6 +98,11 @@ const Page = () => {
   const handleCommentSubmit = (e) => {
     e.preventDefault();
 
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+
     if (!comment.author.trim() || !comment.message.trim()) {
       alert("נא למלא את כל השדות!");
       return;
