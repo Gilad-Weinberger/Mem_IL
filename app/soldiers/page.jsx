@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Fuse from "fuse.js";
 import { getAllObjects } from "@/lib/functions/dbFunctions";
 import { ranks } from "@/lib/data/ranks";
@@ -18,6 +18,7 @@ const Page = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [rankSearch, setRankSearch] = useState("");
   const [showRankOptions, setShowRankOptions] = useState(false);
+  const rankDropdownRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,6 +67,23 @@ const Page = () => {
     fetchSoldiers();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        rankDropdownRef.current &&
+        !rankDropdownRef.current.contains(event.target)
+      ) {
+        setShowRankOptions(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div
       className="bg-[rgb(25,25,25)] w-full pt-14 p-5 min-h-screen text-white"
@@ -96,7 +114,10 @@ const Page = () => {
               />
             </div>
             {/* Rank search with dropdown */}
-            <div className="relative flex w-full md:w-1/2 rank-dropdown">
+            <div
+              ref={rankDropdownRef}
+              className="relative flex w-full md:w-1/2 rank-dropdown"
+            >
               <input
                 type="text"
                 dir="rtl"
@@ -135,7 +156,6 @@ const Page = () => {
               )}
             </div>
           </div>
-
           <div className="text-center w-full mt-6">
             <p className="text-2xl md:text-3xl font-semibold">ארכיון החיילים</p>
             <hr className="w-full mt-2 border-gray-500" />
