@@ -29,6 +29,7 @@ const Page = () => {
         }
       } else {
         setUser(null);
+        router.push("/signin");
       }
       setLoading(false);
     });
@@ -69,18 +70,18 @@ const Page = () => {
     return <div className="text-white text-center mt-20">טוען...</div>;
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
-        <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
-      </div>
-    );
-  }
-
   if (userStatus === "regular") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
         <p className="text-xl">אין לך הרשאה לגשת לעמוד זה</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
+        <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
       </div>
     );
   }

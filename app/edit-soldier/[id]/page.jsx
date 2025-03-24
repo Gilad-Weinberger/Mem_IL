@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import { ranks } from "@/lib/data/ranks";
 import { doc, getDoc } from "firebase/firestore";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const EditSoldierPage = () => {
   const { id } = useParams();
@@ -33,6 +34,7 @@ const EditSoldierPage = () => {
         }
       } else {
         setUser(null);
+        router.push("/signin");
       }
       setLoading(false);
     });
@@ -155,6 +157,14 @@ const EditSoldierPage = () => {
           <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
         </button>
         <p className="text-xl mb-4 max-w-[80%]">אין באפשרותך לערוך חייל זה</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
+        <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
       </div>
     );
   }

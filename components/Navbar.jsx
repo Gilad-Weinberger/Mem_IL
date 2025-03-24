@@ -7,8 +7,8 @@ import Image from "next/image";
 import logout from "@/lib/functions/logout";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { getAllObjects } from "@/lib/functions/dbFunctions";
 import { doc, getDoc } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
@@ -17,44 +17,45 @@ const Navbar = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
-        fetchNotificationCount(user.uid);
 
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           setUserStatus(userDoc.data().status);
         }
+
+        const soldiersQuery = query(
+          collection(db, "soldiers"),
+          where("createdBy", "==", user.uid)
+        );
+
+        const unsubscribeSoldiers = onSnapshot(soldiersQuery, (snapshot) => {
+          const soldierIds = snapshot.docs.map((doc) => doc.id);
+
+          const commentsQuery = query(
+            collection(db, "comments"),
+            where("status", "==", "pending"),
+            where("soldierId", "in", soldierIds)
+          );
+
+          const unsubscribeComments = onSnapshot(commentsQuery, (snapshot) => {
+            setNotificationCount(snapshot.size);
+          });
+
+          return () => unsubscribeComments();
+        });
+
+        return () => unsubscribeSoldiers();
       } else {
         setUser(null);
         setNotificationCount(0);
       }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribeAuth();
   }, []);
-
-  const fetchNotificationCount = async (userId) => {
-    try {
-      const soldiers = await getAllObjects("soldiers");
-      const userSoldiers = soldiers.filter(
-        (soldier) => soldier.createdBy === userId
-      );
-
-      const allComments = await getAllObjects("comments");
-      const pendingComments = allComments.filter(
-        (comment) =>
-          comment.status === "pending" &&
-          userSoldiers.some((soldier) => soldier.id === comment.soldierId)
-      );
-
-      console.log("pendingComments", pendingComments.length);
-      setNotificationCount(pendingComments.length);
-    } catch (error) {
-      console.error("Error fetching notification count:", error);
-    }
-  };
 
   const handleLogout = async () => {
     await logout();
@@ -122,7 +123,7 @@ const Navbar = () => {
         {user ? (
           <button onClick={handleLogout} className="md:mt-auto">
             <Image
-              src={"/user.svg"}
+              src={"/signin.svg"}
               alt="signout-icon"
               height={25}
               width={25}
@@ -132,7 +133,7 @@ const Navbar = () => {
         ) : (
           <Link href="/signin" className="md:mt-auto">
             <Image
-              src={"/signin.svg"}
+              src={"/user.svg"}
               alt="signin-icon"
               height={25}
               width={25}

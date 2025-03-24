@@ -39,6 +39,7 @@ const Page = () => {
         }
       } else {
         setUser(null);
+        router.push("/signin");
       }
       setLoading(false);
     });
@@ -68,8 +69,11 @@ const Page = () => {
   }
 
   if (!user) {
-    router.push("/signin");
-    return;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
+        <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
+      </div>
+    );
   }
 
   // Check if user status is regular
