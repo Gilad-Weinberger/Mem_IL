@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 const ShowComments = ({ comments, user, handleLikeComment }) => {
-  console.log("ShowComments received comments:", comments); // Debug log
   const [commentLimit, setCommentLimit] = useState(3);
   const [showHideButton, setShowHideButton] = useState(false);
 
