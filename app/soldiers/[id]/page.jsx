@@ -16,7 +16,7 @@ import { rankToInitials } from "@/lib/functions/rankInitials";
 import { QRCodeCanvas } from "qrcode.react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
-import ShowComments from "@/elements/SoldierID/ShowComments";
+import ShowComments from "@/elements/ShowComments";
 
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
 const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
@@ -37,6 +37,7 @@ const Page = () => {
   const [user, setUser] = useState(null); // Track the authenticated user
   const [imageLimit, setImageLimit] = useState(2); // Limit for displayed images
   const [showHideImagesButton, setShowHideImagesButton] = useState(false);
+  const [showCommentSentPopup, setShowCommentSentPopup] = useState(false); // State for pop-up visibility
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -114,6 +115,7 @@ const Page = () => {
       .then(() => {
         setComment({ author: "", message: "" });
         setComments((prev) => [...prev, newComment]);
+        setShowCommentSentPopup(true);
       })
       .catch((error) => console.error("Error adding comment:", error));
   };
@@ -429,6 +431,27 @@ const Page = () => {
             <p className="text-white text-center">
               עליך להתחבר כדי לבצע לייק לתגובה
             </p>
+          </div>
+        </div>
+      )}
+      {showCommentSentPopup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[rgb(25,25,25)] p-6 rounded-lg relative max-w-sm mx-4">
+            <button
+              onClick={() => setShowCommentSentPopup(false)}
+              className="absolute top-2 left-2 text-white text-2xl hover:text-gray-400"
+            >
+              ×
+            </button>
+            <h3 className="text-white text-xl mb-4 text-center">
+              התגובה שלך נשלחה והיא ממתינה לאישור
+            </h3>
+            <button
+              onClick={() => setShowCommentSentPopup(false)}
+              className="w-full mt-2 rounded-lg hover:text-black hover:bg-white border border-white py-2 text-lg transition-all duration-200"
+            >
+              אישור
+            </button>
           </div>
         </div>
       )}
