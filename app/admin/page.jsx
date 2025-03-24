@@ -121,21 +121,16 @@ const Page = () => {
             <>
               {soldiers.map((soldier) => (
                 <div key={soldier.id} className="relative group">
-                  <Link
-                    href={`/soldiers/${soldier.id}`}
-                    className="flex flex-col items-center cursor-pointer hover:opacity-80"
-                  >
-                    <Image
-                      src={soldier.images[0] || "/nevo.jpeg"}
-                      alt="soldier-image"
-                      width={150}
-                      height={150}
-                      className="rounded-lg w-full h-40 object-cover"
-                    />
-                    <p className="mt-2 text-lg md:text-xl">
-                      {soldier.darga} {soldier.name}
-                    </p>
-                  </Link>
+                  <Image
+                    src={soldier.images[0] || "/nevo.jpeg"}
+                    alt="soldier-image"
+                    width={150}
+                    height={150}
+                    className="rounded-lg w-full h-40 object-cover"
+                  />
+                  <p className="mt-2 text-lg md:text-xl">
+                    {soldier.darga} {soldier.name}
+                  </p>
                   <button
                     onClick={(e) => handleDelete(e, soldier.id)}
                     className="absolute bottom-[43px] left-1.5 bg-red-500 p-2 rounded-full hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200"

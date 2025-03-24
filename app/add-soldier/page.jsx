@@ -9,7 +9,7 @@ import { ranks } from "@/lib/data/ranks";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
-import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
+import { doc, getDoc } from "firebase/firestore";
 
 const Page = () => {
   const [soldier, setSoldier] = useState({});
