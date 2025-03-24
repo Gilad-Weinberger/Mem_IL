@@ -8,7 +8,7 @@ import {
 } from "@/lib/functions/dbFunctions";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, onSnapshot } from "firebase/firestore";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,7 @@ const Page = () => {
 
   useEffect(() => {
     if (user && userStatus !== "regular") {
-      const fetchPendingComments = async () => {
+      const unsubscribe = onSnapshot(collection(db, "comments"), async () => {
         try {
           const soldiers = await getAllObjects("soldiers");
           const userSoldiers = soldiers.filter(
@@ -66,26 +66,31 @@ const Page = () => {
         } finally {
           setLoading(false);
         }
-      };
+      });
 
-      fetchPendingComments();
+      return () => unsubscribe();
     }
   }, [user, userStatus]);
 
   const handleCommentApproval = async (commentId, approve) => {
+    // Optimistically update local state
+    setPendingComments((prev) =>
+      prev.filter((comment) => comment.id !== commentId)
+    );
+
     try {
       if (approve) {
         await updateObject("comments", commentId, { status: "approved" });
       } else {
         await deleteObject("comments", commentId);
       }
-
-      // Update local state
-      setPendingComments((prev) =>
-        prev.filter((comment) => comment.id !== commentId)
-      );
     } catch (error) {
       console.error("Error handling comment:", error);
+      // Revert local state update if API call fails
+      setPendingComments((prev) => [
+        ...prev,
+        pendingComments.find((comment) => comment.id === commentId),
+      ]);
     }
   };
 
