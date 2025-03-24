@@ -10,7 +10,6 @@ import Footer from "@/components/Footer";
 import { ranks } from "@/lib/data/ranks";
 import { doc, getDoc } from "firebase/firestore";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 const EditSoldierPage = () => {
   const { id } = useParams();
