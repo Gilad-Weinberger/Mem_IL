@@ -6,7 +6,11 @@ import Link from "next/link";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth, googleProvider } from "../../lib/firebase";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged, signInWithPopup, sendPasswordResetEmail } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -98,11 +102,19 @@ export default function SignIn() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-900 p-4">
-      <button onClick={() => router.back()} className="fixed top-4 left-4 p-2 rounded">
+      <button
+        onClick={() => router.back()}
+        className="fixed top-4 left-4 p-2 rounded"
+      >
         <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
       </button>
-      <form onSubmit={handleEmailPasswordSignIn} className="w-full max-w-sm bg-gray-800 p-6 rounded-xl shadow-md text-right">
-        <h2 className="mb-6 text-center text-3xl font-bold text-white">התחברות</h2>
+      <form
+        onSubmit={handleEmailPasswordSignIn}
+        className="w-full max-w-sm bg-gray-800 p-6 rounded-xl shadow-md text-right"
+      >
+        <h2 className="mb-6 text-center text-3xl font-bold text-white">
+          התחברות
+        </h2>
         <div className="mb-4">
           <label className="mb-2 block text-gray-300">אימייל</label>
           <input
@@ -128,26 +140,42 @@ export default function SignIn() {
           />
         </div>
         {error && <p className="mb-5 text-center text-red-400">{error}</p>}
-        <button type="submit" className="w-full rounded bg-indigo-600 p-3 font-semibold text-white hover:bg-indigo-700">התחבר</button>
         <button
-          onClick={handleGoogleSignIn}
-          type="button"
-          className="mt-4 flex w-full items-center justify-center rounded border border-gray-600 p-3 font-semibold text-white hover:border-indigo-500"
+          type="submit"
+          className="w-full rounded bg-indigo-600 p-3 font-semibold text-white hover:bg-indigo-700"
         >
-          <Image src="/google.svg" alt="Google icon" width={20} height={20} className="ml-2" /> התחבר עם גוגל
+          התחבר
         </button>
-        <p className="mt-4 text-center text-gray-400">
+        <p className="mt-5 my-3 text-center text-gray-400">
           <button
             onClick={handleResetPassword}
             type="button"
             className="text-indigo-500 hover:underline"
           >
-            לשיחזור
+            לשחזור הסיסמה
           </button>{" "}
           ?שכחת סיסמה
         </p>
+        <button
+          onClick={handleGoogleSignIn}
+          type="button"
+          className="mt-4 flex w-full items-center justify-center rounded border border-gray-600 p-3 font-semibold text-white hover:border-indigo-500"
+        >
+          <Image
+            src="/google.svg"
+            alt="Google icon"
+            width={20}
+            height={20}
+            className="ml-2"
+          />{" "}
+          התחבר עם גוגל
+        </button>
+
         <p className="mt-4 text-center text-gray-400">
-          אין לך חשבון? <Link href="/signup" className="text-indigo-500 hover:underline">הרשם</Link>
+          אין לך חשבון?{" "}
+          <Link href="/signup" className="text-indigo-500 hover:underline">
+            הרשם
+          </Link>
         </p>
       </form>
       {showPopup && (
