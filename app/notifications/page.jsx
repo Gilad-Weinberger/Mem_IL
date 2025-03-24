@@ -37,7 +37,7 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
-    if (user && userStatus === "admin") {
+    if (user && userStatus !== "regular") {
       const fetchPendingComments = async () => {
         try {
           const soldiers = await getAllObjects("soldiers");
