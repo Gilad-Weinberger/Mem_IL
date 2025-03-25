@@ -24,6 +24,7 @@ const Navbar = () => {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           setUserStatus(userDoc.data().status);
+          console.log(userDoc.data().status);
         }
 
         const soldiersQuery = query(

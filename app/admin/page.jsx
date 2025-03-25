@@ -7,7 +7,6 @@ import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
-import Link from "next/link";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 
@@ -87,9 +86,12 @@ const Page = () => {
   }
 
   return (
-    <div className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white">
+    <div
+      className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white"
+      dir="rtl"
+    >
       <Navbar />
-      <div className="h-full max-w-4xl mx-auto" dir="rtl">
+      <div className="h-full max-w-4xl mx-auto">
         <div className="relative flex justify-center w-full">
           <input
             type="text"
