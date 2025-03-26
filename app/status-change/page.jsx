@@ -77,7 +77,7 @@ const Page = () => {
       `Are you sure you want to change this user:\nemail: ${selectedUser.email}\nstatus to "${newStatus}"?`
     );
 
-    if (!confirmChange) return;
+    if (!confirmChange) return; // check if user wants to change the status
 
     try {
       await updateObject("users", userId, { status: newStatus });
