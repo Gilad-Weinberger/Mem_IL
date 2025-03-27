@@ -123,7 +123,7 @@ const Page = () => {
             <input
               type="text"
               dir="rtl"
-              placeholder="חפש חייל/ת..."
+              placeholder="חפש אימייל של משתמש"
               className="w-full rounded-lg py-2 pr-4 pl-10 text-black"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
