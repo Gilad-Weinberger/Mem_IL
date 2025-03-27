@@ -83,15 +83,26 @@ const Navbar = () => {
             />
           </Link>
           {user && userStatus === "admin" && (
-            <Link href="/admin">
-              <Image
-                src={"/admin.svg"}
-                alt="admin-icon"
-                height={25}
-                width={25}
-                className="invert md:h-8 md:w-8"
-              />
-            </Link>
+            <>
+              <Link href="/admin">
+                <Image
+                  src={"/admin.svg"}
+                  alt="admin-icon"
+                  height={25}
+                  width={25}
+                  className="invert md:h-8 md:w-8"
+                />
+              </Link>
+              <Link href="/status-change">
+                <Image
+                  src={"/status.svg"}
+                  alt="status-icon"
+                  height={35}
+                  width={35}
+                  className="invert md:h-10 md:w-10"
+                />
+              </Link>
+            </>
           )}
           {user && userStatus !== "regular" && (
             <>
