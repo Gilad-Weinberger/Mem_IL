@@ -16,7 +16,6 @@ import { rankToInitials } from "@/lib/functions/rankInitials";
 import { QRCodeCanvas } from "qrcode.react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
-import ShowComments from "@/elements/ShowComments";
 
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
 const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
