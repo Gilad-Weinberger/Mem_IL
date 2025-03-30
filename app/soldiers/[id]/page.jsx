@@ -20,6 +20,9 @@ import ShowComments from "@/elements/ShowComments";
 
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: false });
 const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
+const ShowComments = dynamic(() => import("@/elements/ShowComments"), {
+  ssr: false,
+});
 
 const Page = () => {
   const [soldier, setSoldier] = useState(null);
