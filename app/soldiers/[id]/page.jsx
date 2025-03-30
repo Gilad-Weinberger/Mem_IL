@@ -13,7 +13,6 @@ import {
   getObjectsByField,
 } from "@/lib/functions/dbFunctions";
 import { rankToInitials } from "@/lib/functions/rankInitials";
-import { QRCodeCanvas } from "qrcode.react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
@@ -22,6 +21,10 @@ const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 const ShowComments = dynamic(() => import("@/elements/ShowComments"), {
   ssr: false,
 });
+const QRCodeCanvas = dynamic(
+  () => import("qrcode.react").then((mod) => mod.QRCodeCanvas),
+  { ssr: false }
+);
 
 const Page = () => {
   const [soldier, setSoldier] = useState(null);
@@ -338,6 +341,7 @@ const Page = () => {
                 width={1000}
                 height={1000}
                 className="w-full h-auto rounded-lg"
+                loading="lazy"
               />
             </motion.div>
           ))}
