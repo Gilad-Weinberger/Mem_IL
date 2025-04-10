@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "@/context/AuthContext";
 
 const PageLayout = ({ children, className }) => {
   const { onLogout } = useContext(AuthContext);
