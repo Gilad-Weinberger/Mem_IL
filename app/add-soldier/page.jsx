@@ -3,7 +3,7 @@
 import { createObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import SoldierFormContainer from "@/elements/SoldierForm";
+import MultiStepFormContainer from "@/elements/MultiStepForm";
 import { useAuth } from "@/context/AuthContext";
 
 const Page = () => {
@@ -54,18 +54,20 @@ const Page = () => {
       createdAt: new Date().toISOString(),
     };
 
-    createObject("soldiers", soldierWithUser)
+    return createObject("soldiers", soldierWithUser)
       .then((docRef) => {
         console.log("Soldier created successfully");
         router.push(`/soldiers/${docRef.id}`);
+        return docRef;
       })
       .catch((error) => {
         console.error("Error creating soldier:", error);
         alert("אירעה שגיאה בעת יצירת החייל");
+        throw error;
       });
   };
 
-  return <SoldierFormContainer onSubmit={handleSubmit} />;
+  return <MultiStepFormContainer onSubmit={handleSubmit} />;
 };
 
 export default Page;

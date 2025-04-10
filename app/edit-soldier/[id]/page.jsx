@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { getObject, updateObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import SoldierFormContainer from "@/elements/SoldierForm";
+import MultiStepFormContainer from "@/elements/MultiStepForm";
 import { useAuth } from "@/context/AuthContext";
 
 const EditSoldierPage = ({ params }) => {
@@ -35,7 +35,7 @@ const EditSoldierPage = ({ params }) => {
 
       fetchSoldier();
     }
-  }, [id, user]);
+  }, [id, user, router]);
 
   // Show loading state while checking authentication
   if (loading) {
@@ -82,7 +82,7 @@ const EditSoldierPage = ({ params }) => {
       updatedAt: new Date().toISOString(),
     };
 
-    updateObject("soldiers", id, soldierWithUpdatedInfo)
+    return updateObject("soldiers", id, soldierWithUpdatedInfo)
       .then(() => {
         console.log("Soldier updated successfully");
         router.push(`/soldiers/${id}`);
@@ -90,11 +90,12 @@ const EditSoldierPage = ({ params }) => {
       .catch((error) => {
         console.error("Error updating soldier:", error);
         alert("אירעה שגיאה בעת עדכון פרטי החייל");
+        throw error;
       });
   };
 
   return (
-    <SoldierFormContainer
+    <MultiStepFormContainer
       initialData={soldierData}
       onSubmit={handleSubmit}
       isEdit={true}
