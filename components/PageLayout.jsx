@@ -8,7 +8,7 @@ const PageLayout = ({ children, className }) => {
 
   return (
     <div
-      className={`bg-[rgb(25,25,25)] w-full min-h-screen h-full px-5 pt-14 text-white ${
+      className={`bg-[rgb(25,25,25)] w-full min-h-screen h-full px-5 pt-[70px] text-white ${
         className || ""
       }`}
       dir="rtl"

@@ -45,7 +45,7 @@ const Navbar = () => {
   return (
     <div>
       <div
-        className="fixed md:right-auto md:h-screen md:w-16 top-0 right-0 w-full bg-[rgb(25,25,25)] flex md:flex-col items-center justify-between md:justify-start md:gap-10 px-10 md:py-10 md:px-0 h-12 z-50 shadow-md"
+        className="fixed md:right-auto md:h-screen md:w-16 top-0 right-0 w-full bg-[rgb(25,25,25)] flex md:flex-col items-center justify-between md:justify-start md:gap-10 px-5 md:px-0 py-8 md:py-10 h-8 z-50 shadow-md"
         dir="rtl"
       >
         <div
