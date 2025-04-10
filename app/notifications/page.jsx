@@ -6,36 +6,17 @@ import {
   updateObject,
   deleteObject,
 } from "@/lib/functions/dbFunctions";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
-import { doc, getDoc, collection, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { collection, onSnapshot } from "firebase/firestore";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 const Page = () => {
+  const { user, userStatus, loading } = useAuth();
   const [pendingComments, setPendingComments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-  const [userStatus, setUserStatus] = useState(null);
   const router = useRouter();
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user);
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          setUserStatus(userDoc.data().status);
-        }
-      } else {
-        setUser(null);
-        router.push("/signin");
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   useEffect(() => {
     if (user && userStatus !== "regular") {
@@ -64,8 +45,6 @@ const Page = () => {
           setPendingComments(commentsWithSoldierNames);
         } catch (error) {
           console.error("Error fetching pending comments:", error);
-        } finally {
-          setLoading(false);
         }
       });
 
@@ -74,7 +53,6 @@ const Page = () => {
   }, [user, userStatus]);
 
   const handleCommentApproval = async (commentId, approve) => {
-    // Optimistically update local state
     setPendingComments((prev) =>
       prev.filter((comment) => comment.id !== commentId)
     );
@@ -87,7 +65,6 @@ const Page = () => {
       }
     } catch (error) {
       console.error("Error handling comment:", error);
-      // Revert local state update if API call fails
       setPendingComments((prev) => [
         ...prev,
         pendingComments.find((comment) => comment.id === commentId),

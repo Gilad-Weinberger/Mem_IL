@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth, googleProvider } from "../../lib/firebase";
+import { auth, googleProvider, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged, signInWithPopup } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -18,16 +18,7 @@ export default function SignUp() {
   const router = useRouter();
   const [createUserWithEmailAndPassword] =
     useCreateUserWithEmailAndPassword(auth);
-  const [user, setUser] = useState();
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []);
+  const { loading } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,10 +33,9 @@ export default function SignUp() {
         email: user.email,
         status: "regular",
         createdAt: new Date().toISOString(),
-      }); // Create user object in Firestore
+      });
 
       sessionStorage.setItem("user", JSON.stringify(user));
-
       setEmail("");
       setPassword("");
       setConfirmPassword("");
@@ -75,18 +65,17 @@ export default function SignUp() {
     }
   };
 
+  if (loading) {
+    return <div className="text-white text-center mt-20">טוען...</div>;
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-900 p-4">
       <button
         onClick={() => router.back()}
         className="fixed top-4 left-4 p-2 rounded"
       >
-        <Image
-          src="/previous.svg"
-          alt="Go Back"
-          width={24}
-          height={24}
-        />
+        <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
       </button>
       <form
         onSubmit={handleSubmit}

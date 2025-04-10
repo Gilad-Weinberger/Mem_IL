@@ -4,37 +4,26 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import logout from "@/lib/functions/logout";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
-  const [user, setUser] = useState(null);
-  const [userStatus, setUserStatus] = useState(null);
+  const { user, userStatus, logout } = useAuth();
   const [notificationCount, setNotificationCount] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user);
+    if (user && userStatus !== "regular") {
+      const soldiersQuery = query(
+        collection(db, "soldiers"),
+        where("createdBy", "==", user.uid)
+      );
 
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          setUserStatus(userDoc.data().status);
-          console.log(userDoc.data().status);
-        }
+      const unsubscribeSoldiers = onSnapshot(soldiersQuery, (snapshot) => {
+        const soldierIds = snapshot.docs.map((doc) => doc.id);
 
-        const soldiersQuery = query(
-          collection(db, "soldiers"),
-          where("createdBy", "==", user.uid)
-        );
-
-        const unsubscribeSoldiers = onSnapshot(soldiersQuery, (snapshot) => {
-          const soldierIds = snapshot.docs.map((doc) => doc.id);
-
+        if (soldierIds.length > 0) {
           const commentsQuery = query(
             collection(db, "comments"),
             where("status", "==", "pending"),
@@ -46,22 +35,12 @@ const Navbar = () => {
           });
 
           return () => unsubscribeComments();
-        });
+        }
+      });
 
-        return () => unsubscribeSoldiers();
-      } else {
-        setUser(null);
-        setNotificationCount(0);
-      }
-    });
-
-    return () => unsubscribeAuth();
-  }, []);
-
-  const handleLogout = async () => {
-    await logout();
-    setUser(null);
-  };
+      return () => unsubscribeSoldiers();
+    }
+  }, [user, userStatus]);
 
   return (
     <div>
@@ -133,7 +112,7 @@ const Navbar = () => {
           )}
         </div>
         {user ? (
-          <button onClick={handleLogout} className="md:mt-auto">
+          <button onClick={logout} className="md:mt-auto">
             <Image
               src={"/signout.svg"}
               alt="signout-icon"

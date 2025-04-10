@@ -1,7 +1,10 @@
+import { useAuth } from "@/context/AuthContext";
 import UserCard from "./UserCard";
 
 const UserList = ({ users, changeUserStatus, usersLoading, usersError }) => {
-  if (usersLoading) {
+  const { loading } = useAuth();
+
+  if (loading || usersLoading) {
     return <div className="text-white text-center mt-20">טוען משתמשים...</div>;
   }
 

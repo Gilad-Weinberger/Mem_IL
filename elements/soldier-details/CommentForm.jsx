@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { createObject } from "@/lib/functions/dbFunctions";
+import { useAuth } from "@/context/AuthContext";
 
-const CommentForm = ({ soldierId, user, onCommentSubmit, showLoginModal }) => {
+const CommentForm = ({ soldierId, onCommentSubmit, showLoginModal }) => {
+  const { user } = useAuth();
   const [comment, setComment] = useState({
     author: "",
     message: "",

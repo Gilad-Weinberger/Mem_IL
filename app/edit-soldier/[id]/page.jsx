@@ -3,32 +3,21 @@
 import React, { useState, useEffect } from "react";
 import { getObject, updateObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
 import Image from "next/image";
 import SoldierFormContainer from "@/elements/SoldierForm";
+import { useAuth } from "@/context/AuthContext";
 
 const EditSoldierPage = ({ params }) => {
-  // Unwrap params with React.use()
   const unwrappedParams = React.use(params);
   const { id } = unwrappedParams;
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState();
-  const [userStatus, setUserStatus] = useState(null);
+  const { user, userStatus, loading } = useAuth();
   const [soldierData, setSoldierData] = useState({});
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user);
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          setUserStatus(userDoc.data().status);
-        }
-
-        // Fetch soldier data
+    if (user) {
+      // Fetch soldier data
+      const fetchSoldier = async () => {
         try {
           const data = await getObject("soldiers", id);
           if (data) {
@@ -42,15 +31,11 @@ const EditSoldierPage = ({ params }) => {
           alert("אירעה שגיאה בעת טעינת פרטי החייל");
           router.push("/");
         }
-      } else {
-        setUser(null);
-        router.push("/signin");
-      }
-      setLoading(false);
-    });
+      };
 
-    return () => unsubscribe();
-  }, [id]);
+      fetchSoldier();
+    }
+  }, [id, user]);
 
   // Show loading state while checking authentication
   if (loading) {
@@ -85,32 +70,6 @@ const EditSoldierPage = ({ params }) => {
         <p className="text-xl mb-4 max-w-[80%]">
           אין באפשרותך לערוך את פרטי החייל
         </p>
-      </div>
-    );
-  }
-
-  // Show message if user status is regular
-  if (user && (userStatus === "regular" || !userStatus)) {
-    return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white gap-4 text-center"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl max-w-[80%]">
-          הסטטוס שלך הוא רגיל, <br /> אנא בקש עדכון סטטוס.
-        </p>
-        <button
-          onClick={() => router.push("/status-request")}
-          className="p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200"
-        >
-          בקש עדכון סטטוס
-        </button>
       </div>
     );
   }

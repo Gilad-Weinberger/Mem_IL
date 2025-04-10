@@ -1,48 +1,23 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { doc, getDoc, collection, onSnapshot } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SearchBar from "./SearchBar";
 import UserList from "./UserList";
 import { handleStatusChange } from "./StatusChangeUtils";
+import { useAuth } from "@/context/AuthContext";
 
 const StatusChangeContainer = () => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
-  const [userStatus, setUserStatus] = useState(null);
+  const { user, userStatus, loading } = useAuth();
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(true);
   const [usersError, setUsersError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user);
-        try {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            setUserStatus(userData?.status || null);
-          }
-        } catch (err) {
-          console.error("Error fetching user document:", err);
-          setError("Failed to fetch user data.");
-        }
-      } else {
-        setUser(null);
-        router.push("/signin");
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [router]);
 
   useEffect(() => {
     if (user && userStatus === "admin") {

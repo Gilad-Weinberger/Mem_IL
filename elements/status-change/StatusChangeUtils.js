@@ -10,7 +10,7 @@ export const handleStatusChange = async (
   if (selectedUser?.status === newStatus) return;
 
   const confirmChange = window.confirm(
-    `Are you sure you want to change this user:\nemail: ${selectedUser.email}\nstatus to "${newStatus}"?`
+    `האם אתה בטוח שברצונך לשנות את הסטטוס של המשתמש:\nemail: ${selectedUser.email}\nלסטטוס "${newStatus}"?`
   );
 
   if (!confirmChange) return;
@@ -24,5 +24,6 @@ export const handleStatusChange = async (
     );
   } catch (error) {
     console.error("Error updating user status:", error);
+    alert("שגיאה בעדכון סטטוס המשתמש");
   }
 };

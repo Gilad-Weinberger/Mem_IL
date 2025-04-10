@@ -1,36 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth, googleProvider } from "../../lib/firebase";
+import { auth, googleProvider, db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  sendPasswordResetEmail,
-} from "firebase/auth";
+import { signInWithPopup, sendPasswordResetEmail } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
-  const router = useRouter();
-  const [user, setUser] = useState();
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const router = useRouter();
+  const { loading } = useAuth();
 
   const handleEmailPasswordSignIn = async (e) => {
     e.preventDefault();
@@ -92,13 +80,17 @@ export default function SignIn() {
     }
     try {
       await sendPasswordResetEmail(auth, email);
-      setError(""); // Clear any previous errors
+      setError("");
       setPopupMessage(`אימייל לשחזור הסיסמה נשלח לכתובת: ${email}`);
       setShowPopup(true);
     } catch (e) {
       setError(e.message);
     }
   };
+
+  if (loading) {
+    return <div className="text-white text-center mt-20">טוען...</div>;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-900 p-4">

@@ -1,8 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 import { rankToInitials } from "@/lib/functions/rankInitials";
 
-const SoldierHeader = ({ soldier, handleShare, handleQRClick, user, id }) => {
+const SoldierHeader = ({ soldier, handleShare, handleQRClick, id }) => {
+  const { user } = useAuth();
+
   return (
     <div className="max-w-3xl mx-auto text-center mt-6">
       <p className="text-[40px] mt-1 leading-[40px] font-extralight">

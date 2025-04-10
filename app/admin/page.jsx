@@ -2,39 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { getAllObjects, deleteObject } from "@/lib/functions/dbFunctions";
-import { auth, db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 const Page = () => {
   const [soldiers, setSoldiers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [user, setUser] = useState(null);
-  const [userStatus, setUserStatus] = useState(null);
+  const { user, userStatus } = useAuth();
   const router = useRouter();
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user);
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          setUserStatus(userDoc.data().status);
-        }
-      } else {
-        setUser(null);
-        router.push("/signin");
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   useEffect(() => {
     const fetchSoldiers = async () => {
@@ -112,9 +91,7 @@ const Page = () => {
           <hr className="w-full mt-2 border-gray-500" />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-          {loading ? (
-            <p className="text-center w-full text-lg">טוען חיילים...</p>
-          ) : error ? (
+          {error ? (
             <p className="text-center w-full text-lg text-red-500">
               הייתה שגיאה בטעינת החיילים
             </p>

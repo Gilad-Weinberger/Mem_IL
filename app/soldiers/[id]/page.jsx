@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -10,6 +8,7 @@ import {
   updateObject,
   getObjectsByField,
 } from "@/lib/functions/dbFunctions";
+import { useAuth } from "@/context/AuthContext";
 import PageLayout from "@/components/PageLayout";
 import SoldierHeader from "@/elements/soldier-details/SoldierHeader";
 import SoldierLifeStory from "@/elements/soldier-details/SoldierLifeStory";
@@ -20,39 +19,18 @@ import QRModal from "@/elements/soldier-details/QRModal";
 import NotificationModal from "@/elements/soldier-details/NotificationModal";
 
 const Page = () => {
+  const { user, loading } = useAuth();
   const [soldier, setSoldier] = useState(null);
   const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showExpandedQR, setShowExpandedQR] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showCommentSentPopup, setShowCommentSentPopup] = useState(false);
   const { id } = useParams();
   const router = useRouter();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-      if (authUser) {
-        const storedUser = sessionStorage.getItem("user");
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        } else {
-          sessionStorage.setItem("user", JSON.stringify(authUser));
-          setUser(authUser);
-        }
-      } else {
-        sessionStorage.removeItem("user");
-        setUser(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
 
   useEffect(() => {
     if (id) {
-      setLoading(true);
       Promise.all([
         getObject("soldiers", id),
         getObjectsByField("comments", "soldierId", id),
@@ -65,8 +43,7 @@ const Page = () => {
             setComments(commentsData || []);
           }
         })
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
+        .catch((err) => setError(err));
     }
   }, [id]);
 
@@ -124,18 +101,12 @@ const Page = () => {
     router.push("/signup");
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("user");
-    setComments((prev) => prev.map((c) => ({ ...c, likes: [] })));
-    alert("התנתקת בהצלחה");
-  };
-
   const handleNewComment = (newComment) => {
     setComments((prev) => [...prev, newComment]);
     setShowCommentSentPopup(true);
   };
 
-  if (loading) {
+  if (loading || !soldier) {
     return (
       <div className="text-white text-center text-xl mt-10">טוען מידע...</div>
     );
@@ -149,16 +120,8 @@ const Page = () => {
     );
   }
 
-  if (!soldier) {
-    return (
-      <div className="text-white text-center text-xl mt-10">
-        שגיאה בטעינת המידע
-      </div>
-    );
-  }
-
   return (
-    <PageLayout onLogout={handleLogout}>
+    <PageLayout>
       <button
         onClick={() => router.back()}
         className="fixed top-4 left-4 p-2 rounded"
@@ -186,7 +149,6 @@ const Page = () => {
 
       <CommentForm
         soldierId={id}
-        user={user}
         onCommentSubmit={handleNewComment}
         showLoginModal={() => setShowLoginModal(true)}
       />
