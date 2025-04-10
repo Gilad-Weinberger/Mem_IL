@@ -2,9 +2,10 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <div className="mt-10 text-center">
+    <div className="w-full py-4 mt-10 text-center">
       <p className="text-lg">
-        ליצירת קשר:<br />
+        ליצירת קשר:
+        <br />
         memory.il.app@gmail.com
       </p>
       <p className="text-sm mt-4">

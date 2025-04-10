@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { getAllObjects, deleteObject } from "@/lib/functions/dbFunctions";
-import Navbar from "@/components/Navbar";
 import Image from "next/image";
-import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import PageLayout from "@/components/PageLayout";
 
 const Page = () => {
   const [soldiers, setSoldiers] = useState([]);
@@ -65,12 +64,8 @@ const Page = () => {
   }
 
   return (
-    <div
-      className="bg-black w-full pt-14 p-5 min-h-screen h-full text-white"
-      dir="rtl"
-    >
-      <Navbar />
-      <div className="h-full max-w-4xl mx-auto">
+    <PageLayout>
+      <div className="max-w-4xl mx-auto w-full">
         <div className="relative flex justify-center w-full">
           <input
             type="text"
@@ -129,8 +124,7 @@ const Page = () => {
           )}
         </div>
       </div>
-      <Footer />
-    </div>
+    </PageLayout>
   );
 };
 

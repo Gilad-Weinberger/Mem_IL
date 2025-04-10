@@ -8,10 +8,9 @@ import {
 } from "@/lib/functions/dbFunctions";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import PageLayout from "@/components/PageLayout";
 
 const Page = () => {
   const { user, userStatus, loading } = useAuth();
@@ -93,12 +92,8 @@ const Page = () => {
   }
 
   return (
-    <div
-      className="bg-[rgb(25,25,25)] w-full min-h-screen h-full px-5 pt-14 text-white"
-      dir="rtl"
-    >
-      <Navbar />
-      <div className="max-w-3xl mx-auto mt-8">
+    <PageLayout>
+      <div className="max-w-3xl mx-auto w-full">
         <h1 className="text-3xl mb-6">תגובות ממתינות לאישור</h1>
         {pendingComments.length === 0 ? (
           <p className="text-lg">אין תגובות ממתינות לאישור</p>
@@ -131,8 +126,7 @@ const Page = () => {
           ))
         )}
       </div>
-      <Footer />
-    </div>
+    </PageLayout>
   );
 };
 

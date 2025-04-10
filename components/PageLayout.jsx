@@ -8,13 +8,13 @@ const PageLayout = ({ children, className }) => {
 
   return (
     <div
-      className={`bg-[rgb(25,25,25)] w-full min-h-screen h-full px-5 pt-[70px] text-white ${
+      className={`bg-[rgb(25,25,25)] w-full min-h-screen h-full flex flex-col px-5 pt-[70px] text-white ${
         className || ""
       }`}
       dir="rtl"
     >
       <Navbar onLogout={onLogout} />
-      {children}
+      <div className="flex-grow">{children}</div>
       <Footer />
     </div>
   );
