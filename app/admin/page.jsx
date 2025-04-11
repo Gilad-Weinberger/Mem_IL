@@ -1,16 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getAllObjects, deleteObject } from "@/lib/functions/dbFunctions";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import PageLayout from "@/components/PageLayout";
+import { warsList } from "@/lib/data/wars";
 
 const Page = () => {
   const [soldiers, setSoldiers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [warFilter, setWarFilter] = useState("");
+  const [showWarOptions, setShowWarOptions] = useState(false);
   const { user, userStatus } = useAuth();
   const router = useRouter();
 
@@ -42,6 +46,28 @@ const Page = () => {
       }
     }
   };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleWarSelect = (war) => {
+    setWarFilter(war);
+    setShowWarOptions(false);
+  };
+
+  // Filter soldiers based on search query and selected war
+  const filteredSoldiers = useMemo(() => {
+    return soldiers.filter((soldier) => {
+      const matchesSearch = soldier.name
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesWar =
+        !warFilter ||
+        soldier.warFellIn?.toLowerCase().includes(warFilter.toLowerCase());
+      return matchesSearch && matchesWar;
+    });
+  }, [soldiers, searchQuery, warFilter]);
 
   if (loading) {
     return <div className="text-white text-center mt-20">טוען...</div>;
@@ -84,20 +110,61 @@ const Page = () => {
   return (
     <PageLayout>
       <div className="max-w-4xl mx-auto w-full">
-        <div className="relative flex justify-center w-full">
-          <input
-            type="text"
-            dir="rtl"
-            placeholder="חפש חייל/ת..."
-            className="w-full md:w-3/4 lg:w-1/2 rounded-lg py-2 pr-4 pl-10 md:pl-12 text-black"
-          />
-          <Image
-            src="/search.svg"
-            alt="search"
-            width={22}
-            height={22}
-            className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2"
-          />
+        <div className="flex flex-col md:flex-row gap-3 w-full">
+          {/* Name search */}
+          <div className="relative flex w-full md:w-1/2">
+            <input
+              type="text"
+              dir="rtl"
+              placeholder="חפש חייל/ת..."
+              className="w-full rounded-lg py-2 pr-4 pl-10 text-black"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+            <Image
+              src="/search.svg"
+              alt="search"
+              width={22}
+              height={22}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2"
+            />
+          </div>
+          {/* War filter dropdown */}
+          <div className="relative flex w-full md:w-1/2">
+            <input
+              type="text"
+              dir="rtl"
+              placeholder="סנן לפי מלחמה..."
+              className="w-full rounded-lg py-2 pr-4 pl-10 text-black"
+              value={warFilter}
+              onChange={(e) => setWarFilter(e.target.value)}
+              onFocus={() => setShowWarOptions(true)}
+            />
+            <Image
+              src="/search.svg"
+              alt="search"
+              width={22}
+              height={22}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2"
+            />
+            {showWarOptions && (
+              <div className="absolute z-50 w-full mt-1 top-full right-0 bg-white rounded-lg max-h-60 overflow-y-auto">
+                {warsList
+                  .filter((war) =>
+                    war.toLowerCase().includes(warFilter.toLowerCase())
+                  )
+                  .map((war) => (
+                    <div
+                      key={war}
+                      className="p-2 hover:bg-gray-100 cursor-pointer text-black text-right"
+                      onClick={() => handleWarSelect(war)}
+                    >
+                      {war}
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
         </div>
         <div className="text-center w-full mt-6">
           <p className="text-2xl md:text-3xl font-semibold">ארכיון החיילים</p>
@@ -108,11 +175,13 @@ const Page = () => {
             <p className="text-center w-full text-lg text-red-500">
               הייתה שגיאה בטעינת החיילים
             </p>
-          ) : soldiers.length === 0 ? (
-            <p className="text-center w-full text-lg">רשימת החיילים ריקה</p>
+          ) : filteredSoldiers.length === 0 ? (
+            <p className="text-center w-full text-lg">
+              לא נמצאו חיילים מתאימים
+            </p>
           ) : (
             <>
-              {soldiers.map((soldier) => (
+              {filteredSoldiers.map((soldier) => (
                 <div key={soldier.id} className="relative group">
                   <Image
                     src={soldier.images[0] || "/nevo.jpeg"}

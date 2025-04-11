@@ -1,20 +1,20 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { ranks } from "@/lib/data/ranks";
+import { warsList } from "@/lib/data/wars";
 
-const SoldierSearch = ({ onSearchChange, onRankChange }) => {
+const SoldierSearch = ({ onSearchChange, onWarChange }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [rankSearch, setRankSearch] = useState("");
-  const [showRankOptions, setShowRankOptions] = useState(false);
-  const rankDropdownRef = useRef(null);
+  const [warSearch, setWarSearch] = useState("");
+  const [showWarOptions, setShowWarOptions] = useState(false);
+  const warDropdownRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        rankDropdownRef.current &&
-        !rankDropdownRef.current.contains(event.target)
+        warDropdownRef.current &&
+        !warDropdownRef.current.contains(event.target)
       ) {
-        setShowRankOptions(false);
+        setShowWarOptions(false);
       }
     };
 
@@ -30,15 +30,15 @@ const SoldierSearch = ({ onSearchChange, onRankChange }) => {
     onSearchChange(e.target.value);
   };
 
-  const handleRankSelect = (rank) => {
-    setRankSearch(rank);
-    setShowRankOptions(false);
-    onRankChange(rank);
+  const handleWarSelect = (war) => {
+    setWarSearch(war);
+    setShowWarOptions(false);
+    onWarChange(war);
   };
 
-  const handleRankChange = (e) => {
-    setRankSearch(e.target.value);
-    onRankChange(e.target.value);
+  const handleWarChange = (e) => {
+    setWarSearch(e.target.value);
+    onWarChange(e.target.value);
   };
 
   return (
@@ -63,19 +63,19 @@ const SoldierSearch = ({ onSearchChange, onRankChange }) => {
             className="absolute left-3 top-1/2 transform -translate-y-1/2"
           />
         </div>
-        {/* Rank search with dropdown */}
+        {/* War search with dropdown */}
         <div
-          ref={rankDropdownRef}
-          className="relative flex w-full md:w-1/2 rank-dropdown"
+          ref={warDropdownRef}
+          className="relative flex w-full md:w-1/2 war-dropdown"
         >
           <input
             type="text"
             dir="rtl"
-            placeholder="חפש לפי דרגה..."
+            placeholder="חפש לפי מלחמה..."
             className="w-full rounded-lg py-2 pr-4 pl-10 text-black"
-            value={rankSearch}
-            onChange={handleRankChange}
-            onFocus={() => setShowRankOptions(true)}
+            value={warSearch}
+            onChange={handleWarChange}
+            onFocus={() => setShowWarOptions(true)}
           />
           <Image
             src="/search.svg"
@@ -84,19 +84,19 @@ const SoldierSearch = ({ onSearchChange, onRankChange }) => {
             height={22}
             className="absolute left-3 top-1/2 transform -translate-y-1/2"
           />
-          {showRankOptions && (
+          {showWarOptions && (
             <div className="absolute z-50 w-full mt-1 top-full right-0 bg-white rounded-lg max-h-60 overflow-y-auto">
-              {ranks
-                .filter((rank) =>
-                  rank.toLowerCase().includes(rankSearch.toLowerCase())
+              {warsList
+                .filter((war) =>
+                  war.toLowerCase().includes(warSearch.toLowerCase())
                 )
-                .map((rank) => (
+                .map((war) => (
                   <div
-                    key={rank}
+                    key={war}
                     className="p-2 hover:bg-gray-100 cursor-pointer text-black text-right"
-                    onClick={() => handleRankSelect(rank)}
+                    onClick={() => handleWarSelect(war)}
                   >
-                    {rank}
+                    {war}
                   </div>
                 ))}
             </div>

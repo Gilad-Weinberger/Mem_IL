@@ -13,7 +13,7 @@ const Page = () => {
   const [allSoldiers, setAllSoldiers] = useState([]);
   const [displayedSoldiers, setDisplayedSoldiers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [rankSearch, setRankSearch] = useState("");
+  const [warSearch, setWarSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,18 +27,18 @@ const Page = () => {
     });
   }, [allSoldiers]);
 
-  // Get filtered soldiers based on search and rank
+  // Get filtered soldiers based on search and war
   const filteredSoldiers = useMemo(() => {
     let result = allSoldiers;
-    if (rankSearch) {
+    if (warSearch) {
       result = result.filter((soldier) =>
-        soldier.rank.toLowerCase().includes(rankSearch.toLowerCase())
+        soldier.warFellIn?.toLowerCase().includes(warSearch.toLowerCase())
       );
     }
     return searchQuery
       ? fuse.search(searchQuery).map((res) => res.item)
       : result;
-  }, [searchQuery, allSoldiers, rankSearch, fuse]);
+  }, [searchQuery, allSoldiers, warSearch, fuse]);
 
   // Paginate the displayed soldiers
   useEffect(() => {
@@ -67,9 +67,9 @@ const Page = () => {
     setCurrentPage(1); // Reset pagination when search changes
   };
 
-  const handleRankChange = (rank) => {
-    setRankSearch(rank);
-    setCurrentPage(1); // Reset pagination when rank filter changes
+  const handleWarChange = (war) => {
+    setWarSearch(war);
+    setCurrentPage(1); // Reset pagination when war filter changes
   };
 
   const handleLoadMore = () => {
@@ -81,7 +81,7 @@ const Page = () => {
       <div className="h-full max-w-4xl mx-auto">
         <SoldierSearch
           onSearchChange={handleSearchChange}
-          onRankChange={handleRankChange}
+          onWarChange={handleWarChange}
         />
         <SoldierGrid
           soldiers={displayedSoldiers}
