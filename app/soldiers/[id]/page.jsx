@@ -13,6 +13,7 @@ import PageLayout from "@/components/PageLayout";
 import SoldierHeader from "@/elements/soldier-details/SoldierHeader";
 import SoldierLifeStory from "@/elements/soldier-details/SoldierLifeStory";
 import SoldierImages from "@/elements/soldier-details/SoldierImages";
+import SoldierWar from "@/elements/soldier-details/SoldierWar";
 import ShowComments from "@/elements/soldier-details/ShowComments";
 import CommentForm from "@/elements/soldier-details/CommentForm";
 import QRModal from "@/elements/soldier-details/QRModal";
@@ -138,6 +139,11 @@ const Page = () => {
       />
 
       <SoldierLifeStory lifeStory={soldier.lifeStory} />
+
+      <SoldierWar
+        warFellIn={soldier.warFellIn}
+        tombLocation={soldier.tombLocation}
+      />
 
       <SoldierImages images={soldier.images} />
 

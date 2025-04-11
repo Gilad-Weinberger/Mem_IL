@@ -1,6 +1,6 @@
 import React from "react";
 import { useFormContext } from "../FormContext";
-import FormTextarea from "@/elements/SoldierForm/FormTextarea";
+import FormTextarea from "@/elements/SoldierForm/FormComponents/FormTextarea";
 
 const LifeStoryStep = () => {
   const { formData, updateFormData, errors } = useFormContext();

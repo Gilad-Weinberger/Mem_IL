@@ -3,7 +3,7 @@
 import { createObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import MultiStepFormContainer from "@/elements/MultiStepForm";
+import MultiStepFormContainer from "@/elements/SoldierForm";
 import { useAuth } from "@/context/AuthContext";
 
 const Page = () => {

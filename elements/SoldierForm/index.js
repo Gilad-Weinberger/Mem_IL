@@ -1,17 +1,21 @@
-import SoldierFormContainer from "./SoldierFormContainer";
-import FormInput from "./FormInput";
-import FormTextarea from "./FormTextarea";
-import ImageUpload from "./ImageUpload";
-import RankDropdown from "./RankDropdown";
-import SocialMediaInputs from "./SocialMediaInputs";
+import MultiStepFormContainer from "./MultiStepFormContainer";
+import { FormProvider, useFormContext } from "./FormContext";
+import StepNavigator from "./StepNavigator";
+import BasicInfoStep from "./steps/BasicInfoStep";
+import LifeStoryStep from "./steps/LifeStoryStep";
+import ImagesStep from "./steps/ImagesStep";
+import DatesStep from "./steps/DatesStep";
+import SocialMediaStep from "./steps/SocialMediaStep";
 
 export {
-  SoldierFormContainer,
-  FormInput,
-  FormTextarea,
-  ImageUpload,
-  RankDropdown,
-  SocialMediaInputs,
+  FormProvider,
+  useFormContext,
+  StepNavigator,
+  BasicInfoStep,
+  LifeStoryStep,
+  ImagesStep,
+  DatesStep,
+  SocialMediaStep,
 };
 
-export default SoldierFormContainer;
+export default MultiStepFormContainer;

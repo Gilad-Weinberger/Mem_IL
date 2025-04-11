@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { getObject, updateObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import MultiStepFormContainer from "@/elements/MultiStepForm";
+import MultiStepFormContainer from "@/elements/SoldierForm";
 import { useAuth } from "@/context/AuthContext";
 
 const EditSoldierPage = ({ params }) => {

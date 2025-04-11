@@ -64,7 +64,7 @@ const MultiStepFormContainer = ({
     {
       component: DatesStep,
       label: "תאריכים",
-      fieldsToValidate: ["birthDate", "dateOfDeath"],
+      fieldsToValidate: ["birthDate", "dateOfDeath", "warFellIn"],
     },
     {
       component: SocialMediaStep,

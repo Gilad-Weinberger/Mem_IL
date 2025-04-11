@@ -1,7 +1,7 @@
 import React from "react";
 import { useFormContext } from "../FormContext";
-import FormInput from "@/elements/SoldierForm/FormInput";
-import RankDropdown from "@/elements/SoldierForm/RankDropdown";
+import FormInput from "@/elements/SoldierForm/FormComponents/FormInput";
+import RankDropdown from "@/elements/SoldierForm/FormComponents/RankDropdown";
 
 const BasicInfoStep = () => {
   const { formData, updateFormData, errors } = useFormContext();

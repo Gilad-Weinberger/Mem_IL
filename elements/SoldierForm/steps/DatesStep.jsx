@@ -1,6 +1,10 @@
 import React from "react";
 import { useFormContext } from "../FormContext";
-import FormInput from "@/elements/SoldierForm/FormInput";
+import FormInput from "@/elements/SoldierForm/FormComponents/FormInput";
+import {
+  WarDropdown,
+  MapLocationPicker,
+} from "@/elements/SoldierForm/FormComponents";
 
 const DatesStep = () => {
   const { formData, updateFormData, errors } = useFormContext();
@@ -30,6 +34,18 @@ const DatesStep = () => {
         label="תאריך פטירה"
         type="date"
         error={errors.dateOfDeath}
+      />
+
+      <WarDropdown
+        value={formData.warFellIn || ""}
+        onChange={handleChange}
+        error={errors.warFellIn}
+      />
+
+      <MapLocationPicker
+        value={formData.tombLocation || ""}
+        onChange={handleChange}
+        error={errors.tombLocation}
       />
     </div>
   );

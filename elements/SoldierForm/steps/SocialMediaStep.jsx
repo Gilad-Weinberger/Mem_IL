@@ -1,6 +1,6 @@
 import React from "react";
 import { useFormContext } from "../FormContext";
-import FormInput from "@/elements/SoldierForm/FormInput";
+import FormInput from "@/elements/SoldierForm/FormComponents/FormInput";
 
 const SocialMediaStep = () => {
   const { formData, updateFormData, errors } = useFormContext();
