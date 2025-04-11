@@ -140,10 +140,7 @@ const Page = () => {
 
       <SoldierLifeStory lifeStory={soldier.lifeStory} />
 
-      <SoldierWar
-        warFellIn={soldier.warFellIn}
-        tombLocation={soldier.tombLocation}
-      />
+      <SoldierWar warFellIn={soldier.warFellIn} />
 
       <SoldierImages images={soldier.images} />
 

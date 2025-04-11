@@ -9,7 +9,7 @@ const UserCard = ({ user, changeUserStatus }) => {
   ];
 
   return (
-    <div className="w-full border border-white bg-indigo-500 h-[100px] p-3 rounded-lg relative mt-5">
+    <div className="w-full border border-white bg-dark-blue h-[100px] p-3 rounded-lg relative mt-5">
       <p>{user.email}</p>
       <div className="absolute bottom-3 left-3 flex gap-2">
         {statusButtons.map((button) => (

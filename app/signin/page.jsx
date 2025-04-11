@@ -134,7 +134,7 @@ export default function SignIn() {
         {error && <p className="mb-5 text-center text-red-400">{error}</p>}
         <button
           type="submit"
-          className="w-full rounded bg-indigo-600 p-3 font-semibold text-white hover:bg-indigo-700"
+          className="w-full rounded bg-dark-blue p-3 font-semibold text-white hover:bg-darker-blue"
         >
           התחבר
         </button>
@@ -176,7 +176,7 @@ export default function SignIn() {
             <p className="color-black">{popupMessage}</p>
             <button
               onClick={() => setShowPopup(false)}
-              className="mt-4 rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+              className="mt-4 rounded bg-dark-blue px-4 py-2 text-white hover:bg-darker-blue"
             >
               סגור
             </button>

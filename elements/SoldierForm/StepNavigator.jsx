@@ -65,7 +65,7 @@ const StepNavigator = ({ steps, onSubmit }) => {
           <button
             type="button"
             onClick={handleNext}
-            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200"
+            className="px-6 py-2 bg-dark-blue text-white rounded-lg hover:bg-darker-blue transition duration-200"
           >
             הבא
           </button>
@@ -74,7 +74,7 @@ const StepNavigator = ({ steps, onSubmit }) => {
             type="submit"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200 disabled:bg-gray-700 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-dark-blue text-white rounded-lg hover:bg-darker-blue transition duration-200 disabled:bg-gray-700 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "שולח..." : isEdit ? "עדכן" : "שלח"}
           </button>

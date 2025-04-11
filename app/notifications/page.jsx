@@ -11,6 +11,7 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import PageLayout from "@/components/PageLayout";
+import Image from "next/image";
 
 const Page = () => {
   const { user, userStatus, loading } = useAuth();
@@ -77,7 +78,16 @@ const Page = () => {
 
   if (userStatus === "regular") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
+      <div
+        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
+        dir="rtl"
+      >
+        <button
+          onClick={() => router.back()}
+          className="fixed top-4 left-4 p-2 rounded"
+        >
+          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
+        </button>
         <p className="text-xl">אין לך הרשאה לגשת לעמוד זה</p>
       </div>
     );
@@ -85,7 +95,16 @@ const Page = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center">
+      <div
+        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
+        dir="rtl"
+      >
+        <button
+          onClick={() => router.back()}
+          className="fixed top-4 left-4 p-2 rounded"
+        >
+          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
+        </button>
         <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
       </div>
     );

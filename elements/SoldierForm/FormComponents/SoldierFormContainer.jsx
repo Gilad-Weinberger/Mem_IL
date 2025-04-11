@@ -143,7 +143,7 @@ const SoldierFormContainer = ({
           <button
             type="submit"
             onClick={handleSubmit}
-            className="w-full p-3 rounded bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition duration-200"
+            className="w-full p-3 rounded bg-dark-blue text-white font-semibold hover:bg-darker-blue transition duration-200"
           >
             {isEdit ? "עדכן" : "שלח"}
           </button>

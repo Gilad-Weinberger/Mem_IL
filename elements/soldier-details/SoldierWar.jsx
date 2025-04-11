@@ -1,9 +1,8 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import MapDisplay from "./MapDisplay";
 
-const SoldierWar = ({ warFellIn, tombLocation }) => {
+const SoldierWar = ({ warFellIn }) => {
   return (
     <div className="max-w-3xl mx-auto mt-6">
       <p className="text-[30px]">מידע נוסף</p>
@@ -15,8 +14,6 @@ const SoldierWar = ({ warFellIn, tombLocation }) => {
           <p className="text-lg">{warFellIn}</p>
         </div>
       )}
-
-      {tombLocation && <MapDisplay locationUrl={tombLocation} />}
     </div>
   );
 };

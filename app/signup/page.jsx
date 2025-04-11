@@ -124,7 +124,7 @@ export default function SignUp() {
         {error && <p className="mb-5 text-center text-red-400">{error}</p>}
         <button
           type="submit"
-          className="w-full rounded bg-indigo-600 p-3 font-semibold text-white hover:bg-indigo-700"
+          className="w-full rounded bg-dark-blue p-3 font-semibold text-white hover:bg-darker-blue"
         >
           הרשמה
         </button>

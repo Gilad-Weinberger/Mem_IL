@@ -8,7 +8,9 @@ const StatusButton = ({ status, currentStatus, onClick, icon }) => {
     >
       <Image src={icon} alt={status} width={25} height={25} />
       {currentStatus === status && (
-        <span className="absolute -top-0.5 -right-0.5 bg-black w-3.5 h-3.5 rounded-full"></span>
+        <>
+          <span className="absolute -top-0.5 -right-0.5 bg-black w-3.5 h-3.5 rounded-full border border-white shadow-sm"></span>
+        </>
       )}
     </button>
   );

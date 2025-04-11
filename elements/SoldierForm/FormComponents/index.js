@@ -5,7 +5,6 @@ import ImageUpload from "./ImageUpload";
 import RankDropdown from "./RankDropdown";
 import SocialMediaInputs from "./SocialMediaInputs";
 import WarDropdown from "./WarDropdown";
-import MapLocationPicker from "./MapLocationPicker";
 
 export {
   SoldierFormContainer,
@@ -15,7 +14,6 @@ export {
   RankDropdown,
   SocialMediaInputs,
   WarDropdown,
-  MapLocationPicker,
 };
 
 export default SoldierFormContainer;
