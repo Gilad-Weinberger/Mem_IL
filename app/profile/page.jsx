@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import PageLayout from "@/components/PageLayout";
 import { getAllObjects } from "@/lib/functions/dbFunctions";
+import CommentCard from "@/elements/soldier-details/CommentCard";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,7 @@ const Page = () => {
           // Fetch soldiers created by the user
           const soldiers = await getAllObjects("soldiers");
           const userCreatedSoldiers = soldiers.filter(
-            soldier => soldier.createdBy === user.uid
+            (soldier) => soldier.createdBy === user.uid
           );
           setUserSoldiers(userCreatedSoldiers);
 
@@ -31,12 +32,14 @@ const Page = () => {
           // Associate each comment with the soldier name
           const commentsWithSoldierNames = await Promise.all(
             comments
-              .filter(comment => comment.author) // Filter comments with author
+              .filter((comment) => comment.author) // Filter comments with author
               .map(async (comment) => {
-                const soldier = soldiers.find(s => s.id === comment.soldierId);
+                const soldier = soldiers.find(
+                  (s) => s.id === comment.soldierId
+                );
                 return {
                   ...comment,
-                  soldierName: soldier ? soldier.name : "Unknown"
+                  soldierName: soldier ? soldier.name : "Unknown",
                 };
               })
           );
@@ -101,7 +104,13 @@ const Page = () => {
             onClick={handleLogout}
             className="mt-4 bg-red-600 hover:bg-red-700 transition px-6 py-2 rounded-lg flex items-center mx-auto"
           >
-            <Image src="/signout.svg" alt="Logout" width={20} height={20} className="invert ml-2" />
+            <Image
+              src="/signout.svg"
+              alt="Logout"
+              width={20}
+              height={20}
+              className="invert ml-2"
+            />
             התנתק
           </button>
         </div>
@@ -111,8 +120,8 @@ const Page = () => {
           {userSoldiers.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {userSoldiers.map((soldier) => (
-                <div 
-                  key={soldier.id} 
+                <div
+                  key={soldier.id}
                   className="cursor-pointer hover:opacity-80"
                   onClick={() => router.push(`/soldiers/${soldier.id}`)}
                 >
@@ -136,7 +145,14 @@ const Page = () => {
           {userComments.length > 0 ? (
             <div className="space-y-4">
               {userComments.map((comment, index) => (
-                <CommentCard key={index} comment={comment} user={user} handlehandleLikeComment={null} />
+                <CommentCard
+                  key={comment.id || index}
+                  comment={comment}
+                  user={user}
+                  handleLikeComment={null}
+                  index={index}
+                  showSoldierName={true}
+                />
               ))}
             </div>
           ) : (

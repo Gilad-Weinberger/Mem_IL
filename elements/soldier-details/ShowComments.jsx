@@ -36,12 +36,13 @@ const ShowComments = ({ comments, user, handleLikeComment }) => {
       <hr className="w-[50%] mt-1 mb-4" />
       {sortedComments.length > 0 ? (
         <>
-          {displayedComments.map((c, index) => (
-            <CommentCard 
-              key={index}
-              comment={c}
+          {displayedComments.map((comment, index) => (
+            <CommentCard
+              key={comment.id || index}
+              comment={comment}
               user={user}
               handleLikeComment={handleLikeComment}
+              index={index}
             />
           ))}
           {sortedComments.length > commentLimit && (
