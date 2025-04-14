@@ -73,7 +73,7 @@ const Page = () => {
     return <div className="text-white text-center mt-20">טוען...</div>;
   }
 
-  if (userStatus === "regular") {
+  if (userStatus !== "admin") {
     return (
       <div
         className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"

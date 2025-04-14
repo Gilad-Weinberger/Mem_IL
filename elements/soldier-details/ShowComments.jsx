@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { motion } from "framer-motion";
 import Image from "next/image";
+import CommentCard from "./CommentCard";
 
 const ShowComments = ({ comments, user, handleLikeComment }) => {
   const [commentLimit, setCommentLimit] = useState(3);
@@ -30,15 +30,6 @@ const ShowComments = ({ comments, user, handleLikeComment }) => {
     setShowHideButton(false);
   };
 
-  const formatDate = (dateString) => {
-    const options = {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    };
-    return new Date(dateString).toLocaleDateString("he-IL", options);
-  };
-
   return (
     <div className="max-w-3xl mx-auto mt-8">
       <p className="text-[30px]">תגובות</p>
@@ -46,36 +37,12 @@ const ShowComments = ({ comments, user, handleLikeComment }) => {
       {sortedComments.length > 0 ? (
         <>
           {displayedComments.map((c, index) => (
-            <motion.div
+            <CommentCard 
               key={index}
-              className="bg-gray-800 p-3 rounded-lg mb-4 relative"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-            >
-              <p className="text-sm text-gray-400 absolute top-4 left-2">
-                {formatDate(c.createdAt)}
-              </p>
-              <p className="text-lg font-semibold">{c.author}</p>
-              <p className="mt-2">{c.message}</p>
-              <div className="absolute bottom-2 left-2 flex items-center gap-1">
-                <button
-                  onClick={() => handleLikeComment(c.id)}
-                  className="mr-1"
-                >
-                  <Image
-                    src={`/heart-${
-                      c.likes?.includes(user?.uid) ? "true" : "false"
-                    }.svg`}
-                    alt="like"
-                    width={24}
-                    height={24}
-                    className={c.likes?.includes(user?.uid) ? "" : "invert"}
-                  />
-                </button>
-                <span>{c.likes ? c.likes.length : 0}</span>
-              </div>
-            </motion.div>
+              comment={c}
+              user={user}
+              handleLikeComment={handleLikeComment}
+            />
           ))}
           {sortedComments.length > commentLimit && (
             <button

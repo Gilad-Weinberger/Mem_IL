@@ -112,19 +112,19 @@ const Navbar = () => {
           )}
         </div>
         {user ? (
-          <button onClick={logout} className="md:mt-auto">
+          <Link href="/profile" className="md:mt-auto">
             <Image
-              src={"/signout.svg"}
+              src={"/user.svg"}
               alt="signout-icon"
               height={25}
               width={25}
               className="invert hover:opacity-70 md:h-8 md:w-8"
             />
-          </button>
+          </Link>
         ) : (
           <Link href="/signin" className="md:mt-auto">
             <Image
-              src={"/user.svg"}
+              src={"/signin.svg"}
               alt="signin-icon"
               height={25}
               width={25}
