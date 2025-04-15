@@ -53,10 +53,9 @@ const CommentCard = ({
       {showSoldierName && comment.soldierName && (
         <div className="mt-1 mb-2">
           <span
-            className="text-sm text-blue-400 cursor-pointer hover:underline"
-            onClick={navigateToSoldier}
+            className="text-sm"
           >
-            נכתב על {comment.soldierName}
+            נכתב על <span className="text-blue-400 cursor-pointer" onClick={navigateToSoldier}>{comment.soldierName}</span>
           </span>
         </div>
       )}

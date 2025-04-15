@@ -14,7 +14,7 @@ const NotificationModal = ({ showModal, onClose, title, message }) => {
         <p className="text-white text-center mb-4">{message}</p>
         <button
           onClick={onClose}
-          className="w-full mt-2 rounded-lg hover:text-black hover:bg-white border border-white py-2 text-lg transition-all duration-200"
+          className="w-full mt-2 rounded-lg hover:text-black hover:bg-white border border-white text-white py-2 text-lg transition-all duration-200"
         >
           אישור
         </button>

@@ -5,14 +5,17 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import PageLayout from "@/components/PageLayout";
-import { getAllObjects } from "@/lib/functions/dbFunctions";
+import { getAllObjects, getObjectsByField } from "@/lib/functions/dbFunctions";
 import CommentCard from "@/elements/soldier-details/CommentCard";
+import USER_STATUSES from "@/lib/data/statuses";
+import Link from "next/link";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userSoldiers, setUserSoldiers] = useState([]);
   const [userComments, setUserComments] = useState([]);
+  const [statusRequest, setStatusRequest] = useState(null);
   const { user, userStatus, logout } = useAuth();
   const router = useRouter();
 
@@ -44,6 +47,24 @@ const Page = () => {
               })
           );
           setUserComments(commentsWithSoldierNames);
+
+          // Check for existing status requests
+          if (userStatus === "regular") {
+            const existingRequests = await getObjectsByField(
+              "statusRequests",
+              "userId",
+              user.uid
+            );
+
+            // Sort by creation date (newest first) to get the most recent status
+            const sortedRequests = existingRequests.sort(
+              (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            );
+
+            if (sortedRequests.length > 0) {
+              setStatusRequest(sortedRequests[0]);
+            }
+          }
         } catch (err) {
           console.error("Error fetching user data:", err);
           setError("שגיאה בטעינת נתוני המשתמש");
@@ -56,7 +77,7 @@ const Page = () => {
     } else {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, userStatus]);
 
   const handleLogout = async () => {
     try {
@@ -92,29 +113,64 @@ const Page = () => {
   return (
     <PageLayout>
       <div className="max-w-3xl mx-auto" dir="rtl">
-        <div className="text-center mb-10">
+        <div className="text-center mb-5">
           <h1 className="text-3xl font-bold mb-2">פרופיל משתמש</h1>
           <p className="text-xl">{user.email}</p>
-          <div className="mt-2">
-            <span className="inline-block px-3 py-1 bg-dark-blue rounded-full text-white">
-              סטטוס: {userStatus || "רגיל"}
-            </span>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="mt-4 bg-red-600 hover:bg-red-700 transition px-6 py-2 rounded-lg flex items-center mx-auto"
-          >
-            <Image
-              src="/signout.svg"
-              alt="Logout"
-              width={20}
-              height={20}
-              className="invert ml-2"
-            />
-            התנתק
-          </button>
         </div>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        <button
+          onClick={handleLogout}
+          className="my-5 bg-red-600 hover:bg-red-700 transition gap-2 px-6 py-2 rounded-lg flex items-center mx-auto"
+        >
+          <Image
+            src="/signout.svg"
+            alt="Logout"
+            width={20}
+            height={20}
+            className="invert"
+          />
+          התנתק
+        </button>
+        <div className="bg-gray-800 rounded-lg p-6 mb-6">
+          <h2 className="text-2xl font-semibold mb-4">סטטוס משתמש</h2>
+          <div className="text-center flex flex-col gap-1">
+            <span className="inline-block px-4 py-2 bg-dark-blue rounded-full text-white">
+              {userStatus
+                ? USER_STATUSES[userStatus]
+                : USER_STATUSES["regular"]}
+            </span>
+
+            {/* Status request information */}
+            {statusRequest && statusRequest.status === "pending" && (
+              <div className="mt-3 bg-yellow-600 rounded-lg p-3 text-white">
+                <p>בקשתך לשדרוג סטטוס נשלחה ומחכה לאישור</p>
+                <p className="text-sm mt-1">
+                  נשלח:{" "}
+                  {new Date(statusRequest.createdAt).toLocaleDateString(
+                    "he-IL"
+                  )}
+                </p>
+              </div>
+            )}
+
+            {statusRequest && statusRequest.status === "rejected" && (
+              <div className="mt-3 bg-red-600 rounded-lg p-3 text-white">
+                <p>בקשתך לשדרוג סטטוס נדחתה</p>
+                <p className="text-sm mt-1">ניתן להגיש בקשה חדשה</p>
+              </div>
+            )}
+
+            {(!statusRequest || statusRequest.status === "rejected") &&
+              (!userStatus || userStatus === "regular") && (
+                <Link
+                  href="/status-form"
+                  className="mt-3 bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-lg"
+                >
+                  שדרג סטטוס
+                </Link>
+              )}
+          </div>
+        </div>
         <div className="bg-gray-800 rounded-lg p-6 mb-6">
           <h2 className="text-2xl font-semibold mb-4">חיילים שהוספת</h2>
           {userSoldiers.length > 0 ? (
