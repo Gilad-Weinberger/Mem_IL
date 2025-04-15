@@ -82,7 +82,7 @@ const Page = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      router.push("/signin");
+      router.push("/auth/signin");
     } catch (error) {
       console.error("Error during logout:", error);
       setError("שגיאה בהתנתקות");
@@ -193,7 +193,17 @@ const Page = () => {
               ))}
             </div>
           ) : (
-            <p className="text-center">לא הוספת חיילים עדיין</p>
+            <div className="text-center">
+              <p>לא הוספת חיילים עדיין</p>
+              {userStatus && userStatus !== "regular" && (
+                <Link
+                  href="/add-soldier"
+                  className="mt-4 inline-block bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-lg"
+                >
+                  הוסף חייל
+                </Link>
+              )}
+            </div>
           )}
         </div>
         <div className="bg-gray-800 rounded-lg p-6">
