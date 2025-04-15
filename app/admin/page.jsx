@@ -3,10 +3,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { getAllObjects, deleteObject } from "@/lib/functions/dbFunctions";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import PageLayout from "@/components/PageLayout";
 import { warsList } from "@/lib/data/wars";
+import UnauthorizedState from "@/elements/shared/UnauthorizedState";
 
 const Page = () => {
   const [soldiers, setSoldiers] = useState([]);
@@ -16,7 +16,6 @@ const Page = () => {
   const [warFilter, setWarFilter] = useState("");
   const [showWarOptions, setShowWarOptions] = useState(false);
   const { user, userStatus } = useAuth();
-  const router = useRouter();
 
   useEffect(() => {
     const fetchSoldiers = async () => {
@@ -74,37 +73,11 @@ const Page = () => {
   }
 
   if (userStatus !== "admin") {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl">אין לך הרשאה לגשת לעמוד זה</p>
-      </div>
-    );
+    return <UnauthorizedState message="אין לך הרשאה לגשת לעמוד זה" />;
   }
 
   if (!user) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
-      </div>
-    );
+    return <UnauthorizedState message="צריך להתחבר על מנת לגשת לעמוד זה" />;
   }
 
   return (

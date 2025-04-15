@@ -8,10 +8,14 @@ import {
 } from "@/lib/functions/dbFunctions";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import PageLayout from "@/components/PageLayout";
-import Image from "next/image";
+
+// Import the new components
+import NotificationHeader from "@/elements/notifications/NotificationHeader";
+import PendingCommentsList from "@/elements/notifications/PendingCommentsList";
+import StatusRequestsList from "@/elements/notifications/StatusRequestsList";
+import UnauthorizedState from "@/elements/shared/UnauthorizedState";
 
 const Page = () => {
   const { user, userStatus, loading } = useAuth();
@@ -19,7 +23,6 @@ const Page = () => {
   const [pendingStatusRequests, setPendingStatusRequests] = useState([]);
   const [showComments, setShowComments] = useState(true);
   const [showRequests, setShowRequests] = useState(true);
-  const router = useRouter();
 
   // Toggle function to show only one section at a time
   const toggleSection = (section) => {
@@ -169,169 +172,44 @@ const Page = () => {
   }
 
   if (userStatus === "regular") {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl">אין לך הרשאה לגשת לעמוד זה</p>
-      </div>
-    );
+    return <UnauthorizedState message="אין לך הרשאה לגשת לעמוד זה" />;
   }
 
   if (!user) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
-      </div>
-    );
+    return <UnauthorizedState message="צריך להתחבר על מנת לגשת לעמוד זה" />;
   }
 
   return (
     <PageLayout>
       <div className="max-w-3xl mx-auto w-full">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-3xl">תגובות ממתינות לאישור</h1>
-          {pendingComments.length > 0 && (
-            <button
-              onClick={() => toggleSection("comments")}
-              className="bg-gray-700 p-2 rounded-full hover:bg-gray-600 transition-colors"
-            >
-              <Image
-                src="/previous.svg"
-                alt="Toggle"
-                width={20}
-                height={20}
-                className={`transform transition-transform ${showComments ? "rotate-90" : "-rotate-90"}`}
-              />
-            </button>
-          )}
-        </div>
-        {showComments &&
-          (pendingComments.length === 0 ? (
-            <p className="text-lg mb-8">אין תגובות ממתינות לאישור</p>
-          ) : (
-            <div className="mb-8">
-              {pendingComments.map((comment, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-800 p-4 rounded-lg mb-4 relative"
-                >
-                  <p className="text-sm text-gray-400">
-                    תגובה לחייל: {comment.soldierName}
-                  </p>
-                  <p className="text-lg font-semibold mt-2">{comment.author}</p>
-                  <p className="mt-2 mb-10">{comment.message}</p>
-                  <div className="flex gap-4 mt-4 absolute left-2 bottom-2">
-                    <button
-                      onClick={() => handleCommentApproval(comment.id, true)}
-                      className="bg-green-600 px-4 py-1 rounded-lg hover:bg-green-700"
-                    >
-                      ✓
-                    </button>
-                    <button
-                      onClick={() => handleCommentApproval(comment.id, false)}
-                      className="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700"
-                    >
-                      ✗
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
+        {/* Comments section */}
+        <NotificationHeader
+          title="תגובות ממתינות לאישור"
+          hasItems={pendingComments.length > 0}
+          isShowing={showComments}
+          toggleSection={toggleSection}
+          section="comments"
+        />
+        <PendingCommentsList
+          pendingComments={pendingComments}
+          handleCommentApproval={handleCommentApproval}
+          showComments={showComments}
+        />
+        {/* Status requests section (admins only) */}
         {userStatus === "admin" && (
           <>
-            <div className="flex items-center justify-between mb-4 mt-8">
-              <h1 className="text-3xl">בקשות סטטוס ממתינות</h1>
-              {pendingStatusRequests.length > 0 && (
-                <button
-                  onClick={() => toggleSection("requests")}
-                  className="bg-gray-700 p-2 rounded-full hover:bg-gray-600 transition-colors"
-                >
-                  <Image
-                    src="/previous.svg"
-                    alt="Toggle"
-                    width={20}
-                    height={20}
-                    className={`transform transition-transform ${showRequests ? "-rotate-90" : "rotate-0"}`}
-                  />
-                </button>
-              )}
-            </div>
-
-            {showRequests &&
-              (pendingStatusRequests.length === 0 ? (
-                <p className="text-lg">אין בקשות סטטוס ממתינות לאישור</p>
-              ) : (
-                pendingStatusRequests.map((request, index) => (
-                  <div
-                    key={index}
-                    className="bg-gray-800 p-4 rounded-lg mb-4 relative"
-                  >
-                    <p className="text-lg font-semibold mt-2">
-                      {request.userEmail}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      שם מלא: {request.fullName}
-                    </p>
-                    {request.soldierName && (
-                      <p className="text-sm text-gray-400">
-                        חייל: {request.soldierName}
-                      </p>
-                    )}
-                    {request.relation && (
-                      <p className="text-sm text-gray-400">
-                        קשר לחייל: {request.relation}
-                      </p>
-                    )}
-                    <p className="mt-2 mb-10">
-                      סיבת הבקשה: {request.reason || "לא צוין"}
-                    </p>
-                    <div className="flex gap-4 mt-4 absolute left-2 bottom-2">
-                      <button
-                        onClick={() =>
-                          handleStatusRequestApproval(
-                            request.id,
-                            request.userId,
-                            true
-                          )
-                        }
-                        className="bg-green-600 px-4 py-1 rounded-lg hover:bg-green-700"
-                      >
-                        ✓
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleStatusRequestApproval(
-                            request.id,
-                            request.userId,
-                            false
-                          )
-                        }
-                        className="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700"
-                      >
-                        ✗
-                      </button>
-                    </div>
-                  </div>
-                ))
-              ))}
+            <NotificationHeader
+              title="בקשות סטטוס ממתינות"
+              hasItems={pendingStatusRequests.length > 0}
+              isShowing={showRequests}
+              toggleSection={toggleSection}
+              section="requests"
+            />
+            <StatusRequestsList
+              pendingStatusRequests={pendingStatusRequests}
+              handleStatusRequestApproval={handleStatusRequestApproval}
+              showRequests={showRequests}
+            />
           </>
         )}
       </div>

@@ -2,9 +2,9 @@
 
 import { createObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import MultiStepFormContainer from "@/elements/SoldierForm";
 import { useAuth } from "@/context/AuthContext";
+import UnauthorizedState from "@/elements/shared/UnauthorizedState";
 
 const Page = () => {
   const { user, userStatus, loading } = useAuth();
@@ -19,40 +19,12 @@ const Page = () => {
   }
 
   if (!user) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
-      </div>
-    );
+    return <UnauthorizedState message="צריך להתחבר על מנת לגשת לעמוד זה" />;
   }
 
   // Check if user status is regular
   if (userStatus === "regular" || !userStatus) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl mb-4 max-w-[80%]">
-          אין באפשרותך להוסיף חייל חדש למערכת
-        </p>
-      </div>
-    );
+    return <UnauthorizedState message="אין באפשרותך להוסיף חייל חדש למערכת" />;
   }
 
   const handleSubmit = (soldierData) => {

@@ -122,7 +122,7 @@ const Navbar = () => {
             />
           </Link>
         ) : (
-          <Link href="/signin" className="md:mt-auto">
+          <Link href="/auth/signin" className="md:mt-auto">
             <Image
               src={"/signin.svg"}
               alt="signin-icon"

@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { getObject, updateObject } from "@/lib/functions/dbFunctions";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import MultiStepFormContainer from "@/elements/SoldierForm";
 import { useAuth } from "@/context/AuthContext";
+import UnauthorizedState from "@/elements/shared/UnauthorizedState";
 
 const EditSoldierPage = ({ params }) => {
   const unwrappedParams = React.use(params);
@@ -47,40 +47,12 @@ const EditSoldierPage = ({ params }) => {
   }
 
   if (!user) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
-      </div>
-    );
+    return <UnauthorizedState message="צריך להתחבר על מנת לגשת לעמוד זה" />;
   }
 
   // Check if user status is regular
   if (userStatus === "regular" || !userStatus) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl mb-4 max-w-[80%]">
-          אין באפשרותך לערוך את פרטי החייל
-        </p>
-      </div>
-    );
+    return <UnauthorizedState message="אין באפשרותך לערוך את פרטי החייל" />;
   }
 
   const handleSubmit = (updatedSoldierData) => {

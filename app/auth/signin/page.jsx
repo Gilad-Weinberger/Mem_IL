@@ -165,7 +165,7 @@ export default function SignIn() {
 
         <p className="mt-4 text-center text-gray-400">
           אין לך חשבון?{" "}
-          <Link href="/signup" className="text-indigo-500 hover:underline">
+          <Link href="/auth/signup" className="text-indigo-500 hover:underline">
             הרשם
           </Link>
         </p>

@@ -144,7 +144,7 @@ export default function SignUp() {
         </button>
         <p className="mt-4 text-center text-gray-400">
           כבר יש לך חשבון?{" "}
-          <Link href="/signin" className="text-indigo-500 hover:underline">
+          <Link href="/auth/signin" className="text-indigo-500 hover:underline">
             התחבר
           </Link>
         </p>

@@ -3,14 +3,13 @@
 import { useState, useEffect } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SearchBar from "./SearchBar";
 import UserList from "./UserList";
 import { handleStatusChange } from "./StatusChangeUtils";
 import { useAuth } from "@/context/AuthContext";
+import UnauthorizedState from "@/elements/shared/UnauthorizedState";
 
 const StatusChangeContainer = () => {
   const { user, userStatus, loading } = useAuth();
@@ -18,7 +17,6 @@ const StatusChangeContainer = () => {
   const [usersLoading, setUsersLoading] = useState(true);
   const [usersError, setUsersError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const router = useRouter();
 
   useEffect(() => {
     if (user && userStatus === "admin") {
@@ -60,37 +58,11 @@ const StatusChangeContainer = () => {
   }
 
   if (userStatus !== "admin") {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl">אין לך הרשאה לגשת לעמוד זה</p>
-      </div>
-    );
+    return <UnauthorizedState message="אין לך הרשאה לגשת לעמוד זה" />;
   }
 
   if (!user) {
-    return (
-      <div
-        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
-        dir="rtl"
-      >
-        <button
-          onClick={() => router.back()}
-          className="fixed top-4 left-4 p-2 rounded"
-        >
-          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
-        </button>
-        <p className="text-xl">צריך להתחבר על מנת לגשת לעמוד זה</p>
-      </div>
-    );
+    return <UnauthorizedState message="צריך להתחבר על מנת לגשת לעמוד זה" />;
   }
 
   return (
