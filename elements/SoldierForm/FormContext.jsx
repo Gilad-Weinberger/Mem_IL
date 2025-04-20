@@ -11,10 +11,19 @@ export const FormProvider = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFiles, setImageFiles] = useState([]);
 
   useEffect(() => {
     if (isEdit && Object.keys(initialData).length > 0) {
-      setFormData(initialData);
+      // When editing, if we have existing images, set them as imagePreviews too
+      if (initialData.images && initialData.images.length > 0) {
+        setFormData({
+          ...initialData,
+          imagePreviews: initialData.images,
+        });
+      } else {
+        setFormData(initialData);
+      }
     }
   }, [initialData, isEdit]);
 
@@ -39,10 +48,18 @@ export const FormProvider = ({
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    const fileLinks = files.map((file) => URL.createObjectURL(file));
+
+    // Store the actual file objects for later upload
+    setImageFiles((prevFiles) => [...prevFiles, ...files]);
+
+    // Create object URLs for preview
+    const filePreviews = files.map((file) => URL.createObjectURL(file));
+
     setFormData((prevData) => ({
       ...prevData,
-      images: prevData.images ? [...prevData.images, ...fileLinks] : fileLinks,
+      imagePreviews: prevData.imagePreviews
+        ? [...prevData.imagePreviews, ...filePreviews]
+        : filePreviews,
     }));
 
     // Clear any image-related errors
@@ -56,12 +73,21 @@ export const FormProvider = ({
   };
 
   const handleImageDelete = (index) => {
+    // Remove from preview
     setFormData((prevData) => {
-      const newImages = prevData.images.filter((_, i) => i !== index);
+      const newPreviews =
+        prevData.imagePreviews?.filter((_, i) => i !== index) || [];
       return {
         ...prevData,
-        images: newImages,
+        imagePreviews: newPreviews,
       };
+    });
+
+    // Remove from files to upload
+    setImageFiles((prevFiles) => {
+      const newFiles = [...prevFiles];
+      newFiles.splice(index, 1);
+      return newFiles;
     });
   };
 
@@ -91,6 +117,7 @@ export const FormProvider = ({
 
       if (
         field === "images" &&
+        (!formData.imagePreviews || formData.imagePreviews.length === 0) &&
         (!formData.images || formData.images.length === 0)
       ) {
         newErrors.images = "חובה להעלות לפחות תמונה אחת";
@@ -109,8 +136,12 @@ export const FormProvider = ({
     if (!formData.lifeStory) newErrors.lifeStory = "סיפור חיים נדרש";
     if (!formData.birthDate) newErrors.birthDate = "תאריך לידה נדרש";
     if (!formData.dateOfDeath) newErrors.dateOfDeath = "תאריך פטירה נדרש";
-    if (!formData.images || formData.images.length === 0)
+    if (
+      (!formData.imagePreviews || formData.imagePreviews.length === 0) &&
+      (!formData.images || formData.images.length === 0)
+    ) {
       newErrors.images = "חובה להעלות לפחות תמונה אחת";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -133,6 +164,7 @@ export const FormProvider = ({
         validateAll,
         handleImageChange,
         handleImageDelete,
+        imageFiles,
         isEdit,
       }}
     >
