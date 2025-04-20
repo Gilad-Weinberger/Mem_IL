@@ -56,7 +56,7 @@ const Page = () => {
               user.uid
             );
 
-            // Sort by creation date (newest first) to get the most recent status
+            // Sort by creation date (newest first) 
             const sortedRequests = existingRequests.sort(
               (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
             );
