@@ -12,6 +12,7 @@ const StepNavigator = ({ steps, onSubmit }) => {
     isSubmitting,
     setIsSubmitting,
     isEdit,
+    imageFiles,
   } = useFormContext();
 
   const handleNext = () => {
@@ -34,7 +35,7 @@ const StepNavigator = ({ steps, onSubmit }) => {
     if (validateAll()) {
       setIsSubmitting(true);
       try {
-        await onSubmit(formData);
+        await onSubmit(formData, imageFiles);
       } catch (error) {
         console.error("Form submission error:", error);
       } finally {
@@ -76,7 +77,13 @@ const StepNavigator = ({ steps, onSubmit }) => {
             disabled={isSubmitting}
             className="px-6 py-2 bg-dark-blue text-white rounded-lg hover:bg-darker-blue transition duration-200 disabled:bg-gray-700 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? "שולח..." : isEdit ? "עדכן" : "שלח"}
+            {isSubmitting
+              ? isEdit
+                ? "מעדכן..."
+                : "מוסיף..."
+              : isEdit
+                ? "עדכן"
+                : "הוסף"}
           </button>
         )}
       </div>

@@ -15,29 +15,45 @@ const SoldierImages = ({ images }) => {
     setShowHideImagesButton(false);
   };
 
+  // Extract the image URL from the image object or use direct URL string
+  const getImageUrl = (image) => {
+    if (!image) return null;
+    return typeof image === "string" ? image : image.url || null;
+  };
+
+  // If no images or empty array, show a message
+  if (!images || images.length === 0) {
+    return null;
+  }
+
   return (
     <div className="max-w-3xl mx-auto mt-6">
       <p className="text-[30px]">תמונות</p>
       <hr className="w-[50%] mt-1" />
       <div className="flex flex-wrap justify-between gap-4 mt-3">
-        {(images || []).slice(0, imageLimit).map((image, index) => (
-          <motion.div
-            key={index}
-            className="w-[47%] cursor-pointer"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.05 }}
-          >
-            <Image
-              src={image}
-              alt="image"
-              width={1000}
-              height={1000}
-              className="w-full h-auto rounded-lg"
-              loading="lazy"
-            />
-          </motion.div>
-        ))}
+        {(images || []).slice(0, imageLimit).map((image, index) => {
+          const imageUrl = getImageUrl(image);
+          if (!imageUrl) return null; // Skip images with no URL
+
+          return (
+            <motion.div
+              key={index}
+              className="w-[47%] cursor-pointer"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.05 }}
+            >
+              <Image
+                src={imageUrl}
+                alt="image"
+                width={1000}
+                height={1000}
+                className="w-full h-auto rounded-lg"
+                loading="lazy"
+              />
+            </motion.div>
+          );
+        })}
       </div>
       {images && imageLimit < images.length && (
         <button

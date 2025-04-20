@@ -6,19 +6,41 @@ import { rankToInitials } from "@/lib/functions/rankInitials";
 const SoldierHeader = ({ soldier, handleShare, handleQRClick, id }) => {
   const { user } = useAuth();
 
+  // Extract image URL for the first image
+  const getMainImageUrl = () => {
+    if (!soldier.images || soldier.images.length === 0) {
+      return null; // Return null instead of empty string for no image
+    }
+
+    const firstImage = soldier.images[0];
+    // Handle both string format and object format for images
+    return typeof firstImage === "string"
+      ? firstImage
+      : firstImage?.url || null;
+  };
+
   return (
     <div className="max-w-3xl mx-auto text-center mt-6">
       <p className="text-[40px] mt-1 leading-[40px] font-extralight">
         {rankToInitials(soldier.rank)} {soldier.name}
       </p>
-      <Image
-        src={soldier?.images?.[0] || ""}
-        alt="soldier"
-        width={300}
-        height={330}
-        priority={true}
-        className="w-full sm:w-[60%] md:w-[55%] h-auto object-cover rounded-lg mx-auto mt-3"
-      />
+
+      {/* Only render the Image component if we have a valid image source */}
+      {getMainImageUrl() ? (
+        <Image
+          src={getMainImageUrl()}
+          alt="soldier"
+          width={300}
+          height={330}
+          priority={true}
+          className="w-full sm:w-[60%] md:w-[55%] h-auto object-cover rounded-lg mx-auto mt-3"
+        />
+      ) : (
+        <div className="w-full sm:w-[60%] md:w-[55%] h-[330px] bg-gray-700 rounded-lg mx-auto mt-3 flex items-center justify-center">
+          <span className="text-gray-400">No image available</span>
+        </div>
+      )}
+
       <div className="flex flex-wrap item-center justify-center mt-5 gap-6">
         {soldier.instagram_link && (
           <Link href={soldier.instagram_link} target="_blank">
