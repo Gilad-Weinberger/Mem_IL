@@ -112,7 +112,14 @@ const Page = () => {
 
   return (
     <PageLayout>
-      <div className="max-w-3xl mx-auto" dir="rtl">
+      <div className="max-w-3xl mx-auto relative" dir="rtl">
+        {/* Go Back Button */}
+        <button
+          onClick={() => router.back()}
+          className="fixed top-4 left-4 p-2 rounded"
+        >
+          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
+        </button>
         <div className="text-center mb-5">
           <h1 className="text-3xl font-bold mb-2">פרופיל משתמש</h1>
           <p className="text-xl">{user.email}</p>
