@@ -16,6 +16,7 @@ import SoldierImages from "@/elements/soldier-details/SoldierImages";
 import SoldierWar from "@/elements/soldier-details/SoldierWar";
 import ShowComments from "@/elements/soldier-details/ShowComments";
 import CommentForm from "@/elements/soldier-details/CommentForm";
+import SocialLinks from "@/elements/soldier-details/SocialLinks";
 import QRModal from "@/elements/soldier-details/QRModal";
 import NotificationModal from "@/elements/soldier-details/NotificationModal";
 
@@ -130,13 +131,7 @@ const Page = () => {
         <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
       </button>
 
-      <SoldierHeader
-        soldier={soldier}
-        handleShare={handleShare}
-        handleQRClick={handleQRClick}
-        user={user}
-        id={id}
-      />
+      <SoldierHeader soldier={soldier} id={id} handleQRClick={handleQRClick} />
 
       <SoldierLifeStory lifeStory={soldier.lifeStory} />
 
@@ -155,6 +150,8 @@ const Page = () => {
         onCommentSubmit={handleNewComment}
         showLoginModal={() => setShowLoginModal(true)}
       />
+
+      <SocialLinks soldier={soldier} handleShare={handleShare} />
 
       <QRModal
         showModal={showExpandedQR}

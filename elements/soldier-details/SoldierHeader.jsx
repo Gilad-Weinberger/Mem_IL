@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { rankToInitials } from "@/lib/functions/rankInitials";
 
-const SoldierHeader = ({ soldier, handleShare, handleQRClick, id }) => {
+const SoldierHeader = ({ soldier, id, handleQRClick }) => {
   const { user } = useAuth();
 
   // Extract image URL for the first image
@@ -17,6 +17,21 @@ const SoldierHeader = ({ soldier, handleShare, handleQRClick, id }) => {
     return typeof firstImage === "string"
       ? firstImage
       : firstImage?.url || null;
+  };
+
+  // Format dates for display
+  const formatDateRange = () => {
+    const hasBirth = soldier.birthDate && soldier.birthDate.trim().length > 0;
+    const hasDeath = soldier.deathDate && soldier.deathDate.trim().length > 0;
+
+    if (hasBirth && hasDeath) {
+      return `${soldier.birthDate} - ${soldier.deathDate}`;
+    } else if (hasBirth) {
+      return `${soldier.birthDate} - `;
+    } else if (hasDeath) {
+      return ` - ${soldier.deathDate}`;
+    }
+    return "";
   };
 
   return (
@@ -41,49 +56,15 @@ const SoldierHeader = ({ soldier, handleShare, handleQRClick, id }) => {
         </div>
       )}
 
+      {/* Birth date, death date, and war information */}
+      <div className="mt-4 mb-4">
+        <p className="text-lg font-light">{formatDateRange()}</p>
+        {soldier.warFellIn && (
+          <p className="text-md font-light mt-1">נפל ב{soldier.warFellIn}</p>
+        )}
+      </div>
+
       <div className="flex flex-wrap item-center justify-center mt-5 gap-6">
-        {soldier.instagram_link && (
-          <Link href={soldier.instagram_link} target="_blank">
-            <Image
-              src={"/instagram.svg"}
-              alt="instagram-icon"
-              width={42}
-              height={42}
-              className="invert"
-            />
-          </Link>
-        )}
-        {soldier.facebook_link && (
-          <Link href={soldier.facebook_link} target="">
-            <Image
-              src={"/facebook.svg"}
-              alt="facebook-icon"
-              width={42}
-              height={42}
-              className="invert"
-            />
-          </Link>
-        )}
-        {soldier.whatsapp_link && (
-          <Link href={soldier.whatsapp_link} className="mt-0.5" target="_blank">
-            <Image
-              src={"/whatsapp.svg"}
-              alt="whatsapp-icon"
-              width={40}
-              height={40}
-              className="invert"
-            />
-          </Link>
-        )}
-        <button onClick={handleShare} className="mt-0.5">
-          <Image
-            src={"/share.svg"}
-            alt="share-icon"
-            width={40}
-            height={40}
-            className="invert"
-          />
-        </button>
         <button
           onClick={handleQRClick}
           className="bg-[rgb(25,25,25)] rounded-lg h-[42px] w-[42px] flex items-center justify-center"
