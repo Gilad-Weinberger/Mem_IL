@@ -3,7 +3,11 @@ import Link from "next/link";
 const Hero = () => {
   return (
     <div className="max-w-3xl mx-auto mt-8 text-center">
-      <img src="favicon.png" alt="favicon" className="w-[500] mr-[125]"/>
+      <img 
+        src="favicon.png" 
+        alt="favicon" 
+        className="mx-auto w-[150px] sm:w-[200px] md:w-[300px]" 
+      />
       <h1 className="text-4xl">ברוכים הבאים לאתר memory.il</h1>
       <p className="text-lg mb-6">כאן תוכלו למצוא מידע על חיילים שנפלו</p>
       <Link
