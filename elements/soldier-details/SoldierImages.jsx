@@ -6,6 +6,8 @@ const SoldierImages = ({ images }) => {
   const [imageLimit, setImageLimit] = useState(2); // Limit for displayed images
   const [showHideImagesButton, setShowHideImagesButton] = useState(false);
 
+  console.log(images);
+
   const handleShowMoreImages = () => {
     setImageLimit((prev) => prev + 2);
   };

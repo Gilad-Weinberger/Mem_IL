@@ -27,7 +27,7 @@ const SoldierGrid = ({ soldiers, loading, error, onLoadMore, hasMore }) => {
             className="flex flex-col items-center cursor-pointer hover:opacity-80"
           >
             <Image
-              src={soldier.images[0] || ""}
+              src={soldier.images[0].url || ""}
               alt="soldier-image"
               width={150}
               height={150}
