@@ -108,6 +108,15 @@ const Navbar = () => {
                   className="invert md:h-8 md:w-8"
                 />
               </Link>
+              <Link href="/extract-soldier">
+                <Image
+                  src={"/data-extract.svg"}
+                  alt="extract-soldier-data-icon"
+                  height={25}
+                  width={25}
+                  className="invert md:h-8 md:w-8"
+                />
+              </Link>
             </>
           )}
         </div>
