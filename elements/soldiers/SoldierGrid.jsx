@@ -38,7 +38,7 @@ const SoldierGrid = ({ soldiers, loading, error, onLoadMore, hasMore }) => {
               width={150}
               height={150}
               className="rounded-lg w-full h-40 object-cover"
-              priority
+              loading="lazy"
             />
             <p className="mt-2 text-white text-lg md:text-xl">
               {rankToInitials(soldier.rank)} {soldier.name}
