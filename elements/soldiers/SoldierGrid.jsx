@@ -31,7 +31,7 @@ const SoldierGrid = ({ soldiers, loading, error, onLoadMore, hasMore }) => {
                 soldier.images && soldier.images.length > 0
                   ? typeof soldier.images[0] === "string"
                     ? soldier.images[0]
-                    : soldier.images[0]?.url || ""
+                    : soldier.images[0]?.url || "/placeholder-soldier.png"
                   : "/placeholder-soldier.png"
               }
               alt="soldier-image"
