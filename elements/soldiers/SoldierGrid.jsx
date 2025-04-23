@@ -27,7 +27,13 @@ const SoldierGrid = ({ soldiers, loading, error, onLoadMore, hasMore }) => {
             className="flex flex-col items-center cursor-pointer hover:opacity-80"
           >
             <Image
-              src={soldier.images[0].url || ""}
+              src={
+                soldier.images && soldier.images.length > 0
+                  ? typeof soldier.images[0] === "string"
+                    ? soldier.images[0]
+                    : soldier.images[0]?.url || ""
+                  : "/placeholder-soldier.png"
+              }
               alt="soldier-image"
               width={150}
               height={150}
