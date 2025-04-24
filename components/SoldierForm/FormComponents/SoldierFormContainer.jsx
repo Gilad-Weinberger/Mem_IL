@@ -5,7 +5,7 @@ import FormTextarea from "./FormTextarea";
 import ImageUpload from "./ImageUpload";
 import RankDropdown from "./RankDropdown";
 import SocialMediaInputs from "./SocialMediaInputs";
-import PageLayout from "@/components/PageLayout";
+import PageLayout from "@/components/shared/layout/PageLayout";
 
 const SoldierFormContainer = ({
   initialData = {},

@@ -2,7 +2,7 @@ import React from "react";
 import { FormProvider, useFormContext } from "./FormContext";
 import StepNavigator from "./StepNavigator";
 import CircularProgressBar from "./CircularProgressBar";
-import PageLayout from "@/components/PageLayout";
+import PageLayout from "@/components/shared/layout/PageLayout";
 
 // Import all step components
 import BasicInfoStep from "./steps/BasicInfoStep";

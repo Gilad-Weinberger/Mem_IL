@@ -3,9 +3,9 @@
 import { useState, useEffect, useMemo } from "react";
 import Fuse from "fuse.js";
 import { getAllObjects } from "@/lib/functions/dbFunctions";
-import PageLayout from "@/components/PageLayout";
-import SoldierSearch from "@/elements/soldiers/SoldierSearch";
-import SoldierGrid from "@/elements/soldiers/SoldierGrid";
+import PageLayout from "@/components/shared/layout/PageLayout";
+import SoldierSearch from "@/components/soldiers/SoldierSearch";
+import SoldierGrid from "@/components/soldiers/SoldierGrid";
 
 const PAGE_SIZE = 12; // Load soldiers in batches of 12
 

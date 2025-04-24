@@ -1,6 +1,6 @@
 import React from "react";
 import { useFormContext } from "../FormContext";
-import ImageUpload from "@/elements/SoldierForm/FormComponents/ImageUpload";
+import ImageUpload from "@/components/SoldierForm/FormComponents/ImageUpload";
 
 const ImagesStep = () => {
   const { formData, handleImageChange, handleImageDelete, errors } =

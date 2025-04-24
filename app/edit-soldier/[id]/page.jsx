@@ -4,9 +4,9 @@ import React, { useState, useEffect } from "react";
 import { getObject, updateObject } from "@/lib/functions/dbFunctions";
 import { uploadMultipleFiles, deleteFile } from "@/lib/functions/storageUtils";
 import { useRouter } from "next/navigation";
-import MultiStepFormContainer from "@/elements/SoldierForm";
+import MultiStepFormContainer from "@/components/SoldierForm";
 import { useAuth } from "@/context/AuthContext";
-import UnauthorizedState from "@/elements/shared/UnauthorizedState";
+import UnauthorizedState from "@/components/shared/ui/UnauthorizedState";
 
 const EditSoldierPage = ({ params }) => {
   const unwrappedParams = React.use(params);

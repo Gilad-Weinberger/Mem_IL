@@ -4,9 +4,9 @@ import { useState, useEffect, useMemo } from "react";
 import { getAllObjects, deleteObject } from "@/lib/functions/dbFunctions";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
-import PageLayout from "@/components/PageLayout";
+import PageLayout from "@/components/shared/layout/PageLayout";
 import { warsList } from "@/lib/data/wars";
-import UnauthorizedState from "@/elements/shared/UnauthorizedState";
+import UnauthorizedState from "@/components/shared/ui/UnauthorizedState";
 
 const Page = () => {
   const [soldiers, setSoldiers] = useState([]);

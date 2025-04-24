@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import PageLayout from "@/components/PageLayout";
-import UnauthorizedState from "@/elements/shared/UnauthorizedState";
+import PageLayout from "@/components/shared/layout/PageLayout";
+import UnauthorizedState from "@/components/shared/ui/UnauthorizedState";
 import Link from "next/link";
 
 const Page = () => {

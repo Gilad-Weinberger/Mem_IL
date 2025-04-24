@@ -9,13 +9,13 @@ import {
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
-import PageLayout from "@/components/PageLayout";
+import PageLayout from "@/components/shared/layout/PageLayout";
 
 // Import the new components
-import NotificationHeader from "@/elements/notifications/NotificationHeader";
-import PendingCommentsList from "@/elements/notifications/PendingCommentsList";
-import StatusRequestsList from "@/elements/notifications/StatusRequestsList";
-import UnauthorizedState from "@/elements/shared/UnauthorizedState";
+import NotificationHeader from "@/components/notifications/NotificationHeader";
+import PendingCommentsList from "@/components/notifications/PendingCommentsList";
+import StatusRequestsList from "@/components/notifications/StatusRequestsList";
+import UnauthorizedState from "@/components/shared/ui/UnauthorizedState";
 
 const Page = () => {
   const { user, userStatus, loading } = useAuth();

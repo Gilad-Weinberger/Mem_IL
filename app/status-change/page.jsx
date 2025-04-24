@@ -1,6 +1,6 @@
 "use client";
 
-import StatusChangeContainer from "@/elements/status-change/StatusChangeContainer";
+import StatusChangeContainer from "@/components/status-change/StatusChangeContainer";
 
 const Page = () => {
   return <StatusChangeContainer />;

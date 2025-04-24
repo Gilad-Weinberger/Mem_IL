@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import Navbar from "@/components/shared/layout/Navbar";
+import Footer from "@/components/shared/layout/Footer";
 import SearchBar from "./SearchBar";
 import UserList from "./UserList";
 import { handleStatusChange } from "./StatusChangeUtils";
 import { useAuth } from "@/context/AuthContext";
-import UnauthorizedState from "@/elements/shared/UnauthorizedState";
+import UnauthorizedState from "@/components/shared/ui/UnauthorizedState";
 
 const StatusChangeContainer = () => {
   const { user, userStatus, loading } = useAuth();

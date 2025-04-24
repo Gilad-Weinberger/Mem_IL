@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import PageLayout from "@/components/PageLayout";
+import PageLayout from "@/components/shared/layout/PageLayout";
 import { getAllObjects, getObjectsByField } from "@/lib/functions/dbFunctions";
-import CommentCard from "@/elements/soldier-details/CommentCard";
+import CommentCard from "@/components/soldier-details/CommentCard";
 import USER_STATUSES from "@/lib/data/statuses";
 import Link from "next/link";
 
@@ -56,7 +56,7 @@ const Page = () => {
               user.uid
             );
 
-            // Sort by creation date (newest first) 
+            // Sort by creation date (newest first)
             const sortedRequests = existingRequests.sort(
               (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
             );

@@ -9,16 +9,16 @@ import {
   getObjectsByField,
 } from "@/lib/functions/dbFunctions";
 import { useAuth } from "@/context/AuthContext";
-import PageLayout from "@/components/PageLayout";
-import SoldierHeader from "@/elements/soldier-details/SoldierHeader";
-import SoldierLifeStory from "@/elements/soldier-details/SoldierLifeStory";
-import SoldierImages from "@/elements/soldier-details/SoldierImages";
-import SoldierWar from "@/elements/soldier-details/SoldierWar";
-import ShowComments from "@/elements/soldier-details/ShowComments";
-import CommentForm from "@/elements/soldier-details/CommentForm";
-import SocialLinks from "@/elements/soldier-details/SocialLinks";
-import QRModal from "@/elements/soldier-details/QRModal";
-import NotificationModal from "@/elements/soldier-details/NotificationModal";
+import PageLayout from "@/components/shared/layout/PageLayout";
+import SoldierHeader from "@/components/soldier-details/SoldierHeader";
+import SoldierLifeStory from "@/components/soldier-details/SoldierLifeStory";
+import SoldierImages from "@/components/soldier-details/SoldierImages";
+import SoldierWar from "@/components/soldier-details/SoldierWar";
+import ShowComments from "@/components/soldier-details/ShowComments";
+import CommentForm from "@/components/soldier-details/CommentForm";
+import SocialLinks from "@/components/soldier-details/SocialLinks";
+import QRModal from "@/components/soldier-details/QRModal";
+import NotificationModal from "@/components/soldier-details/NotificationModal";
 
 const Page = () => {
   const { user, loading } = useAuth();

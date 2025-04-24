@@ -3,9 +3,9 @@
 import { createObject } from "@/lib/functions/dbFunctions";
 import { uploadMultipleFiles } from "@/lib/functions/storageUtils";
 import { useRouter } from "next/navigation";
-import MultiStepFormContainer from "@/elements/SoldierForm";
+import MultiStepFormContainer from "@/components/SoldierForm";
 import { useAuth } from "@/context/AuthContext";
-import UnauthorizedState from "@/elements/shared/UnauthorizedState";
+import UnauthorizedState from "@/components/shared/ui/UnauthorizedState";
 
 const Page = () => {
   const { user, userStatus, loading } = useAuth();

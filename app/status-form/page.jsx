@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 import { createObject, getObjectsByField } from "@/lib/functions/dbFunctions";
-import NotificationModal from "@/elements/soldier-details/NotificationModal";
-import UnauthorizedState from "@/elements/shared/UnauthorizedState";
+import NotificationModal from "@/components/soldier-details/NotificationModal";
+import UnauthorizedState from "@/components/shared/ui/UnauthorizedState";
 
 const Page = () => {
   const [loading, setLoading] = useState(true);
