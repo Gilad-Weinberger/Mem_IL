@@ -35,7 +35,7 @@ const RankDropdown = ({ value, onChange, error }) => {
   return (
     <div className="mb-4">
       <label htmlFor="rank" className="block text-gray-300 mb-2 float-right">
-        :דרגה
+        דרגה:
       </label>
       <div className="relative rank-dropdown">
         <input

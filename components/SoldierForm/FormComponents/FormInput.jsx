@@ -13,7 +13,7 @@ const FormInput = ({
   return (
     <div className="mb-4">
       <label htmlFor={id} className="block text-gray-300 mb-2 float-right">
-        :{label}
+        {label}:
       </label>
       <input
         type={type}

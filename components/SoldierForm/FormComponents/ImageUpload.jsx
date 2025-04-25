@@ -26,7 +26,7 @@ const ImageUpload = ({ images, onImageChange, onImageDelete, error }) => {
           htmlFor="images"
           className="block text-gray-300 mb-2 float-right"
         >
-          :תמונות
+          תמונות:
         </label>
         <input
           type="file"
