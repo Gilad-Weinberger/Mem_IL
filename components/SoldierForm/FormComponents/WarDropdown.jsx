@@ -5,7 +5,7 @@ const WarDropdown = ({ value, onChange, error }) => {
   return (
     <div className="mb-4">
       <label className="block text-white mb-2" htmlFor="warFellIn">
-        נפל במלחמה:
+        נפל במלחמה-:
       </label>
       <div className="relative">
         <select
