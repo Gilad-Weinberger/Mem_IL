@@ -100,7 +100,7 @@ const Page = () => {
 
   const handleCloseLoginModal = () => {
     setShowLoginModal(false);
-    router.push("/signup");
+    router.push("/auth/signup");
   };
 
   const handleNewComment = (newComment) => {
