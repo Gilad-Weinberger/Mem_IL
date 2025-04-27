@@ -19,17 +19,35 @@ const SoldierHeader = ({ soldier, id, handleQRClick }) => {
       : firstImage?.url || null;
   };
 
+  // Format date to dd/mm/yyyy
+  const formatDate = (dateString) => {
+    if (!dateString || dateString.trim().length === 0) return "";
+
+    try {
+      const [year, month, day] = dateString.split(/[-/]/);
+      if (year && month && day) {
+        return `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${year}`;
+      }
+
+      // If the date is already in dd/mm/yyyy format or cannot be parsed
+      return dateString;
+    } catch (error) {
+      return dateString;
+    }
+  };
+
   // Format dates for display
   const formatDateRange = () => {
     const hasBirth = soldier.birthDate && soldier.birthDate.trim().length > 0;
-    const hasDeath = soldier.deathDate && soldier.deathDate.trim().length > 0;
+    const hasDeath =
+      soldier.dateOfDeath && soldier.dateOfDeath.trim().length > 0;
 
     if (hasBirth && hasDeath) {
-      return `${soldier.birthDate} - ${soldier.deathDate}`;
+      return `${formatDate(soldier.dateOfDeath)} - ${formatDate(soldier.birthDate)}`;
     } else if (hasBirth) {
-      return `${soldier.birthDate} - `;
+      return ` - ${formatDate(soldier.birthDate)}`;
     } else if (hasDeath) {
-      return ` - ${soldier.deathDate}`;
+      return `${formatDate(soldier.dateOfDeath)} - `;
     }
     return "";
   };
