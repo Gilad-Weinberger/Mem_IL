@@ -189,7 +189,7 @@ const Page = () => {
                   onClick={() => router.push(`/soldiers/${soldier.id}`)}
                 >
                   <Image
-                    src={soldier.images?.[0] || ""}
+                    src={soldier.images?.[0] || "/placeholder-soldier.png"}
                     alt={soldier.name}
                     width={150}
                     height={150}
