@@ -1,10 +1,16 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { rankToInitials } from "@/lib/functions/rankInitials";
+import { toJewishDate, formatJewishDateInHebrew } from "jewish-date";
 
 const SoldierHeader = ({ soldier, id, handleQRClick }) => {
   const { user } = useAuth();
+  const [hebrewBirthDate, setHebrewBirthDate] = useState("");
+  const [hebrewDeathDate, setHebrewDeathDate] = useState("");
 
   // Extract image URL for the first image
   const getMainImageUrl = () => {
@@ -37,25 +43,40 @@ const SoldierHeader = ({ soldier, id, handleQRClick }) => {
   };
 
   // Format dates for display
-  const formatDateRange = () => {
-    const hasBirth = soldier.birthDate && soldier.birthDate.trim().length > 0;
-    const hasDeath =
-      soldier.dateOfDeath && soldier.dateOfDeath.trim().length > 0;
+  const formatDateRange = (birthDate, deathDate) => {
+    const hasBirth = birthDate && birthDate.trim().length > 0;
+    const hasDeath = deathDate && deathDate.trim().length > 0;
 
     if (hasBirth && hasDeath) {
-      return `${formatDate(soldier.dateOfDeath)} - ${formatDate(soldier.birthDate)}`;
+      return `${formatDate(deathDate)} - ${formatDate(birthDate)}`;
     } else if (hasBirth) {
-      return ` - ${formatDate(soldier.birthDate)}`;
+      return ` - ${formatDate(birthDate)}`;
     } else if (hasDeath) {
-      return `${formatDate(soldier.dateOfDeath)} - `;
+      return `${formatDate(deathDate)} - `;
     }
     return "";
   };
 
+  useEffect(() => {
+    const convertDateToHebrew = (dateString) => {
+      const date = new Date(dateString);
+      const jewishDate = toJewishDate(date);
+      const jewishDateInHebrewStr = formatJewishDateInHebrew(jewishDate);
+      return jewishDateInHebrewStr;
+    };
+
+    if (soldier.birthDate) {
+      setHebrewBirthDate(convertDateToHebrew(soldier.birthDate));
+    }
+    if (soldier.dateOfDeath) {
+      setHebrewDeathDate(convertDateToHebrew(soldier.dateOfDeath));
+    }
+  }, [soldier.birthDate, soldier.dateOfDeath]);
+
   return (
     <div className="max-w-3xl mx-auto text-center mt-6">
       <p className="text-[40px] mt-1 leading-[40px] font-extralight">
-        {rankToInitials(soldier.rank)} {soldier.name}
+        {rankToInitials(soldier.rank)} {soldier.name} הי"ד
       </p>
 
       {/* Only render the Image component if we have a valid image source */}
@@ -76,9 +97,16 @@ const SoldierHeader = ({ soldier, id, handleQRClick }) => {
 
       {/* Birth date, death date, and war information */}
       <div className="mt-4 mb-4">
-        <p className="text-lg font-light">{formatDateRange()}</p>
+        <p className="text-lg font-light">
+          {formatDateRange(soldier.birthDate, soldier.dateOfDeath)}
+        </p>
+        {hebrewBirthDate && hebrewDeathDate ? (
+          <p className="text-md font-light mt-0.5">
+            {formatDateRange(hebrewDeathDate, hebrewBirthDate)}
+          </p>
+        ) : null}
         {soldier.warFellIn && (
-          <p className="text-md font-light mt-1">נפל ב{soldier.warFellIn}</p>
+          <p className="text-md font-light mt-3 ">נפל ב{soldier.warFellIn}</p>
         )}
       </div>
 
