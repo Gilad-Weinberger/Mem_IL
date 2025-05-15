@@ -57,6 +57,14 @@ const SoldierHeader = ({ soldier, id, handleQRClick }) => {
     return "";
   };
 
+  const formatMemorialTitle = (memorialTitle) => {
+    if (memorialTitle === "היד") {
+      return 'הי"ד';
+    } else if (memorialTitle === "זל") {
+      return 'ז"ל';
+    }
+  };
+
   useEffect(() => {
     const convertDateToHebrew = (dateString) => {
       const date = new Date(dateString);
@@ -76,7 +84,10 @@ const SoldierHeader = ({ soldier, id, handleQRClick }) => {
   return (
     <div className="max-w-3xl mx-auto text-center mt-6">
       <p className="text-[40px] mt-1 leading-[40px] font-extralight">
-        {rankToInitials(soldier.rank)} {soldier.name} הי"ד
+        {rankToInitials(soldier.rank)} {soldier.name} {""}
+        {soldier.memorialTitle
+          ? `${formatMemorialTitle(soldier.memorialTitle)} `
+          : 'הי"ד'}
       </p>
 
       {/* Only render the Image component if we have a valid image source */}

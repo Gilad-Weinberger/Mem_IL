@@ -7,7 +7,10 @@ export const FormProvider = ({
   children,
   isEdit = false,
 }) => {
-  const [formData, setFormData] = useState(initialData);
+  const [formData, setFormData] = useState({
+    memorialTitle: "היד",
+    ...initialData,
+  });
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -99,6 +102,10 @@ export const FormProvider = ({
         newErrors.name = "שם מלא נדרש";
       }
 
+      if (field === "memorialTitle" && !formData.memorialTitle) {
+        newErrors.memorialTitle = "תואר זיכרון נדרש";
+      }
+
       if (field === "rank" && !formData.rank) {
         newErrors.rank = "דרגה נדרשת";
       }
@@ -132,10 +139,11 @@ export const FormProvider = ({
     const newErrors = {};
 
     if (!formData.name) newErrors.name = "שם מלא נדרש";
+    if (!formData.memorialTitle) newErrors.memorialTitle = "תואר זיכרון נדרש";
     if (!formData.rank) newErrors.rank = "דרגה נדרשת";
     if (!formData.lifeStory) newErrors.lifeStory = "סיפור חיים נדרש";
     if (!formData.birthDate) newErrors.birthDate = "תאריך לידה נדרש";
-    if (!formData.dateOfDeath) newErrors.dateOfDeath = "תאריך פטירה נדרש";
+    if (!formData.dateOfDeath) newErrors.dateOfDeath = "תאריך פטירה נדרשת";
     if (
       (!formData.imagePreviews || formData.imagePreviews.length === 0) &&
       (!formData.images || formData.images.length === 0)

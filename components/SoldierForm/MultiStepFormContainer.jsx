@@ -49,7 +49,7 @@ const MultiStepFormContainer = ({
     {
       component: BasicInfoStep,
       label: "פרטים בסיסיים",
-      fieldsToValidate: ["name", "rank"],
+      fieldsToValidate: ["name", "memorialTitle", "rank"],
     },
     {
       component: LifeStoryStep,
