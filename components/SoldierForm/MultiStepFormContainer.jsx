@@ -7,6 +7,7 @@ import PageLayout from "@/components/shared/layout/PageLayout";
 // Import all step components
 import BasicInfoStep from "./steps/BasicInfoStep";
 import LifeStoryStep from "./steps/LifeStoryStep";
+import LocationConnectionStep from "./steps/LocationConnectionStep";
 import ImagesStep from "./steps/ImagesStep";
 import DatesStep from "./steps/DatesStep";
 import SocialMediaStep from "./steps/SocialMediaStep";
@@ -55,6 +56,11 @@ const MultiStepFormContainer = ({
       component: LifeStoryStep,
       label: "סיפור חיים",
       fieldsToValidate: ["lifeStory"],
+    },
+    {
+      component: LocationConnectionStep,
+      label: "מקום אהוב",
+      fieldsToValidate: [],
     },
     {
       component: ImagesStep,

@@ -6,6 +6,7 @@ import LifeStoryStep from "./steps/LifeStoryStep";
 import ImagesStep from "./steps/ImagesStep";
 import DatesStep from "./steps/DatesStep";
 import SocialMediaStep from "./steps/SocialMediaStep";
+import LocationConnectionStep from "./steps/LocationConnectionStep";
 
 export {
   FormProvider,
@@ -13,6 +14,7 @@ export {
   StepNavigator,
   BasicInfoStep,
   LifeStoryStep,
+  LocationConnectionStep,
   ImagesStep,
   DatesStep,
   SocialMediaStep,
