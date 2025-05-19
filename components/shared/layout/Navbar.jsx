@@ -63,7 +63,7 @@ const Navbar = () => {
           </Link>
           {user && userStatus === "admin" && (
             <>
-              <Link href="/admin">
+              {/*<Link href="/admin">
                 <Image
                   src={"/admin.svg"}
                   alt="admin-icon"
@@ -71,7 +71,7 @@ const Navbar = () => {
                   width={25}
                   className="invert md:h-8 md:w-8"
                 />
-              </Link>
+              </Link>*/}
               <Link href="/status-change">
                 <Image
                   src={"/status.svg"}
@@ -108,7 +108,7 @@ const Navbar = () => {
                   className="invert md:h-8 md:w-8"
                 />
               </Link>
-              <Link href="/extract-soldier">
+              {/*<Link href="/extract-soldier">
                 <Image
                   src={"/data-extract.svg"}
                   alt="extract-soldier-data-icon"
@@ -116,7 +116,7 @@ const Navbar = () => {
                   width={25}
                   className="invert md:h-8 md:w-8"
                 />
-              </Link>
+              </Link>*/}
             </>
           )}
         </div>
