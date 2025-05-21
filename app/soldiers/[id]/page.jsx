@@ -135,7 +135,7 @@ const Page = () => {
 
       <SoldierLifeStory lifeStory={soldier.lifeStory} />
 
-      <SoldierLocationConnection locationConnection={soldier.locationConnection} />
+      {/*<SoldierLocationConnection locationConnection={soldier.locationConnection} />*/}
 
       <SoldierImages images={soldier.images} />
 
