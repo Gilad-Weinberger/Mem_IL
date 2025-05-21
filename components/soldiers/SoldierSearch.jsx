@@ -64,7 +64,7 @@ const SoldierSearch = ({ onSearchChange, onWarChange }) => {
           />
         </div>
         {/* War search with dropdown */}
-        <div
+        {/* <div
           ref={warDropdownRef}
           className="relative flex w-full md:w-1/2 war-dropdown"
         >
@@ -101,7 +101,7 @@ const SoldierSearch = ({ onSearchChange, onWarChange }) => {
                 ))}
             </div>
           )}
-        </div>
+        </div> */}
       </div>
       <div className="text-center w-full mt-6">
         <p className="text-2xl md:text-3xl font-semibold">ארכיון החיילים</p>
