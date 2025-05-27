@@ -38,7 +38,7 @@ const Page = () => {
           // Associate each comment with the soldier name
           const commentsWithSoldierNames = await Promise.all(
             comments
-              .filter((comment) => comment.author) // Filter comments with author
+              .filter((comment) => comment.userId === user.uid) // Filter comments by userId
               .map(async (comment) => {
                 const soldier = soldiers.find(
                   (s) => s.id === comment.soldierId
@@ -198,7 +198,13 @@ const Page = () => {
                   onClick={() => router.push(`/soldiers/${soldier.id}`)}
                 >
                   <Image
-                    src={soldier.images?.[0] || "/placeholder-soldier.png"}
+                    src={
+                      soldier.images && soldier.images.length > 0
+                        ? typeof soldier.images[0] === "string"
+                          ? soldier.images[0]
+                          : soldier.images[0]?.url || "/placeholder-soldier.png"
+                        : "/placeholder-soldier.png"
+                    }
                     alt={soldier.name}
                     width={150}
                     height={150}

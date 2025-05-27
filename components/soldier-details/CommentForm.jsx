@@ -33,6 +33,7 @@ const CommentForm = ({ soldierId, onCommentSubmit, showLoginModal }) => {
     const newComment = {
       ...comment,
       soldierId,
+      userId: user.uid,
       likes: [],
       status: "pending",
       createdAt: new Date().toISOString(),
