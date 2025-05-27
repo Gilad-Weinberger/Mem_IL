@@ -16,7 +16,7 @@ const Page = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestStatus, setRequestStatus] = useState(null); // null, "pending", "approved", "blocked"
-  const { user, userStatus } = useAuth();
+  const { user, userStatus, refreshUserStatus } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -30,6 +30,9 @@ const Page = () => {
     if (user) {
       const checkExistingRequests = async () => {
         try {
+          // Refresh user status first to get the most current status
+          await refreshUserStatus();
+
           const existingRequests = await getObjectsByField(
             "statusRequests",
             "userId",
@@ -54,7 +57,7 @@ const Page = () => {
 
       checkExistingRequests();
     }
-  }, [user]);
+  }, [user, refreshUserStatus]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -100,7 +103,33 @@ const Page = () => {
   }
 
   if (userStatus !== "regular") {
-    return <UnauthorizedState message="אין לך הרשאה לגשת לעמוד זה" />;
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
+        dir="rtl"
+      >
+        <button
+          onClick={() => router.back()}
+          className="fixed top-4 left-4 p-2 rounded"
+        >
+          <Image src="/previous.svg" alt="Go Back" width={24} height={24} />
+        </button>
+        <div className="w-full max-w-sm bg-gray-800 p-6 rounded-xl shadow-md">
+          <h2 className="mb-6 text-center text-3xl font-bold text-white">
+            סטטוס כבר שודרג
+          </h2>
+          <p className="text-white mb-4">
+            הסטטוס שלך כבר שודרג ואינך יכול לבקש שדרוג נוסף.
+          </p>
+          <button
+            onClick={() => router.push("/profile")}
+            className="w-full rounded bg-dark-blue p-3 font-semibold text-white hover:bg-darker-blue mt-4"
+          >
+            חזור לפרופיל
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!user) {
@@ -169,7 +198,7 @@ const Page = () => {
     );
   }
 
-  if (requestStatus === "blocked" || requestStatus === "rejected") {
+  if (requestStatus === "blocked") {
     return (
       <div
         className="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center p-8"
@@ -183,11 +212,11 @@ const Page = () => {
         </button>
         <div className="w-full max-w-sm bg-gray-800 p-6 rounded-xl shadow-md">
           <h2 className="mb-6 text-center text-3xl font-bold text-white">
-            בקשה נדחתה
+            בקשה חסומה
           </h2>
           <p className="text-white mb-4">
-            לצערנו, בקשתך האחרונה לשדרוג סטטוס נדחתה. אם אתה מאמין שזו טעות, אנא
-            צור קשר עם צוות האתר.
+            לצערנו, בקשתך לשדרוג סטטוס נחסמה. אנא צור קשר עם צוות האתר לקבלת
+            מידע נוסף.
           </p>
           <button
             onClick={() => router.push("/profile")}
@@ -216,8 +245,15 @@ const Page = () => {
         className="w-full max-w-sm bg-gray-800 p-6 rounded-xl shadow-md text-right"
       >
         <h2 className="mb-6 text-center text-3xl font-bold text-white">
-          טופס סטטוס
+          {requestStatus === "rejected"
+            ? "בקשה חדשה לשדרוג סטטוס"
+            : "טופס סטטוס"}
         </h2>
+        {requestStatus === "rejected" && (
+          <div className="mb-4 bg-yellow-600 rounded-lg p-3 text-white text-sm">
+            <p>בקשתך הקודמת נדחתה. ניתן להגיש בקשה חדשה עם פרטים מעודכנים.</p>
+          </div>
+        )}
         <div className="mb-4">
           <label className="mb-2 block text-gray-300">שם מלא</label>
           <input

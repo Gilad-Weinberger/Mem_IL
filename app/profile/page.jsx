@@ -16,13 +16,16 @@ const Page = () => {
   const [userSoldiers, setUserSoldiers] = useState([]);
   const [userComments, setUserComments] = useState([]);
   const [statusRequest, setStatusRequest] = useState(null);
-  const { user, userStatus, logout } = useAuth();
+  const { user, userStatus, logout, refreshUserStatus } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (user) {
       const fetchUserData = async () => {
         try {
+          // Refresh user status to get the most current status
+          await refreshUserStatus();
+
           // Fetch soldiers created by the user
           const soldiers = await getAllObjects("soldiers");
           const userCreatedSoldiers = soldiers.filter(
@@ -48,8 +51,9 @@ const Page = () => {
           );
           setUserComments(commentsWithSoldierNames);
 
-          // Check for existing status requests
-          if (userStatus === "regular") {
+          // Check for existing status requests - only for regular users
+          const currentStatus = userStatus || "regular";
+          if (currentStatus === "regular") {
             const existingRequests = await getObjectsByField(
               "statusRequests",
               "userId",
@@ -77,7 +81,7 @@ const Page = () => {
     } else {
       setLoading(false);
     }
-  }, [user, userStatus]);
+  }, [user, refreshUserStatus]);
 
   const handleLogout = async () => {
     try {
@@ -147,28 +151,33 @@ const Page = () => {
                 : USER_STATUSES["regular"]}
             </span>
 
-            {/* Status request information */}
-            {statusRequest && statusRequest.status === "pending" && (
-              <div className="mt-3 bg-yellow-600 rounded-lg p-3 text-white">
-                <p>בקשתך לשדרוג סטטוס נשלחה ומחכה לאישור</p>
-                <p className="text-sm mt-1">
-                  נשלח:{" "}
-                  {new Date(statusRequest.createdAt).toLocaleDateString(
-                    "he-IL"
-                  )}
-                </p>
-              </div>
-            )}
+            {/* Status request information - only show for regular users */}
+            {userStatus === "regular" &&
+              statusRequest &&
+              statusRequest.status === "pending" && (
+                <div className="mt-3 bg-yellow-600 rounded-lg p-3 text-white">
+                  <p>בקשתך לשדרוג סטטוס נשלחה ומחכה לאישור</p>
+                  <p className="text-sm mt-1">
+                    נשלח:{" "}
+                    {new Date(statusRequest.createdAt).toLocaleDateString(
+                      "he-IL"
+                    )}
+                  </p>
+                </div>
+              )}
 
-            {statusRequest && statusRequest.status === "rejected" && (
-              <div className="mt-3 bg-red-600 rounded-lg p-3 text-white">
-                <p>בקשתך לשדרוג סטטוס נדחתה</p>
-                <p className="text-sm mt-1">ניתן להגיש בקשה חדשה</p>
-              </div>
-            )}
+            {userStatus === "regular" &&
+              statusRequest &&
+              statusRequest.status === "rejected" && (
+                <div className="mt-3 bg-red-600 rounded-lg p-3 text-white">
+                  <p>בקשתך לשדרוג סטטוס נדחתה</p>
+                  <p className="text-sm mt-1">ניתן להגיש בקשה חדשה</p>
+                </div>
+              )}
 
-            {(!statusRequest || statusRequest.status === "rejected") &&
-              (!userStatus || userStatus === "regular") && (
+            {/* Show upgrade button only for regular users without pending requests */}
+            {userStatus === "regular" &&
+              (!statusRequest || statusRequest.status === "rejected") && (
                 <Link
                   href="/status-form"
                   className="mt-3 bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-lg"

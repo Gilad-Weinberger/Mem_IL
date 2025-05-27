@@ -14,25 +14,34 @@ export const AuthProvider = ({ children }) => {
   const [userStatus, setUserStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUserStatus = async (currentUser) => {
+    if (currentUser) {
+      try {
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        if (userDoc.exists()) {
+          const status = userDoc.data().status;
+          setUserStatus(status);
+          sessionStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...currentUser,
+              status: status,
+            })
+          );
+          return status;
+        }
+      } catch (err) {
+        console.error("Error fetching user document:", err);
+      }
+    }
+    return null;
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
-        try {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists()) {
-            setUserStatus(userDoc.data().status);
-            sessionStorage.setItem(
-              "user",
-              JSON.stringify({
-                ...user,
-                status: userDoc.data().status,
-              })
-            );
-          }
-        } catch (err) {
-          console.error("Error fetching user document:", err);
-        }
+        await fetchUserStatus(user);
       } else {
         setUser(null);
         setUserStatus(null);
@@ -43,6 +52,13 @@ export const AuthProvider = ({ children }) => {
 
     return () => unsubscribe();
   }, []);
+
+  const refreshUserStatus = async () => {
+    if (user) {
+      return await fetchUserStatus(user);
+    }
+    return null;
+  };
 
   const handleLogout = async () => {
     try {
@@ -59,6 +75,7 @@ export const AuthProvider = ({ children }) => {
     userStatus,
     loading,
     logout: handleLogout,
+    refreshUserStatus,
   };
 
   return (
